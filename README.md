@@ -1,6 +1,6 @@
-# CleverStack
+leverStack
 
-![cleverstack](images/logos/cleverstack-logo-clean.png?raw=true)
+![cleverstack](assets/logos/cleverstack-logo-clean.png?raw=true)
 
 Cleverstack provides you with a solid platform to develop your new AngularJS and NodeJS web applications. It makes use of a whole variety of the leading web technologies to help get your web application up and running quickly.
 
@@ -11,7 +11,7 @@ We're working a new modular version of CleverStack, be sure to watch this repo! 
 
 ## CleverStack Angular Seed
 
-![angular](images/logos/angular-seed-logo-clean.png)
+![angular](assets/logos/angular-seed-logo-clean.png)
 
 Angular JS front-end Seed for use with CleverStack.
 
@@ -20,7 +20,7 @@ Angular Seed Repo: https://github.com/clevertech/cleverstack-angular-seed
 
 ## CleverStack Node Seed
 
-![node](images/logos/node-seed-logo-clean.png)
+![node](assets/logos/node-seed-logo-clean.png)
 
 Node JS back-end Seed for use with CleverStack.
 
@@ -39,7 +39,4 @@ http://cleverstack.io
 An online Wiki which can provide support for install, configurations and troubleshooting.
 
 http://wiki.cleverstack.io
-
-
-
 
