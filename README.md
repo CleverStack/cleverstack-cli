@@ -1,4 +1,4 @@
-leverStack
+# CleverStack
 
 ![cleverstack](assets/logos/cleverstack-logo-clean.png?raw=true)
 
