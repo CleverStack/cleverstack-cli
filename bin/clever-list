@@ -12,12 +12,7 @@ program.on( '--help', function ( ) {
   console.log( '' );
 } );
 
+process.argv = process.argv.splice(0, 2);
 program.parse( process.argv );
 
-lib.repos.list( function ( err, repos ) {
-  if (!!err) {
-    lib.utils.fail( err );
-  }
-
-  repos.forEach( lib.repos.display );
-} );
+require( path.join( __dirname, 'clever-search' ) );

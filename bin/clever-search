@@ -5,6 +5,7 @@ var program = require( 'commander' )
   , request = require( 'superagent' )
   , Promise = require( 'bluebird' )
   , npm     = require( 'npm' )
+  , _       = require( 'lodash' )
   , lib     = require( path.join( __dirname, '..', 'index' ) )
   , utils   = lib.utils
   , RegistryClient  = require( 'bower-registry-client' )
@@ -28,8 +29,8 @@ if (!args) {
   program.help();
 }
 
-var _safe = ['cleverstack', '=pilsy', '=durango', '=sdeering', '=danielyoung'];
-var _keywordSafe = ['cleverstack-backend', 'cleverstack backend', 'cleverstack-frontend', 'cleverstack frontend'];
+var _keywordRequired = ['cleverstack module', 'cleverstack-module', 'cleverstack seed', 'cleverstack-seed']
+  , _keywordType     = ['cleverstack-backend', 'cleverstack backend', 'cleverstack-frontend', 'cleverstack frontend', 'frontend', 'backend', 'seed'];
 
 function searchNPM( queries ) {
   var def = Promise.defer( );
@@ -39,7 +40,7 @@ function searchNPM( queries ) {
   npm.load( {
     silent: true
   }, function() {
-    npm.commands.search( queries, true, function ( err, res ) {
+    npm.commands.search( Array.isArray( queries ) && queries.length > 0 ? queries : [], true, function ( err, res ) {
       if (!!err) {
         return def.reject( err );
       }
@@ -47,20 +48,8 @@ function searchNPM( queries ) {
       var repos = [];
 
       Object.keys( res ).forEach( function ( repo ) {
-        if (_.intersection( res[repo].keywords, _keywordSafe ).length > 0 && res[repo].keywords.indexOf( 'cleverstack' ) > -1) {
+        if (_.intersection( res[repo].keywords, _keywordRequired ).length > 0) {
           repos.push( res[repo] );
-        } else {
-          // Array intersection... benchmarks shown simple loops was the fastest...
-          // chrome 31
-          // http://jsfiddle.net/neoswf/aXzWw/
-          for (var i = 0; i < res[repo].maintainers.length; i++) {
-            for (var z = 0; z < _safe.length; z++) {
-              if (res[repo].maintainers[i] === _safe[z]) {
-                repos.push( res[repo] );
-                break;
-              }
-            }
-          }
         }
       } );
 
@@ -101,6 +90,7 @@ module.exports = ( function() {
 
     results.shift( );
 
+    // Bower is pretty limiting in terms of keywords, etc.
     results.forEach( function ( rep )  {
       if (!!rep.url && rep.url.match(/^git:\/\/github\.com\/(clevertech|CleverStack)/) !== null) {
         repos.push( rep );
