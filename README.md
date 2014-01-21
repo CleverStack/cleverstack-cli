@@ -1,7 +1,5 @@
 # CleverStack CLI
 
-![cleverstack](assets/logos/cleverstack-logo-clean.png?raw=true)
-
 A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecosystem.
 
 ## Installation
