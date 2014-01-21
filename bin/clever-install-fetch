@@ -1,0 +1,117 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , semver  = require( 'semver' )
+  , path    = require( 'path' )
+  , unzip   = require( 'unzip' )
+  , fs      = require( 'fs' )
+  , async   = require( 'async' )
+  , request = require( 'request' )
+  , rimraf  = require( 'rimraf' )
+  , lib     = require( path.join( __dirname, '..', 'index' ) )
+  , tags    = lib.tags;
+
+program
+  .version( lib.pkg.version )
+  .usage( '-p <path> [options] <project> [backend|frontend]' )
+  .option( '-v, --versions [version]', 'Install a specific package version.', '*' )
+  .option( '-p, --path <path>', 'Path to install the package to.' );
+
+program.on( '--help', function ( ) {
+  console.log( '  Examples:' );
+  console.log( '    clever init --fetch my-project' );
+  console.log( '    clever init --fetch my-project-frontend frontend' );
+  console.log( '    clever init --fetch my-project-backend backend' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+if (!program.path) {
+  program.help( );
+}
+
+var module    = process.argv[2]
+  , args      = process.argv.slice( 3 )
+  , mappings  = {
+    backend:  'cleverstack-node-seed',
+    frontend: 'cleverstack-angular-seed'
+  }
+
+if (mappings[module] !== undefined) {
+  module = mappings[module];
+}
+
+function moveFiles( ) {
+  var p = path.resolve( path.join( program.path, module + '-' + program.versions ) );
+  fs.readdir( p, function ( err, files ) {
+    if (!!err) {
+      return lib.utils.fail( err );
+    }
+
+    async.each( files, function ( file, next ) {
+      var finalPath = path.resolve( path.join( program.path, file) );
+      fs.exists( finalPath, function ( exists ) {
+        if (exists) {
+          rimraf( finalPath, function ( err ) {
+            if (!!err) {
+              return next( err );
+            }
+
+            fs.rename( path.resolve( path.join( p, file ) ), finalPath, function ( err ) {
+              if (!!err) {
+                return next( err );
+              }
+
+              next( );
+            } );
+          } );
+        } else {
+          fs.rename( path.resolve( path.join( p, file ) ), finalPath, function ( err ) {
+            if (!!err) {
+              return next( err );
+            }
+
+            next( );
+          } );
+        }
+      } );
+    }, function ( err ) {
+      if (!!err) {
+        return lib.utils.fail( err );
+      }
+
+      rimraf(p, function ( err ) {
+        if (!!err) {
+          return lib.utils.fail( err );
+        }
+
+        process.exit( 0 );
+      } );
+    } );
+  } );
+}
+
+var zip = unzip.Extract( { path: path.resolve( program.path ) } );
+
+zip.on('error', function ( err ) {
+  lib.utils.fail( err );
+});
+
+zip.on('close', function() {
+  moveFiles( program.path );
+} );
+
+tags( module, function ( err, tags ) {
+  if (program.versions === "*") {
+    program.versions = semver.maxSatisfying( tags, program.versions, true ).toString();
+  } else {
+    program.versions = semver.maxSatisfying( tags, semver.clean( program.versions, true ).toString(), true ).toString();
+  }
+
+  if (!program.versions) {
+    return lib.utils.fail( 'Version ' + program.versions + ' for ' + module + ' is not available.' );
+  }
+
+  request.get( 'https://github.com/clevertech/' + module + '/archive/v' + program.versions + '.zip' ).pipe( zip );
+} );

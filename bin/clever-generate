@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+
+var program   = require( 'commander' )
+  , path      = require( 'path' )
+  , mkdirp    = require( 'mkdirp' )
+  , async     = require( 'async' )
+  , es        = require( 'event-stream' )
+  , fs        = require( 'fs' )
+  , tcase     = require( 't-case' )
+  , lib       = require( path.join( __dirname, '..', 'index' ) )
+  , generate  = lib.generator.generate;
+
+program.version( lib.pkg.version );
+
+// Generate our commands with singular and plural lingo
+['service', 'controller', 'model', 'task'].forEach( function ( tmpl ) {
+  program
+    .command( tmpl + ' <name>' )
+    .usage( tmpl + ' <name>' )
+    .description( 'Generates a ' + tmpl + ' as <name> within ' + path.join( process.cwd( ), tmpl ) + 's' )
+    .action( function ( name ) {
+      generate( tmpl + 's', name, function ( ) {
+        lib.utils.success( tmpl + ' generated within ' + path.join( process.cwd( ), tmpl ) );
+      } );
+    } );
+
+  program
+    .command( tmpl + 's' + ' <names>' )
+    .usage( tmpl + 's' + ' <names>' )
+    .description( 'Generates ' + tmpl + 's specified with <name ...> within ' + process.cwd( ) + path.sep + tmpl + 's' )
+    .action( function ( name, prog ) {
+      generate( tmpl + 's', prog.parent.rawArgs.splice( 3 ), function ( ) {
+        lib.utils.success( tmpl + ' generated within ' + path.join( process.cwd( ), tmpl ) );
+      } );
+    } );
+} );
+
+// Tests are a bit unique as well..
+program
+  .command( 'test <name>' )
+  .usage( 'test [options] <name>')
+  .option( '-i, --integration', 'Generate integration tests', true )
+  .option( '-u --unit', 'Generate unit tests.', true )
+  // .option( '-e, --e2e', 'Generate e2e tests.', true )
+  // .option( '-m, --mocks', 'Generate mock tests.', true )
+  .description( 'Generates a test t as <name> within ' + process.cwd( ) + path.sep + 'tests' )
+  .action( function ( name ) {
+    generate( 'tests', name, function ( ) {
+      lib.utils.success( 'test generated within ' + path.join( process.cwd( ), 'tests' ) );
+    } );
+  } );
+
+program
+  .command( 'tests <names>' )
+  .usage( 'tests [options] <names>')
+  .option( '-i, --integration', 'Generate integration tests', true )
+  .option( '-u --unit', 'Generate unit tests.', true )
+  // .option( '-e, --e2e', 'Generate e2e tests.', true )
+  // .option( '-m, --mocks', 'Generate mock tests.', true )
+  .description( 'Generates test specified with <name ...> within ' + process.cwd( ) + path.sep + 'tests' )
+  .action( function ( name ) {
+    generate( 'tests',  prog.parent.rawArgs.splice( 3 ), function ( ) {
+      lib.utils.success( 'tests generated within ' + path.join( process.cwd( ), 'tests' ) );
+    } );
+  } );
+
+program.on( '--help', function ( ) {
+  console.log( '  Example:' );
+  console.log( '' );
+  console.log( '    clever generate model users' );
+  console.log( '    clever generate controller users' );
+  console.log( '    clever g controller users' );
+  console.log( '    clever g controllers users auth email' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+if (!program.args.length) {
+  program.help();
+}

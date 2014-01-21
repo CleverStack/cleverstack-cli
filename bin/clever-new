@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+
+var program   = require( 'commander' )
+  , path      = require( 'path' )
+  , tcase     = require( 't-case' )
+  , mkdirp    = require( 'mkdirp' )
+  , fs        = require( 'fs' )
+  , lib       = require( path.join( __dirname, '..', 'index' ) )
+  , scaffold  = lib.generator.scaffold
+
+program.version( lib.pkg.version );
+
+program
+  .usage( '[options] <name>' )
+  .option( '--no-service', 'Disables generating a service.' )
+  .option( '--no-controller', 'Disables generating a controller.' )
+  .option( '--no-model', 'Disables generating a model.' )
+  .option( '--no-task', 'Disables generating a task.' )
+  .option( '--no-test', 'Disables generating a test.' );
+
+program.on( '--help', function ( ) {
+  console.log( '  Example:' );
+  console.log( '    clever new my_module' );
+  console.log( '    clever new myModule' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+if (program.rawArgs.length < 3) {
+  program.help( );
+}
+
+var filterOut = []
+  , filters   = ['service', 'controller', 'model', 'task', 'test']
+  , args      = program.rawArgs.splice( 2 );
+
+filters.forEach( function ( filter ) {
+  if (program[filter] === false) {
+    filterOut.push( filter );
+  }
+} );
+
+if (filterOut.length === filters.length) {
+  program.help( );
+}
+
+lib.project.locations( ).then( function ( projects ) {
+  var folders = []
+    , name    = path.join( 'modules', args[0] );
+
+  projects.forEach( function ( project ) {
+    var folder = lib.generator.getModulePath( project, name );
+
+    if (fs.existsSync( folder )) {
+      lib.utils.fail( 'Module already exists in ' + folder );
+    }
+
+    folders.push( folder );
+  } );
+
+  lib.utils.info( 'Setting up new module... ' );
+
+  scaffold( name, filterOut, function ( ) {
+    folders.forEach( function ( folder ) {
+      lib.utils.success( 'Module has been created successfully within ' + folder );
+    } );
+  } );
+} )
+.error( lib.utils.error );
+

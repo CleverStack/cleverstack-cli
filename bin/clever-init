@@ -1,0 +1,407 @@
+#!/usr/bin/env node
+
+var Promise = require( 'bluebird' )
+  , program = require( 'commander' )
+  , path    = require( 'path' )
+  , mkdirp  = require( 'mkdirp' )
+  , spawn   = require( 'win-spawn' )
+  , fs      = require( 'fs' )
+  , rimraf  = require( 'rimraf' )
+  , async   = require( 'async' )
+  , prompt  = require( 'inquirer' )
+  , lib     = require( path.join( __dirname, '..', 'index' ) );
+
+Promise.longStackTraces( );
+
+program
+  .version( lib.pkg.version )
+  .option( '-v, --versions', 'Select a specific cleverstack version that you want initialize with.')
+  .option( '-f, --fetch', 'Installs the package without cloning the git repo.');
+
+program
+  .command( '<project>' )
+  .description( ' Creates a project named <project>' );
+
+program.on( '--help', function ( ) {
+  console.log( '  Examples:' );
+  console.log( '    clever init my-project' );
+  console.log( '    clever init project-frontend frontend' );
+  console.log( '    clever init my-project-everything backend frontend' );
+  console.log( '    clever init --fetch my-project-frontend frontend' );
+  console.log( '    clever init --fetch my-project-backend backend' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+var project = program.args[0]
+  , args    = program.args.slice( 3 );
+
+if (args.length < 1 ) {
+  args.push( 'backend' );
+  args.push( 'frontend' );
+}
+
+var remotes = {
+  backend:  'cleverstack-node-seed',
+  frontend: 'cleverstack-angular-seed'
+}
+
+if (!project || project.toString( ).trim( ) === "") {
+  program.help( );
+}
+
+if (fs.existsSync( path.join( process.cwd( ), project ) )) {
+  lib.utils.fail( "Can't create project " + project + " due to a folder named " + project + " existing in " + process.cwd() );
+}
+
+var projectFolder = process.cwd() + path.sep + project;
+
+var installArgs = [];
+if (program.versions) {
+  installArgs.push( '-v' );
+  installArgs.push( program.versions );
+}
+
+if (program.fetch) {
+  installArgs.push( '-f' );
+}
+
+function setupBackend ( dbInfo ) {
+  var def         = Promise.defer( )
+    , projectDir  = path.join( projectFolder, 'backend' );
+
+  if (args.indexOf( 'backend' ) !== -1) {
+    mkdirp( projectDir, function ( err ) {
+      if (!!err) {
+        return def.reject( err );
+      }
+
+      var proc = spawn( path.join( __dirname, ( 'clever-install' + ( !program.fetch ? '-git' : '-fetch' ) ) ), [remotes.backend, '-p', projectDir].concat( installArgs ), {stdio: 'inherit'} );
+      proc.on( 'close', function ( code ) {
+        if (code !== 0) {
+          return def.reject( );
+        }
+
+        if ( typeof dbInfo !== "object" || dbInfo === null) {
+          return def.resolve( );
+        }
+
+        var localJSONFile = require( path.join( projectDir, 'config', 'local.example.json' ) );
+
+        if (localJSONFile !== null) {
+          localJSONFile.orm = localJSONFile.orm || {};
+          localJSONFile.orm.db = localJSONFile.orm.db || {};
+
+          if (!!dbInfo.hasOwnProperty( 'username' )) {
+            localJSONFile.orm.db.username = dbInfo.username;
+          }
+
+          if (dbInfo.hasOwnProperty( 'password' )) {
+            localJSONFile.orm.db.password = dbInfo.password;
+          }
+
+          console.log(dbInfo);
+          if (dbInfo.hasOwnProperty( 'database' )) {
+            localJSONFile.orm.db.database = dbInfo.database;
+          }
+
+          localJSONFile.orm.db.options = localJSONFile.orm.db.options || {};
+
+          if (dbInfo.hasOwnProperty( 'dialect' )) {
+            localJSONFile.orm.db.options.dialect = dbInfo.dialect;
+          }
+
+          localJSONFile.orm.db.options.host = dbInfo.host || '127.0.0.1';
+
+          var portMap = {
+            'mysql': 3306,
+            'mariadb': 3306,
+            'posgtgres': 5432
+          }
+
+          localJSONFile.orm.db.options.port = dbInfo.port || portMap[localJSONFile.orm.db.options.dialect] || '';
+        }
+
+        fs.writeFile( path.join( projectDir, 'config', 'local.json' ), JSON.stringify( localJSONFile, null, 2 ), function ( err ) {
+          if (!!err) {
+            return def.reject( err );
+          }
+
+          def.resolve( );
+        } );
+      } );
+    } );
+  } else {
+    process.nextTick( function( ) {
+      return def.resolve( );
+    } );
+  }
+
+  return def.promise;
+}
+
+function setupFrontend( ) {
+  var def = Promise.defer( );
+
+  if (args.indexOf( 'frontend' ) !== -1) {
+    mkdirp( path.resolve( path.join( projectFolder, 'frontend' ) ), function ( err ) {
+      if (!!err) {
+        return def.reject( err );
+      }
+
+      var proc = spawn( path.join( __dirname, ( 'clever-install' + ( !program.fetch ? '-git' : '-fetch' ) ) ), [remotes.frontend, '-p', projectFolder + path.sep + 'frontend'].concat( installArgs ), {stdio: 'inherit'} );
+      proc.on( 'close', function ( code ) {
+        if (code !== 0) {
+          return def.reject( );
+        }
+
+        def.resolve( );
+      } );
+    } );
+  } else {
+    process.nextTick( function( ) {
+      return def.resolve( );
+    } );
+  }
+
+  return def.promise;
+}
+
+function setupPackages( ) {
+  var def = Promise.defer( );
+
+  async.eachSeries( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
+    var _path = path.resolve( path.join( projectFolder, p ) );
+
+    process.chdir( _path );
+
+    lib.utils.info( 'Installing NPM packages for ' + _path );
+    var proc = spawn( 'npm', ['install'] )
+      , err = '';
+
+    proc.stderr.on('data', function ( data ) {
+      err += data + '';
+    } );
+
+    proc.on( 'close', function ( code ) {
+      if (code !== 0) {
+        return fn( err );
+      }
+
+      lib.utils.success( 'Finished installing NPM packages for ' + _path );
+
+      var modulesFolder = path.resolve( path.join( projectFolder, p, 'modules' ) )
+        , modules = [];
+
+      if (fs.existsSync( modulesFolder )) {
+        modules = fs.readdirSync( modulesFolder );
+        lib.utils.warn( 'Installing module NPMs for ' + _path );
+      }
+
+      async.eachSeries( modules, function ( m, next ) {
+        var jsonPath = path.resolve( path.join( modulesFolder, m, 'package.json' ) )
+          , jsonFile = require( jsonPath )
+          , deps     = [];
+
+        jsonFile.dependencies     = jsonFile.dependencies     || {};
+        jsonFile.devDependencies  = jsonFile.devDependencies  || {};
+
+        Object.keys( jsonFile.dependencies ).forEach( function ( k ) {
+          deps.push( k + '@' + jsonFile.dependencies[k] );
+        } );
+
+        Object.keys( jsonFile.devDependencies ).forEach( function ( k ) {
+          deps.push( k + '@' + jsonFile.devDependencies[k] );
+        } );
+
+        // unfortunately, to get --prefix to work, you have to specify each dep...
+        async.each( deps, function ( dep, _next ) {
+          var err  = ''
+            , proc = spawn( 'npm', ['install', dep, '--prefix', path.resolve( path.join( projectFolder, p ) )] );
+
+          proc.stderr.on('data', function ( data ) {
+            err += data + '';
+          } );
+
+          proc.on( 'close', function ( code ) {
+            if (code !== 0) {
+              return _next( err );
+            }
+
+            _next( );
+          } );
+        }
+        , next );
+      },
+      function ( err ) {
+        if (!!err) {
+          return fn( err );
+        }
+
+        if (modules.length > 0) {
+          lib.utils.success( 'Finished installing module NPMs' );
+        }
+
+        var bowerPath = path.resolve( path.join( projectFolder, p, 'bower.json' ) );
+        process.chdir( path.resolve( path.join( projectFolder, p ) ) );
+
+        // backend folder?
+        if (!fs.existsSync( bowerPath ) ) {
+          lib.utils.warn( 'Running database migrations...' );
+
+          var args = [ '--base', path.resolve( path.join( projectFolder, p ) ), '--gruntfile', path.resolve( path.join( projectFolder, p, 'Gruntfile.js' ) ), 'db:exec' ]
+            , err  = '';
+
+          var env       = process.env;
+          env.NODE_ENV  = 'local';
+
+          var proc = spawn( 'grunt', args, {stdio: 'inherit', env: env} );
+
+          proc.on( 'close', function ( code ) {
+            if (code !== 0) {
+              return fn( err );
+            }
+
+            fn( );
+          } );
+        } else {
+          lib.utils.info( 'Installing bower packages for ' + _path);
+
+          var err  = ''
+            , proc = spawn( 'npm', ['run', 'setup'] );
+
+          proc.stderr.on('data', function ( data ) {
+            err += data + '';
+          } );
+
+          proc.on( 'close', function ( code ) {
+            if (code !== 0) {
+              return fn( err );
+            }
+
+            lib.utils.success( 'Finished installing bower packages.' );
+            fn( );
+          } );
+        }
+      } );
+    } );
+  },
+  function ( err ) {
+    if (!!err) {
+      return def.reject( err );
+    }
+
+    def.resolve( );
+  } );
+
+  return def.promise;
+}
+
+Promise.all( args )
+.then( function ( modules ) {
+  var def = Promise.defer( );
+
+  lib.utils.info( 'Creating ' + project + ' folder in ' + process.cwd( ) + '...' );
+  mkdirp( projectFolder, function ( err ) {
+    if (!!err) {
+      return def.reject( err );
+    }
+
+    def.resolve( modules );
+  } );
+
+  return def.promise;
+} )
+.then( function ( modules) {
+  var def = Promise.defer( );
+
+  if (modules.indexOf( 'backend' ) === -1) {
+    process.nextTick( function ( ) {
+      def.resolve( [modules] );
+    } );
+  } else {
+    console.log( 'We\'ll need some information before installing CleverStack... ');
+
+    var schema = [
+      {
+        name: 'username',
+        message: 'Database username',
+        default: 'root'
+      },
+      {
+        name: 'password',
+        message: 'Database password',
+        hidden: true
+      },
+      {
+        name: 'database',
+        message: 'Database name'
+      },
+      {
+        name: 'host',
+        message: 'Database host',
+        default: '127.0.0.1'
+      },
+      {
+        name: 'port',
+        message: 'Database port (default based on dialect)'
+      },
+      {
+        name: 'dialect',
+        message: 'Database dialect',
+        type: 'list',
+        default: 'mysql',
+        choices: [
+          'mysql',
+          'mariadb',
+          'postgres',
+          'sqlite3'
+        ]
+      }
+    ];
+
+    prompt.prompt( schema, function ( result ) {
+      var ret = [modules];
+      ret.push( {
+        username: result.username,
+        password: result.password,
+        database: result.database,
+        host: result.host,
+        dialect: result.dialect,
+        port: result.port
+      } );
+
+      def.resolve( ret );
+    } );
+  }
+
+  return def.promise;
+} )
+.spread( function ( modules, dbInfo ) {
+  lib.utils.info( 'Fetching repositories... ' );
+  return setupBackend( dbInfo );
+} )
+.then( function( ) {
+  return setupFrontend( );
+} )
+.then( function( ) {
+  lib.utils.info( 'Installing necessary packages...' );
+  return setupPackages( );
+} )
+.then( function( ) {
+  lib.utils.success( 'Project ' + project + ' has been created in ' + projectFolder );
+  process.exit( 0 );
+} )
+.error( function ( err ) {
+  lib.utils.fail( err );
+
+  // remove the project folder if we failed...
+  rimraf( projectFolder, function ( err ) {
+    if (!!err) {
+      console.error( err );
+    }
+
+    process.exit( 1 );
+  } );
+} )

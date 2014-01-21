@@ -1,0 +1,14 @@
+.env
+.nbrun
+.DS_Store
+npm-debug.log
+.netbeans.xml
+node_modules
+.idea
+config/local.json
+test-results.xml
+!.gitignore
+.*.swp
+docs
+nohup.out
+cache.json

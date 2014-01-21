@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , Promise = require( 'bluebird' )
+  , path    = require( 'path' )
+  , rimraf  = require( 'rimraf' )
+  , fs      = require( 'fs' )
+  , _       = require( 'lodash' )
+  , async   = require( 'async' )
+  , lib     = require( path.join( __dirname, '..', 'index' ) );
+
+program.version( lib.pkg.version )
+  .usage( '[options] [modules ...]' );
+
+program.on( '--help', function ( ) {
+  console.log( '  Examples:' );
+  console.log( '    clever remove clever-background-tasks' );
+  console.log( '    clever remove auth clever-background-tasks' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+Promise.longStackTraces( );
+
+if (program.args.length < 1) {
+  program.help( );
+}
+
+function findModules( modules, fn ) {
+  var def = Promise.defer( );
+
+  lib.project.locations( )
+  .then( function ( locations ) {
+    var _modules = [];
+
+    modules.forEach( function ( module ) {
+      locations.forEach( function ( location ) {
+        var moduleLocation = path.join( location.moduleDir, location.modulePath, module );
+        if (fs.existsSync( moduleLocation )) {
+          _modules.push( moduleLocation );
+        }
+      } );
+    } );
+
+    if (_modules.length < 1) {
+      return def.reject( 'There are no modules to remove.' );
+    }
+
+    async.each( _modules, function ( module, next ) {
+      rimraf( module, next );
+    }, function ( err ) {
+      if (!!err) {
+        return def.reject( err );
+      }
+
+      def.resolve( true );
+    } );
+  } )
+  .nodeify( fn );
+
+  return def.promise;
+}
+
+findModules( program.args )
+.then( function ( ) {
+  lib.utils.success( 'Modules have been removed from your project.' );
+}, lib.utils.error );

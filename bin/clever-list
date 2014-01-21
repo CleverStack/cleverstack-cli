@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+var program   = require( 'commander' )
+  , path      = require( 'path' )
+  , lib       = require( path.join( __dirname, '..', 'index' ) );
+
+program.version( lib.pkg.version );
+
+program.on( '--help', function ( ) {
+  console.log( '  Example:' );
+  console.log( '    clever list' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+lib.repos.list( function ( err, repos ) {
+  if (!!err) {
+    lib.utils.fail( err );
+  }
+
+  repos.forEach( lib.repos.display );
+} );

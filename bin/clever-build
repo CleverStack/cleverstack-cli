@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , path    = require( 'path' )
+  , fs      = require( 'fs' )
+  , spawn   = require( 'win-spawn' )
+  , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
+
+program
+  .version( lib.pkg.version )
+
+program.on( '--help', function( ) {
+  console.log( '  Example:' );
+  console.log( '    clever build' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+// get a list of directories within $CWD (or package.json if we're inside the directory...)
+var currentDir  = path.resolve( process.cwd( ) )
+  , dir         = fs.readdirSync( currentDir )
+  , isInProject = false
+  , folders     = [];
+
+dir.filter( function ( d ) {
+  var stats = fs.statSync( path.resolve( path.join( currentDir, d ) ) );
+  return d === "package.json" || stats.isDirectory( );
+} )
+// now let's try to find package information within those directories
+// basically we're trying to figure out if it's the frontend directory...
+.forEach( function ( d ) {
+  isInProject = ['package.json'].indexOf( d ) === -1;
+
+  var pkg = isInProject ? path.resolve( path.join( currentDir, d, 'package.json' ) ) : path.resolve( path.join( currentDir, d ) );
+  if (fs.existsSync( pkg ) ) {
+    var readPkg     = require( pkg )
+      , hasPkgName  = readPkg.hasOwnProperty( 'name' );
+
+    // we only need to know if it's an official cleverstack repo or not...
+    // since the grunt server option is the same, we just literally need to
+    // use indexOf
+    if (hasPkgName && ['cleverstack-angular-seed'].indexOf( readPkg.name ) > -1) {
+      folders.push( {
+        path: path.resolve( path.join( pkg, '..' ) )
+      } );
+    }
+  }
+} );
+
+if (folders.length < 1) {
+  lib.utils.fail( 'CleverStack couldn\'t find the frontend seed directory within ' + process.cwd( ) );
+}
+
+folders.forEach( function ( folder, i )  {
+  var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ) ];
+
+  args.push( 'build' );
+
+  var proc  = spawn( 'grunt', args, { stdio: 'inherit' } )
+    , error = '';
+
+  proc.on( 'error', function ( err ) {
+    error += err;
+  } );
+
+  proc.on( 'close', function ( code ) {
+    if (code !== 0) {
+      return lib.utils.fail( error );
+    }
+
+    lib.utils.success( 'Build was successful' );
+  } );
+} );

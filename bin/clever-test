@@ -1,0 +1,123 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , path    = require( 'path' )
+  , fs      = require( 'fs' )
+  , spawn   = require( 'win-spawn' )
+  , clc     = require( 'cli-color' )
+  , walk    = require( 'walk' )
+  , async   = require( 'async' )
+  , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
+
+var folders = []
+  , cwd = process.cwd( );
+
+function start( reporter ) {
+  lib.utils.info( 'Scanning folders for Gruntfiles...' );
+  var walker = walk.walk( process.cwd( ), {
+    followLinks: false,
+    // we really only want seed folders...
+    filters: ['node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules']
+  } );
+
+  walker.on( 'file', function ( root, fileStats, next ) {
+    if (fileStats.name.toLowerCase( ) === "gruntfile.js") {
+      folders.push( {
+        path: root,
+        name: fileStats.name
+      } );
+    }
+    next( );
+  } );
+
+  walker.on( 'end', function ( ) {
+    if (folders.length < 1) {
+      lib.utils.fail( 'CleverStack couldn\'t find a seed directory with a Gruntfile within ' + process.cwd( ) );
+    }
+
+    // find the shortest path (should be either the $PWD or one directory deep)
+    var shortestPath = folders.reduce( function ( p, c ) {
+      return p.path.split( path.sep ).length > c.path.split( path.sep ).length ? c : p;
+    } );
+
+    folders = folders.filter(function ( f ) {
+      return f.path.split( path.sep ).length === shortestPath.path.split( path.sep ).length;
+    } );
+
+    async.eachSeries( folders, function ( folder, next ) {
+      var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, folder.name ) ) ];
+
+      if (program.host) {
+        args.push( '--host' );
+        args.push( program.host );
+      }
+
+      if (program.port) {
+        args.push( '--port' );
+        args.push( program.port );
+      }
+
+      args.push( ( 'test' + ( typeof reporter !== "string" ? '' : ':' + reporter ) ) );
+
+      var env = process.env;
+
+      if (!process.env.NODE_ENV) {
+        env.NODE_ENV = 'local';
+      }
+
+      if (fs.existsSync( path.resolve( path.join( folder.path, 'modules' ) ) )) {
+        var paths = process.env.NODE_PATH ? [process.env.NODE_PATH] : [];
+        paths.push( path.resolve( path.join( folder.path, 'lib' ) ) + path.sep );
+        paths.push( path.resolve( path.join( folder.path, 'modules' ) ) + path.sep );
+        env.NODE_PATH = paths.join( ':' );
+      }
+
+      var proc  = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } )
+        , error = '';
+
+      proc.on( 'error', function ( err ) {
+        error += err;
+      } );
+
+      proc.on( 'close', function ( code ) {
+        if (code !== 0) {
+          return lib.utils.fail( error );
+        }
+
+        next( );
+      } );
+    }, function ( ) {
+      // grunt doesn't pass an error to us...
+      // grunt will quit before we get to here...
+      process.chdir( cwd );
+      utils.success( 'Tests ran successfully.' );
+    } );
+  } );
+}
+
+program.version( lib.pkg.version );
+
+var reporters = ['e2e', 'unit', 'coverage'];
+
+reporters.forEach( function ( reporter ) {
+  program
+    .command( reporter )
+    .description( (reporter === "coverage" ? 'Generates unit test coverage reports.' : 'Runs ' + reporter + ' tests' ) )
+    .action( start );
+} );
+
+program.on( '--help', function ( ) {
+  console.log( '  Examples:' );
+  console.log( '' );
+  console.log( '    clever test' );
+  console.log( '    clever test coverage' );
+  console.log( '    clever test e2e' );
+  console.log( '    clever test unit' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+if (!program.args.length) {
+  program.help( );
+}

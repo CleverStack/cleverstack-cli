@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , path    = require( 'path' )
+  , fs      = require( 'fs' )
+  , spawn   = require( 'win-spawn' )
+  , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
+
+program
+  .version( lib.pkg.version )
+  .option( '-x, --host [host]', 'Set the host for grunt server' )
+  .option( '-p, --port [port]', 'Set the port for grunt server' );
+
+program.on( '--help', function( ) {
+  console.log( '  Example:' );
+  console.log( '    clever server' );
+  console.log( '    clever --host 10.0.0.0 server' );
+  console.log( '    clever --port 7777 server' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+// get a list of directories within $CWD (or package.json if we're inside the directory...)
+var currentDir  = path.resolve( process.cwd( ) )
+  , dir         = fs.readdirSync( currentDir )
+  , isInProject = false
+  , folders     = [];
+
+dir.filter( function ( d ) {
+  var stats = fs.statSync( path.resolve( path.join( currentDir, d ) ) );
+  return d === "package.json" || stats.isDirectory( );
+} )
+// now let's try to find package information within those directories
+// basically we're trying to figure out if it's the backend or frontend directory...
+.forEach( function ( d ) {
+  isInProject = ['package.json'].indexOf( d ) === -1;
+
+  var pkg = isInProject ? path.resolve( path.join( currentDir, d, 'package.json' ) ) : path.resolve( path.join( currentDir, d ) );
+  if (fs.existsSync( pkg ) ) {
+    var readPkg     = require( pkg )
+      , hasPkgName  = readPkg.hasOwnProperty( 'name' );
+
+    // we only need to know if it's an official cleverstack repo or not...
+    // since the grunt server option is the same, we just literally need to
+    // use indexOf
+    if (hasPkgName && ['cleverstack-angular-seed', 'cleverstack-node-seed'].indexOf( readPkg.name ) > -1) {
+      folders.push( {
+        name: readPkg.name,
+        path: path.resolve( path.join( pkg, '..' ) )
+      } );
+    }
+  }
+} );
+
+if (folders.length < 1) {
+  lib.utils.fail( 'CleverStack couldn\'t find a backend or frontend directory within ' + process.cwd( ) );
+}
+
+var procs = [];
+
+folders.forEach( function ( folder, i )  {
+  var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ) ];
+
+  if (program.host && isInProject) {
+    args.push( '--host' );
+    args.push( program.host );
+  }
+
+  if (program.port && isInProject) {
+    args.push( '--port' );
+    args.push( program.port );
+  }
+
+  if (folder.name === "cleverstack-node-seed") {
+    args.push( 'server:web' );
+  } else {
+    args.push( 'server' );
+  }
+
+  procs[i] = spawn( 'grunt', args, { stdio: 'inherit' } );
+} );

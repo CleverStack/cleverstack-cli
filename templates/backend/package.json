@@ -1,0 +1,21 @@
+{
+  "name": "{{module-name}}",
+  "version": "{{version}}",
+  "private": true,
+  "dependencies": {
+  },
+  "author": {
+    "name": "{{name}}",
+    "email": "{{email}}",
+    "web": "{{web}}"
+  },
+  "collaborators": [
+  ],
+  "description": "",
+  "keywords": [
+    ""
+  ],
+  "main": "module.js",
+  "devDependencies": {
+  }
+}

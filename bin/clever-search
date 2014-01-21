@@ -1,0 +1,120 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , path    = require( 'path' )
+  , request = require( 'superagent' )
+  , Promise = require( 'bluebird' )
+  , npm     = require( 'npm' )
+  , lib     = require( path.join( __dirname, '..', 'index' ) )
+  , utils   = lib.utils
+  , RegistryClient  = require( 'bower-registry-client' )
+  , registry        = new RegistryClient( );
+
+program.version( lib.pkg.version );
+
+program.on( '--help', function ( ) {
+  console.log( '  Examples:' );
+  console.log( '    clever search users' );
+  console.log( '    clever search users auth email' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+// args void of initial commands
+var args = process.argv.slice( 2 );
+
+if (!args) {
+  program.help();
+}
+
+var _safe = ['cleverstack', '=pilsy', '=durango', '=sdeering', '=danielyoung'];
+var _keywordSafe = ['cleverstack-backend', 'cleverstack backend', 'cleverstack-frontend', 'cleverstack frontend'];
+
+function searchNPM( queries ) {
+  var def = Promise.defer( );
+
+  utils.info( 'Searching through NPM packages...' );
+
+  npm.load( {
+    silent: true
+  }, function() {
+    npm.commands.search( queries, true, function ( err, res ) {
+      if (!!err) {
+        return def.reject( err );
+      }
+
+      var repos = [];
+
+      Object.keys( res ).forEach( function ( repo ) {
+        if (_.intersection( res[repo].keywords, _keywordSafe ).length > 0 && res[repo].keywords.indexOf( 'cleverstack' ) > -1) {
+          repos.push( res[repo] );
+        } else {
+          // Array intersection... benchmarks shown simple loops was the fastest...
+          // chrome 31
+          // http://jsfiddle.net/neoswf/aXzWw/
+          for (var i = 0; i < res[repo].maintainers.length; i++) {
+            for (var z = 0; z < _safe.length; z++) {
+              if (res[repo].maintainers[i] === _safe[z]) {
+                repos.push( res[repo] );
+                break;
+              }
+            }
+          }
+        }
+      } );
+
+      def.resolve( repos );
+    } );
+  } );
+
+  return def.promise;
+}
+
+function searchBower( query ) {
+  var def = Promise.defer( );
+
+  utils.info( 'Searching through Bower packages for ' + query + '...' );
+
+  registry.search( query, function ( err, res ) {
+    if (!!err) {
+      return def.reject( err );
+    }
+
+    def.resolve( res );
+  } );
+
+  return def.promise;
+}
+
+module.exports = ( function() {
+  var all = [];
+
+  all.push( searchNPM( args ) );
+  args.forEach( function ( arg ) {
+    all.push( searchBower( arg ) );
+  } );
+
+  Promise.all( all )
+  .then( function ( results ) {
+    var repos  = results[0];
+
+    results.shift( );
+
+    results.forEach( function ( rep )  {
+      if (!!rep.url && rep.url.match(/^git:\/\/github\.com\/(clevertech|CleverStack)/) !== null) {
+        repos.push( rep );
+      }
+    } );
+
+    if (repos.length < 1) {
+      utils.fail( 'Couldn\'t find any modules that were compatible with CleverStack.' );
+    }
+
+    utils.success( 'Found ' + repos.length + ' module' + ( repos.length !== 1 ? 's' : '' ) );
+    console.log( '' );
+
+    repos.forEach( lib.repos.display );
+  } )
+  .error( utils.fail );
+} )();

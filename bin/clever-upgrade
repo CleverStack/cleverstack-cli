@@ -1,0 +1,197 @@
+#!/usr/bin/env node
+
+var program = require( 'commander' )
+  , semver  = require( 'semver' )
+  , path    = require( 'path' )
+  , fs      = require( 'fs' )
+  , spawn   = require( 'win-spawn' )
+  , request = require( 'request' )
+  , Promise = require( 'bluebird' )
+  , rimraf  = require( 'rimraf' )
+  , semver  = require( 'semver' )
+  , lib     = require( path.join( __dirname, '..', 'index' ) )
+  , tags    = lib.tags;
+
+program
+  .version( lib.pkg.version )
+  .option( '-v, --versions [version]', 'Upgrade to a specific package version.' )
+  .option( '-p, --path <path>', 'Path to the package/module.');
+
+program.on( '--help', function ( ) {
+  console.log( '  Examples:' );
+  console.log( '' );
+  console.log( '    clever upgrade' );
+  console.log( '    clever upgrade backend' );
+  console.log( '    clever upgrade frontend' );
+  console.log( '' );
+} );
+
+program.parse( process.argv );
+
+var args = process.argv.slice( 2 );
+
+if (!program.path) {
+  program.path = process.cwd();
+}
+
+// Figure out what we're trying to upgrade...
+var modules = [];
+if (args.length < 1) {
+  modules.push( 'frontend' );
+  modules.push( 'backend' );
+} else {
+  modules = args;
+}
+
+// Figure out where the modules are located...
+var actions = [];
+
+var cleverInstallFetch = function( module, folder, program, fn ) {
+  var installArgs = [];
+  if (program.versions) {
+    installArgs.push( '-v' );
+    installArgs.push( program.versions );
+  }
+
+  if (program.fetch) {
+    installArgs.push( '-f' );
+  }
+
+  var proc = spawn( path.join( __dirname, ( 'clever-install' + ( !program.fetch ? '-git' : '-fetch' ) ) ), [module, '-p', folder].concat( installArgs ), {stdio: 'inherit'} );
+  proc.on( 'close', function ( code ) {
+    if (code !== 0) {
+      return fn( 'Installation for ' + module + ' failed!');
+    }
+
+    fn( null );
+  } );
+}
+
+// main
+var fetchFrontend = function() {
+  var deferred = Promise.defer( );
+
+  var module = 'cleverstack-angular-seed'
+    , folder = path.resolve( path.join( process.cwd(), 'frontend' ) );
+
+  if (!fs.existsSync( folder )) {
+    process.stderr.write( 'Couldn\'t find the frontend folder... make sure you\'re running this command at the root of the project.' );
+    process.exit( 1 );
+  }
+
+  var bowerFile = path.resolve( path.join( folder, 'bower.json' ) );
+  if (!fs.existsSync( bowerFile )) {
+    process.stderr.write( 'Invalid frontend directory -- bower.json file not found.' );
+    process.exit( 1 );
+  }
+
+  bowerFile = require( bowerFile );
+
+  if (!bowerFile.author || bowerFile.author.name !== "Clevertech" || !bowerFile.version) {
+    process.stderr.write( 'Invalid frontend directory -- bower.json does not match ' + module + '.' );
+    process.exit( 1 );
+  }
+
+  var checkVersion = (!program.versions ? '> ' + bowerFile.version : program.versions);
+
+  if (checkVersion === "*") {
+    process.stderr.write( 'Invalid upgrade version please use a semantic version x.x.x' );
+    process.exit( 1 );
+  }
+
+  tags( module, function ( err, tags ) {
+    var version = semver.maxSatisfying( tags, checkVersion, true ).toString();
+
+    if (!version) {
+      return lib.utils.error( 'Version ' + checkVersion + ' for ' + module + ' is not available.' );
+    }
+
+    fs.exists( path.resolve( folder, '.git' ), function ( exists ) {
+      program.fetch     = !exists;
+      program.versions  = version;
+
+      cleverInstallFetch( 'frontend', folder, program, function ( err ) {
+        if (!!err) {
+          return deferred.reject( err );
+        }
+
+        deferred.resolve( ['frontend', version] );
+      } );
+    } );
+  } );
+
+  return deferred.promise;
+}
+
+if (modules.indexOf( 'frontend' ) > -1) {
+  actions.push( fetchFrontend( ) );
+}
+
+var fetchBackend = function() {
+  var deferred = Promise.defer( );
+
+  var module = 'cleverstack-node-seed'
+    , folder = path.resolve( path.join( process.cwd(), 'backend' ) );
+
+  if (!fs.existsSync( folder )) {
+    process.stderr.write( 'Couldn\'t find the backend folder... make sure you\'re running this command at the root of the project.' );
+    process.exit( 1 );
+  }
+
+  var packageFile = path.resolve( path.join( folder, 'package.json' ) );
+  if (!fs.existsSync( packageFile )) {
+    process.stderr.write( 'Invalid backend directory -- package.json file not found.' );
+    process.exit( 1 );
+  }
+
+  packageFile = require( packageFile );
+
+  if (packageFile.name !== "cleverstack-node-seed" || !packageFile.version) {
+    process.stderr.write( 'Invalid backend directory -- package.json does not match ' + module + '.' );
+    process.exit( 1 );
+  }
+
+  // todo: Add semver validation
+  // todo: get rid of async program.versions...
+  var checkVersion = (!program.versions ? (program.versions = '> ' + packageFile.version) : program.versions);
+
+  if (checkVersion === "*") {
+    process.stderr.write( 'Invalid upgrade version please use a semantic version x.x.x' );
+    process.exit( 1 );
+  }
+
+  tags( module, function ( err, tags ) {
+    var version = semver.maxSatisfying( tags, checkVersion, true ).toString();
+
+    if (!version) {
+      return lib.utils.error( 'Version ' + checkVersion + ' for ' + module + ' is not available.' );
+    }
+
+    fs.exists( path.resolve( folder, '.git' ), function ( exists ) {
+      program.fetch     = !exists;
+      program.versions  = version;
+
+      cleverInstallFetch( 'backend', folder, program, function ( err ) {
+        if (!!err) {
+          return deferred.reject( err );
+        }
+
+        deferred.resolve( [ 'backend', version ] );
+      } );
+    } );
+  } );
+
+  return deferred.promise;
+}
+
+if (modules.indexOf( 'backend' ) > -1) {
+  actions.push( fetchBackend( ) );
+}
+
+Promise.all( actions ).then( function ( results ) {
+  results.forEach( function ( r ) {
+    lib.utils.success('upgrade to ' + r[0] + '@' + r[1] + ' has been completed');
+  } );
+  process.exit( 0 );
+} )
+.error( lib.utils.error );
