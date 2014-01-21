@@ -4,7 +4,7 @@ A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecos
 
 ## Installation
 
-```npm install clever-cli -g```
+```npm install cleverstack-cli -g```
 
 ## Quick Setup Tutorial
 
