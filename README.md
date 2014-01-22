@@ -72,7 +72,7 @@ CleverStack will run ```grunt test``` within each seed.
 
 ### Running the server
 
-### Aliases: serve, s
+### Aliases: serve
 
 `$: clever server`
 
