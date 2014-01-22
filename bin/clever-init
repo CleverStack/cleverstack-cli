@@ -51,11 +51,11 @@ if (!project || project.toString( ).trim( ) === "") {
   program.help( );
 }
 
-if (fs.existsSync( path.join( process.cwd( ), project ) )) {
+var projectFolder = path.join( process.cwd( ), project );
+
+if (fs.existsSync( projectFolder )) {
   lib.utils.fail( "Can't create project " + project + " due to a folder named " + project + " existing in " + process.cwd() );
 }
-
-var projectFolder = process.cwd() + path.sep + project;
 
 var installArgs = [];
 if (program.versions) {
@@ -65,6 +65,73 @@ if (program.versions) {
 
 if (program.fetch) {
   installArgs.push( '-f' );
+}
+
+function writeLocalJSON ( projectDir, dbInfo ) {
+  return new Promise( function ( res, rej ) {
+    var localJSONFile = require( path.join( projectDir, 'config', 'local.example.json' ) );
+
+    if (typeof dbInfo !== "object" || dbInfo === null) {
+      return res( );
+    }
+
+    if (localJSONFile !== null) {
+      localJSONFile['clever-orm'] = localJSONFile['clever-orm'] || {};
+      localJSONFile['clever-orm'].db = localJSONFile['clever-orm'].db || {};
+
+      if (dbInfo.hasOwnProperty( 'username' )) {
+        localJSONFile['clever-orm'].db.username = dbInfo.username;
+      }
+
+      if (dbInfo.hasOwnProperty( 'password' )) {
+        localJSONFile['clever-orm'].db.password = dbInfo.password;
+      }
+
+      if (dbInfo.hasOwnProperty( 'database' )) {
+        localJSONFile['clever-orm'].db.database = dbInfo.database;
+      }
+
+      localJSONFile['clever-orm'].db.options = localJSONFile['clever-orm'].db.options || {};
+
+      if (dbInfo.hasOwnProperty( 'dialect' )) {
+        localJSONFile['clever-orm'].db.options.dialect = dbInfo.dialect;
+      }
+
+      localJSONFile['clever-orm'].db.options.host = dbInfo.host || '127.0.0.1';
+
+      var portMap = {
+        'mysql':      3306,
+        'mariadb':    3306,
+        'posgtgres':  5432
+      }
+
+      localJSONFile['clever-orm'].db.options.port = dbInfo.port || portMap[localJSONFile['clever-orm'].db.options.dialect] || '';
+    }
+
+    fs.writeFile( path.join( projectDir, 'config', 'local.json' ), JSON.stringify( localJSONFile, null, 2 ), function ( err ) {
+      if (!!err) {
+        return rej( err );
+      }
+
+      res( );
+    } );
+  } );
+}
+
+function installDeps ( projectDir ) {
+  return new Promise( function ( res, rej ) {
+    var pkg = require( path.join( projectDir, 'package.json' ) );
+
+    if (!pkg.hasOwnProperty( 'bundledDependencies' ) || pkg.bundledDependencies.length < 1) {
+      return res( );
+    }
+
+    lib.utils.info( 'Installing bundled dependencies...' );
+    lib.project.installBundledModules( projectDir, pkg.bundledDependencies ).then( function ( ) {
+      res( );
+    } )
+    .catch( rej );
+  } );
 }
 
 function setupBackend ( dbInfo ) {
@@ -83,53 +150,14 @@ function setupBackend ( dbInfo ) {
           return def.reject( );
         }
 
-        if ( typeof dbInfo !== "object" || dbInfo === null) {
-          return def.resolve( );
-        }
-
-        var localJSONFile = require( path.join( projectDir, 'config', 'local.example.json' ) );
-
-        if (localJSONFile !== null) {
-          localJSONFile.orm = localJSONFile.orm || {};
-          localJSONFile.orm.db = localJSONFile.orm.db || {};
-
-          if (!!dbInfo.hasOwnProperty( 'username' )) {
-            localJSONFile.orm.db.username = dbInfo.username;
-          }
-
-          if (dbInfo.hasOwnProperty( 'password' )) {
-            localJSONFile.orm.db.password = dbInfo.password;
-          }
-
-          console.log(dbInfo);
-          if (dbInfo.hasOwnProperty( 'database' )) {
-            localJSONFile.orm.db.database = dbInfo.database;
-          }
-
-          localJSONFile.orm.db.options = localJSONFile.orm.db.options || {};
-
-          if (dbInfo.hasOwnProperty( 'dialect' )) {
-            localJSONFile.orm.db.options.dialect = dbInfo.dialect;
-          }
-
-          localJSONFile.orm.db.options.host = dbInfo.host || '127.0.0.1';
-
-          var portMap = {
-            'mysql': 3306,
-            'mariadb': 3306,
-            'posgtgres': 5432
-          }
-
-          localJSONFile.orm.db.options.port = dbInfo.port || portMap[localJSONFile.orm.db.options.dialect] || '';
-        }
-
-        fs.writeFile( path.join( projectDir, 'config', 'local.json' ), JSON.stringify( localJSONFile, null, 2 ), function ( err ) {
-          if (!!err) {
-            return def.reject( err );
-          }
-
+        writeLocalJSON( projectDir, dbInfo )
+        .then( function( ) {
+          return installDeps( projectDir )
+        } )
+        .then( function ( ) {
           def.resolve( );
-        } );
+        } )
+        .catch( def.reject );
       } );
     } );
   } else {
@@ -250,11 +278,11 @@ function setupPackages( ) {
         if (!fs.existsSync( bowerPath ) ) {
           lib.utils.warn( 'Running database migrations...' );
 
-          var args = [ '--base', path.resolve( path.join( projectFolder, p ) ), '--gruntfile', path.resolve( path.join( projectFolder, p, 'Gruntfile.js' ) ), 'db:exec' ]
+          var args = [ '--base', path.resolve( path.join( projectFolder, p ) ), '--gruntfile', path.resolve( path.join( projectFolder, p, 'Gruntfile.js' ) ), 'db' ]
             , err  = '';
 
           var env       = process.env;
-          env.NODE_ENV  = 'local';
+          env.NODE_ENV  = 'local'; // overwriting is necessary...
 
           var proc = spawn( 'grunt', args, {stdio: 'inherit', env: env} );
 
@@ -263,6 +291,7 @@ function setupPackages( ) {
               return fn( err );
             }
 
+            process.chdir( path.join( process.cwd( ) , '..' ) );
             fn( );
           } );
         } else {
@@ -393,7 +422,7 @@ Promise.all( args )
   lib.utils.success( 'Project ' + project + ' has been created in ' + projectFolder );
   process.exit( 0 );
 } )
-.error( function ( err ) {
+.catch( function ( err ) {
   lib.utils.fail( err );
 
   // remove the project folder if we failed...

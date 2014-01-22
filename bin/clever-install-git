@@ -59,5 +59,9 @@ if (fs.existsSync( path.resolve( path.join( program.path, '.git' ) ) )) {
     module = 'clevertech/' + module;
   }
 
-  git._run('git clone https://github.com/' + module + '.git ' + program.path, checkOut );
+  if (module.indexOf( '://' ) === -1) {
+    git._run('git clone https://github.com/' + module + '.git ' + program.path, checkOut );
+  } else {
+    git._run('git clone ' + module + ' ' + program.path, checkOut );
+  }
 }

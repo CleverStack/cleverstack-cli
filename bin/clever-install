@@ -8,11 +8,13 @@ var program = require( 'commander' )
   , fs      = require( 'fs' )
   , _       = require( 'lodash' )
   , async   = require( 'async' )
+  , hat     = require( 'hat' )
   , ncp     = require( 'ncp' ).ncp
   , spawn   = require( 'win-spawn' )
   , github  = require( 'github-basic' )
   , mkdirp  = require( 'mkdirp' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) );
+  , lib     = require( path.join( __dirname, '..', 'index' ) )
+  , rack    = hat.rack( );
 
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' )
@@ -75,45 +77,45 @@ function convertToRepo ( repo ) {
   return options;
 }
 
-function exists ( repo, fn ) {
-  var options = convertToRepo( repo )
-    , def     = Promise.defer( );
+// function exists ( repo, fn ) {
+//   var options = convertToRepo( repo )
+//     , def     = Promise.defer( );
 
-  lib.cache.findRepo( options )
-  .then( function ( data ) {
-    if (data === true) {
-      return def.resolve( true );
-    }
+//   lib.cache.findRepo( options )
+//   .then( function ( data ) {
+//     if (data === true) {
+//       return def.resolve( true );
+//     }
 
-    Promise.all( [ github( 'HEAD', '/:user/:repo', options, {
-      host: 'github.com'
-    } ) ] )
-    .then( function ( ) {
-      lib.cache.addRepo( {
-        name: options.repo,
-        url: 'http://github.com/' + options.user + '/' + options.repo
-      } )
-      .then( function () {
-        def.resolve( true );
-      } )
-      .error( def.reject );
-    }, function (err ) {
-      def.reject( 'Repo ' + options.repo + ' does not exist within ' + options.user + '.' );
-    } );
-  } )
-  .nodeify( fn );
+//     Promise.all( [ github( 'HEAD', '/:user/:repo', options, {
+//       host: 'github.com'
+//     } ) ] )
+//     .then( function ( ) {
+//       lib.cache.addRepo( {
+//         name: options.repo,
+//         url: 'http://github.com/' + options.user + '/' + options.repo
+//       } )
+//       .then( function () {
+//         def.resolve( true );
+//       } )
+//       .error( def.reject );
+//     }, function (err ) {
+//       def.reject( 'Repo ' + options.repo + ' does not exist within ' + options.user + '.' );
+//     } );
+//   } )
+//   .nodeify( fn );
 
-  return def.promise;
-}
+//   return def.promise;
+// }
 
 function install ( repo, fn ) {
   var def = Promise.defer( );
 
   repo = convertToRepo( repo );
 
-  lib.project.locations()
+  lib.project.locations( )
   .then( function ( locations ) {
-    var repoPath = path.resolve( path.join( locations[0].moduleDir, '..', 'tmp' ) );
+    var repoPath = path.resolve( path.join( locations[0].moduleDir, '..', 'tmp-' + rack( ) ) );
 
     mkdirp.sync( repoPath );
 
@@ -126,7 +128,8 @@ function install ( repo, fn ) {
 
     proc.on( 'close', function ( code ) {
       if (code !== 0) {
-        return next( 'Failed to install ' + repo.repo + ' within ' + modulePath + "\n" + err );
+        lib.utils.error( 'Failed to install ' + repo.repo + ' within ' + modulePath + "\n" + err );
+        return def.resolve( );
       }
 
       var truePath;
@@ -149,13 +152,19 @@ function install ( repo, fn ) {
         }
       }
 
-      try {
-        var pkg = require( path.join( repoPath, 'package.json' ) );
-      } catch ( _error ) {
-        lib.utils.error( 'This package doesn\'t contain a package.json file.' );
+      var fileName = path.join( repoPath, 'package.json' );
+      if (!fs.existsSync( fileName )) {
+        fileName = path.join( repoPath, 'bower.json' );
       }
 
-      var moduleLocation = path.resolve( path.join( truePath.moduleDir, truePath.modulePath, pkg.name ) );
+      try {
+        var pkg = require( fileName );
+      } catch ( _error ) {
+        lib.utils.error( 'This package doesn\'t contain a ' + path.basename( fileName ) + ' file.' );
+      }
+
+      var name = pkg.hasOwnProperty( 'rename' ) ? pkg.rename : pkg.name;
+      var moduleLocation = path.resolve( path.join( truePath.moduleDir, truePath.modulePath, name ) );
       ncp( repoPath, moduleLocation, function ( err ) {
         if (!!err) {
           return def.reject( err );
@@ -166,9 +175,7 @@ function install ( repo, fn ) {
             return def.reject( err );
           }
 
-          lib.project.installModule( truePath, pkg.name ).then( function ( res ) {
-            def.resolve( true );
-          }, def.reject );
+          def.resolve( true );
         } );
       } );
     } );
@@ -182,14 +189,14 @@ function setup ( repos ) {
 
   async.eachSeries( repos, function ( repo, next ) {
     // check to see if the repo exists first...
-    exists( repo )
+    // exists( repo )
     // install the repo if we do exists!
-    .then( function ( ) {
+    // .then( function ( ) {
       install( repo ).then( function ( ) {
         lib.utils.success( 'Installed ' + repo );
         next( );
       }, next );
-    } );
+    // } );
   },
   function ( err ) {
     if (!!err) {
