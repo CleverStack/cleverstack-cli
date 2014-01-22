@@ -50,7 +50,8 @@
     "unzip": "~0.1.9",
     "request": "~2.33.0",
     "npm-registry-client": "~0.3.3",
-    "hat": "0.0.3"
+    "hat": "0.0.3",
+    "npmconf": "~0.1.12"
   },
   "devDependencies": {
     "mocha": "~1.17.0",
