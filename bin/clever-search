@@ -4,10 +4,7 @@ var program = require( 'commander' )
   , path    = require( 'path' )
   , request = require( 'superagent' )
   , Promise = require( 'bluebird' )
-  , _       = require( 'lodash' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) )
-  , RegistryClient  = require( 'bower-registry-client' )
-  , registry        = new RegistryClient( );
+  , lib     = require( path.join( __dirname, '..', 'index' ) );
 
 program.version( lib.pkg.version );
 
@@ -39,4 +36,6 @@ lib.search.aggregate( args ).spread( function ( npm, bower ) {
 
   repos.forEach( lib.repos.display );
 } )
-.error( lib.utils.fail );
+.catch( function ( err ) {
+  lib.utils.fail( err );
+} );
