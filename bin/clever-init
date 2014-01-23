@@ -82,6 +82,38 @@ function installDeps ( projectDir ) {
   } );
 }
 
+function writeLocalJSON ( projectDir ) {
+  var def = Promise.defer( );
+
+  lib.utils.info( 'Writing local config file...' );
+  var localJSONFile = require( path.join( projectDir, 'config', 'local.example.json' ) );
+
+  if (localJSONFile !== null) {
+    localJSONFile['clever-orm'] = localJSONFile['clever-orm'] || {};
+    localJSONFile['clever-orm'].db = localJSONFile['clever-orm'].db || {};
+
+    [ 'username', 'password', 'database' ].forEach( function ( key ) {
+      localJSONFile['clever-orm'].db[key] = localJSONFile['clever-orm'].db[key] || '';
+    } );
+
+    localJSONFile['clever-orm'].db.options = localJSONFile['clever-orm'].db.options || {};
+
+    [ 'dialect', 'host', 'port' ].forEach( function ( key ) {
+      localJSONFile['clever-orm'].db.options[key] = localJSONFile['clever-orm'].db.options[key] || '';
+    } );
+  }
+
+  fs.writeFile( path.join( projectDir, 'config', 'local.json' ), JSON.stringify( localJSONFile, null, 2 ), function ( err ) {
+    if (!!err) {
+      return def.reject( err );
+    }
+
+    def.resolve( );
+  } );
+
+  return def.promise;
+ }
+
 function setupBackend ( ) {
   var def         = Promise.defer( )
     , projectDir  = path.join( projectFolder, 'backend' );
@@ -98,7 +130,10 @@ function setupBackend ( ) {
           return def.reject( );
         }
 
-        installDeps( projectDir )
+        writeLocalJSON( projectDir )
+        .then( function ( ) {
+          return installDeps( projectDir )
+        } )
         .then( function ( ) {
           def.resolve( );
         } )

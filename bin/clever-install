@@ -136,18 +136,19 @@ function install ( repo, fn ) {
         , hasPackage  = fs.existsSync( packagePath  )
         , hasBower    = fs.existsSync( bowerPath    );
 
-      // todo: Create a way to fetch HEAD files from GitHub on package.json and bower.json
-      // OR (my preferred method) strictly enforce utilizing npm and bower...
-      if ((hasPackage && locations[0].name === "frontend") || (hasBower && locations[0].name === "backend")) {
-        rimraf.sync( repoPath );
-        return def.resolve( );
-      }
+      var location = _.find(locations, function ( loc ) {
+        return loc.name === (hasPackage ? "backend" : "frontend");
+      } );
 
-      if (!hasPackage && locations[0].name === "backend") {
-        lib.utils.error( 'Couldn\'t find the CleverStack backend seed. Please ensure that you\'re installing from the project\'s root directory or within the backend seed.' );
-      }
-      else if (!hasBower && locations[0].name === "frontend") {
-        lib.utils.error( 'Couldn\'t find the CleverStack frontend seed. Please ensure that you\'re installing from the project\'s root directory or within the frontend seed.' );
+      if (typeof location !== "object") {
+        rimraf.sync( repoPath );
+
+        if (hasPackage) {
+          lib.utils.error( 'Couldn\'t find the CleverStack backend seed. Please ensure that you\'re installing from the project\'s root directory or within the backend seed.' );
+        }
+        else if (hasBower) {
+          lib.utils.error( 'Couldn\'t find the CleverStack frontend seed. Please ensure that you\'re installing from the project\'s root directory or within the frontend seed.' );
+        }
       }
 
       try {
@@ -157,7 +158,7 @@ function install ( repo, fn ) {
       }
 
       var name = pkg.hasOwnProperty( 'rename' ) ? pkg.rename : pkg.name;
-      var moduleLocation = path.resolve( path.join( locations[0].moduleDir, locations[0].modulePath, name ) );
+      var moduleLocation = path.resolve( path.join( location.moduleDir, location.modulePath, name ) );
       ncp( repoPath, moduleLocation, function ( err ) {
         if (!!err) {
           return def.reject( err );
@@ -168,7 +169,11 @@ function install ( repo, fn ) {
             return def.reject( err );
           }
 
-          lib.project.installModule( locations[0], moduleLocation )
+          if (location.name !== "backend") {
+            return def.resolve( );
+          }
+
+          lib.project.installModule( location, moduleLocation )
           .then( function( ) {
             lib.project.readGruntTasks( moduleLocation )
             .spread( function ( tasks, filePath ) {
