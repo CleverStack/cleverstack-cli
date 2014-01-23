@@ -39,8 +39,6 @@
     "progress": "~1.1.3",
     "event-stream": "~3.1.0",
     "t-case": "~0.1.0",
-    "walk": "~2.2.1",
-    "walkdir": "0.0.7",
     "findit": "~1.1.0",
     "superagent": "~0.16.0",
     "github-basic": "~2.0.2",

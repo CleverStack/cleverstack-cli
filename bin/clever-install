@@ -128,43 +128,36 @@ function install ( repo, fn ) {
 
     proc.on( 'close', function ( code ) {
       if (code !== 0) {
-        lib.utils.error( 'Failed to install ' + repo.repo + ' within ' + modulePath + "\n" + err );
+        return lib.utils.error( 'Failed to install ' + repo.repo + ' within ' + modulePath + "\n" + err );
+      }
+
+      var packagePath = path.resolve( repoPath, 'package.json'  )
+        , bowerPath   = path.resolve( repoPath, 'bower.json'    )
+        , hasPackage  = fs.existsSync( packagePath  )
+        , hasBower    = fs.existsSync( bowerPath    );
+
+      // todo: Create a way to fetch HEAD files from GitHub on package.json and bower.json
+      // OR (my preferred method) strictly enforce utilizing npm and bower...
+      if ((hasPackage && locations[0].name === "frontend") || (hasBower && locations[0].name === "backend")) {
+        rimraf.sync( repoPath );
         return def.resolve( );
       }
 
-      var truePath;
-
-      if (!fs.existsSync( path.resolve( repoPath, 'bower.json' ) )) {
-         truePath = _.find( locations, function ( loc ) {
-          return loc.name === "backend";
-        } );
-
-        if (typeof truePath === "undefined") {
-          lib.utils.error( 'Couldn\'t find the CleverStack backend seed. Please ensure that you\'re installing from the project\'s root directory or within the backend seed.' );
-        }
-      } else {
-        truePath = _.find( locations, function ( loc ) {
-          return loc.name === "frontend";
-        } );
-
-        if (typeof truePath === "undefined") {
-          lib.utils.error( 'Couldn\'t find the CleverStack frontend seed. Please ensure that you\'re installing from the project\'s root directory or within the frontend seed.' );
-        }
+      if (!hasPackage && locations[0].name === "backend") {
+        lib.utils.error( 'Couldn\'t find the CleverStack backend seed. Please ensure that you\'re installing from the project\'s root directory or within the backend seed.' );
       }
-
-      var fileName = path.join( repoPath, 'package.json' );
-      if (!fs.existsSync( fileName )) {
-        fileName = path.join( repoPath, 'bower.json' );
+      else if (!hasBower && locations[0].name === "frontend") {
+        lib.utils.error( 'Couldn\'t find the CleverStack frontend seed. Please ensure that you\'re installing from the project\'s root directory or within the frontend seed.' );
       }
 
       try {
-        var pkg = require( fileName );
+        var pkg = require( hasBower ? bowerPath : packagePath );
       } catch ( _error ) {
-        lib.utils.error( 'This package doesn\'t contain a ' + path.basename( fileName ) + ' file.' );
+        lib.utils.error( 'This package doesn\'t contain a ' + path.basename( hasBower ? bowerPath : packagePath ) + ' file.' );
       }
 
       var name = pkg.hasOwnProperty( 'rename' ) ? pkg.rename : pkg.name;
-      var moduleLocation = path.resolve( path.join( truePath.moduleDir, truePath.modulePath, name ) );
+      var moduleLocation = path.resolve( path.join( locations[0].moduleDir, locations[0].modulePath, name ) );
       ncp( repoPath, moduleLocation, function ( err ) {
         if (!!err) {
           return def.reject( err );
@@ -175,7 +168,31 @@ function install ( repo, fn ) {
             return def.reject( err );
           }
 
-          def.resolve( true );
+          lib.project.installModule( locations[0], moduleLocation )
+          .then( function( ) {
+            lib.project.readGruntTasks( moduleLocation )
+            .spread( function ( tasks, filePath ) {
+              if (tasks.length < 1) {
+                return def.resolve( true );
+              }
+
+              if (tasks.indexOf( 'readme' ) === -1) {
+                return def.resolve( true );
+              }
+
+              var args = [ '--base', repoPath, '--gruntfile', filePath, 'readme' ];
+              var gruntProc = spawn( 'grunt', args, { stdio: 'inherit' } );
+              gruntProc.on( 'close', function ( ) {
+                def.resolve( true );
+              } );
+            } )
+            .catch( function ( err ) {
+              def.reject( err );
+            } )
+          } )
+          .catch( function ( err ) {
+            def.reject( err );
+          } );
         } );
       } );
     } );

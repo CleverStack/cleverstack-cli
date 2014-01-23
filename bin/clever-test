@@ -5,7 +5,6 @@ var program = require( 'commander' )
   , fs      = require( 'fs' )
   , spawn   = require( 'win-spawn' )
   , clc     = require( 'cli-color' )
-  , walk    = require( 'walk' )
   , async   = require( 'async' )
   , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
@@ -14,20 +13,23 @@ var folders = []
 
 function start( reporter ) {
   lib.utils.info( 'Scanning folders for Gruntfiles...' );
-  var walker = walk.walk( process.cwd( ), {
-    followLinks: false,
-    // we really only want seed folders...
-    filters: ['node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules']
+
+  var walker = require( 'findit' )( process.cwd( ) );
+
+  walker.on( 'directory', function ( dir, stat, stop ) {
+    var base = path.basename( dir );
+    if (['.git', 'node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules'].indexOf( base ) > -1) {
+      stop( );
+    }
   } );
 
-  walker.on( 'file', function ( root, fileStats, next ) {
-    if (fileStats.name.toLowerCase( ) === "gruntfile.js") {
+  walker.on( 'file', function ( root, fileStats ) {
+    if (['gruntfile.js', 'grunt.js'].indexOf( path.basename( root ).toLowerCase( ) ) > -1) {
       folders.push( {
-        path: root,
-        name: fileStats.name
+        path: path.dirname( root ),
+        name: path.basename( root )
       } );
     }
-    next( );
   } );
 
   walker.on( 'end', function ( ) {
@@ -109,7 +111,6 @@ reporters.forEach( function ( reporter ) {
 program.on( '--help', function ( ) {
   console.log( '  Examples:' );
   console.log( '' );
-  console.log( '    clever test' );
   console.log( '    clever test coverage' );
   console.log( '    clever test e2e' );
   console.log( '    clever test unit' );

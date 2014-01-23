@@ -66,7 +66,7 @@ When removing a module, CleverStack will:
 
 To ensure that everything is working correctly, you can run tests with:
 
-`$: clever test`
+`$: clever test unit`
 
 CleverStack will run ```grunt test``` within each seed.
 
@@ -506,7 +506,6 @@ cleverstack::local> .quit
 
   Examples:
 
-    clever test
     clever test coverage
     clever test e2e
     clever test unit
