@@ -143,14 +143,14 @@ function setupFrontend( ) {
   return def.promise;
 }
 
-function setupModules( ) {
+function setupModules( modules ) {
   var def = Promise.defer( );
 
   async.eachSeries( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
     var _path = path.resolve( path.join( projectFolder, p ) );
 
     process.chdir( _path );
-    var proc = spawn( path.join( __dirname, 'clever-install' ), args, { cwd: _path, stdio: 'inherit' } );
+    var proc = spawn( path.join( __dirname, 'clever-install' ), modules, { cwd: _path, stdio: 'inherit' } );
 
     proc.on( 'close', function ( ) {
       fn( );
@@ -306,7 +306,7 @@ Promise.all( args )
   filters.forEach( function ( filter ) {
     var find = args.indexOf( filter );
     if (find > -1) {
-      args = args.splice( filter, 1);
+      args.splice( find, 1 );
     }
   } );
 
