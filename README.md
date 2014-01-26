@@ -247,7 +247,7 @@ In order to interact with your environment's models directly, simply type in:
 
  Commands:
 
-    downgrade [-v version] [-p path] - Downgrades a CleverStack implementation
+    downgrade - Downgrades a CleverStack implementation
     help - Displays this help message
     init <project> [backend|frontend] - Initialized a new project
     generate <option> <name> - Generates a controller, service, model, etc. individually
@@ -256,7 +256,7 @@ In order to interact with your environment's models directly, simply type in:
     search [query] - Searches for a cleverstack module
     server - Starts the CleverStack server
     test - Runs tests within your CleverStack environment
-    upgrade [-v version] [-p path] - Upgrades a CleverStack implementation
+    upgrade - Upgrades a CleverStack implementation
 ```
 
 ### downgrade
@@ -272,14 +272,13 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Options:
 
-    -h, --help                output usage information
-    -V, --version             output the version number
-    -v, --versions [version]  Downgrade to a specific package version.
-    -p, --path <path>         Path to the package/module.
+    -h, --help     output usage information
+    -V, --version  output the version number
 
   Examples:
 
-    clever downgrade
+    clever downgrade clever-orm
+    clever downgrade clever-orm@0.0.1 clever-datatables@0.0.1
     clever downgrade backend
     clever downgrade frontend
 ```
@@ -330,17 +329,17 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Options:
 
-    -h, --help      output usage information
-    -V, --version   output the version number
-    -v, --versions  Select a specific cleverstack version that you want initialize with.
-    -f, --fetch     Installs the package without cloning the git repo.
+    -h, --help     output usage information
+    -V, --version  output the version number
 
   Examples:
     clever init my-project
     clever init project-frontend frontend
     clever init my-project-everything backend frontend
-    clever init --fetch my-project-frontend frontend
-    clever init --fetch my-project-backend backend
+
+  Installing specific versions:
+    clever init my-project backend@<version>
+    clever init my-project frontend@<version>
 ```
 
 ### list
@@ -524,14 +523,13 @@ cleverstack::local> .quit
 
   Options:
 
-    -h, --help                output usage information
-    -V, --version             output the version number
-    -v, --versions [version]  Upgrade to a specific package version.
-    -p, --path <path>         Path to the package/module.
+    -h, --help     output usage information
+    -V, --version  output the version number
 
   Examples:
 
-    clever upgrade
+    clever upgrade clever-orm
+    clever upgrade clever-orm@0.0.3 clever-datatables@0.0.2
     clever upgrade backend
     clever upgrade frontend
 ```
