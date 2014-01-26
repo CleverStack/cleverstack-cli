@@ -2,8 +2,6 @@
 
 var program = require( 'commander' )
   , path    = require( 'path' )
-  , request = require( 'superagent' )
-  , Promise = require( 'bluebird' )
   , lib     = require( path.join( __dirname, '..', 'index' ) );
 
 program.version( lib.pkg.version );

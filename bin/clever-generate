@@ -6,7 +6,6 @@ var program   = require( 'commander' )
   , async     = require( 'async' )
   , es        = require( 'event-stream' )
   , fs        = require( 'fs' )
-  , tcase     = require( 't-case' )
   , lib       = require( path.join( __dirname, '..', 'index' ) )
   , generate  = lib.generator.generate;
 

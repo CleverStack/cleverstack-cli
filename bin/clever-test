@@ -4,12 +4,11 @@ var program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
   , spawn   = require( 'win-spawn' )
-  , clc     = require( 'cli-color' )
   , async   = require( 'async' )
   , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
-var folders = []
-  , cwd = process.cwd( );
+var folders = [ ]
+  , cwd     = process.cwd( );
 
 function start( reporter ) {
   lib.utils.info( 'Scanning folders for Gruntfiles...' );
@@ -18,13 +17,13 @@ function start( reporter ) {
 
   walker.on( 'directory', function ( dir, stat, stop ) {
     var base = path.basename( dir );
-    if (['.git', 'node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules'].indexOf( base ) > -1) {
+    if ([ '.git', 'node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules' ].indexOf( base ) > -1) {
       stop( );
     }
   } );
 
   walker.on( 'file', function ( root, fileStats ) {
-    if (['gruntfile.js', 'grunt.js'].indexOf( path.basename( root ).toLowerCase( ) ) > -1) {
+    if ([ 'gruntfile.js', 'grunt.js' ].indexOf( path.basename( root ).toLowerCase( ) ) > -1) {
       folders.push( {
         path: path.dirname( root ),
         name: path.basename( root )
@@ -47,21 +46,10 @@ function start( reporter ) {
     } );
 
     async.eachSeries( folders, function ( folder, next ) {
-      var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, folder.name ) ) ];
-
-      if (program.host) {
-        args.push( '--host' );
-        args.push( program.host );
-      }
-
-      if (program.port) {
-        args.push( '--port' );
-        args.push( program.port );
-      }
+      var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, folder.name ) ) ]
+        , env  = process.env;
 
       args.push( ( 'test' + ( typeof reporter !== "string" ? '' : ':' + reporter ) ) );
-
-      var env = process.env;
 
       if (!process.env.NODE_ENV) {
         env.NODE_ENV = 'local';
@@ -91,15 +79,14 @@ function start( reporter ) {
     }, function ( ) {
       // grunt doesn't pass an error to us...
       // grunt will quit before we get to here...
-      process.chdir( cwd );
-      utils.success( 'Tests ran successfully.' );
+      lib.utils.success( 'Tests ran successfully.' );
     } );
   } );
 }
 
 program.version( lib.pkg.version );
 
-var reporters = ['e2e', 'unit', 'coverage'];
+var reporters = [ 'e2e', 'unit', 'coverage' ];
 
 reporters.forEach( function ( reporter ) {
   program
@@ -120,5 +107,5 @@ program.on( '--help', function ( ) {
 program.parse( process.argv );
 
 if (!program.args.length) {
-  program.help( );
+  start( 'unit' );
 }

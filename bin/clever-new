@@ -2,8 +2,6 @@
 
 var program   = require( 'commander' )
   , path      = require( 'path' )
-  , tcase     = require( 't-case' )
-  , mkdirp    = require( 'mkdirp' )
   , fs        = require( 'fs' )
   , lib       = require( path.join( __dirname, '..', 'index' ) )
   , scaffold  = lib.generator.scaffold
@@ -31,12 +29,12 @@ if (program.rawArgs.length < 3) {
   program.help( );
 }
 
-var filterOut = []
-  , filters   = ['service', 'controller', 'model', 'task', 'test']
+var filterOut = [ ]
+  , filters   = [ 'service', 'controller', 'model', 'task', 'test' ]
   , args      = program.rawArgs.splice( 2 );
 
 filters.forEach( function ( filter ) {
-  if (program[filter] === false) {
+  if (program[ filter ] === false) {
     filterOut.push( filter );
   }
 } );

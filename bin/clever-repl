@@ -6,7 +6,7 @@ var path  = require( 'path' )
   , tab   = require( 'tab' )
   , fs    = require( 'fs' )
   , _     = require( 'lodash' )
-  , lib   = require( path.resolve( path.join( __dirname, '..', 'lib' ) ) );
+  , lib   = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
 process.env.NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'local';
 
@@ -54,7 +54,7 @@ lib.project.locations().then( function ( projects ) {
     }
   }
 
-  lib.utils.success( 'Welcome to CleverStack ' + lib.colors.darkGray( 'version ' + env.packageJson.version ) );
+  lib.utils.success( 'Welcome to CleverStack ' + lib.colors.darkGray( ' using seed version ' + env.packageJson.version ) );
   lib.utils.success( 'Type .commands or .help for a list of commands' );
 
   // thanks to: https://github.com/jashkenas/coffee-script/blob/master/lib/coffee-script/repl.js#L97
@@ -187,8 +187,8 @@ lib.project.locations().then( function ( projects ) {
   addHistory( local, process.env.HOME ? path.join( process.env.HOME, '.cleverstack_history' ) : void 0, 10240 );
 
   // ormFuncs are the DAOFactory functions that we want to make public...
-  var ormFuncs = ['all', 'find', 'create', 'update', 'describe', 'findAll', 'findOrCreate', 'findAndCountAll', 'findAllJoin', 'findOrInitialize', 'findOrBuild', 'bulkCreate', 'destroy', 'aggregate', 'build', 'count', 'min', 'max'];
-  var models = {};
+  var ormFuncs = [ 'all', 'find', 'create', 'update', 'describe', 'findAll', 'findOrCreate', 'findAndCountAll', 'findAllJoin', 'findOrInitialize', 'findOrBuild', 'bulkCreate', 'destroy', 'aggregate', 'build', 'count', 'min', 'max' ];
+  var models = { };
 
   env.moduleLoader.modules.forEach( function ( module ) {
     Object.keys( module.models.orm ).forEach( function ( orm ) {

@@ -4,6 +4,7 @@ var program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
   , spawn   = require( 'win-spawn' )
+  , async   = require( 'async' )
   , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
 program
@@ -52,12 +53,8 @@ if (folders.length < 1) {
   lib.utils.fail( 'CleverStack couldn\'t find the frontend seed directory within ' + process.cwd( ) );
 }
 
-folders.forEach( function ( folder, i )  {
-  var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ) ];
-
-  args.push( 'build' );
-
-  var proc  = spawn( 'grunt', args, { stdio: 'inherit' } )
+async.each( folders, function ( folder, next ) {
+  var proc  = spawn( 'grunt', [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ), 'build' ], { stdio: 'inherit' } )
     , error = '';
 
   proc.on( 'error', function ( err ) {
@@ -66,9 +63,15 @@ folders.forEach( function ( folder, i )  {
 
   proc.on( 'close', function ( code ) {
     if (code !== 0) {
-      return lib.utils.fail( error );
+      return next( err );
     }
 
-    lib.utils.success( 'Build was successful' );
+    lib.utils.success( 'Build for ' + folder.path + ' was successful' );
+    next( );
   } );
+},
+function ( err ) {
+  if (!!err) {
+    lib.utils.fail( err );
+  }
 } );

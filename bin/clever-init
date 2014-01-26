@@ -13,9 +13,7 @@ var Promise = require( 'bluebird' )
 Promise.longStackTraces( );
 
 program
-  .version( lib.pkg.version )
-  .option( '-v, --versions', 'Select a specific cleverstack version that you want initialize with.')
-  .option( '-f, --fetch', 'Installs the package without cloning the git repo.');
+  .version( lib.pkg.version );
 
 program
   .command( '<project>' )
@@ -26,14 +24,16 @@ program.on( '--help', function ( ) {
   console.log( '    clever init my-project' );
   console.log( '    clever init project-frontend frontend' );
   console.log( '    clever init my-project-everything backend frontend' );
-  console.log( '    clever init --fetch my-project-frontend frontend' );
-  console.log( '    clever init --fetch my-project-backend backend' );
+  console.log( '' );
+  console.log( '  Installing specific versions:' );
+  console.log( '    clever init my-project backend@<version>' );
+  console.log( '    clever init my-project frontend@<version>' );
   console.log( '' );
 } );
 
 program.parse( process.argv );
 
-var project = program.args[0]
+var project = program.args[ 0 ]
   , args    = program.args.slice( 1 );
 
 if (args.length < 1 || (args.indexOf( 'backend' ) === -1 && args.indexOf( 'frontend' ))) {
@@ -56,7 +56,7 @@ if (fs.existsSync( projectFolder )) {
   lib.utils.fail( "Can't create project " + project + " due to a folder named " + project + " existing in " + process.cwd() );
 }
 
-var installArgs = [];
+var installArgs = [ ];
 if (program.versions) {
   installArgs.push( '-v' );
   installArgs.push( program.versions );
@@ -65,6 +65,14 @@ if (program.versions) {
 if (program.fetch) {
   installArgs.push( '-f' );
 }
+
+/**
+ * Installs bundleDependencies through lib.project.installBundledModules if applicable
+ *
+ * @param  {String} projectDir
+ * @return {Promise}
+ * @api private
+ */
 
 function installDeps ( projectDir ) {
   return new Promise( function ( res, rej ) {
@@ -81,6 +89,15 @@ function installDeps ( projectDir ) {
     .catch( rej );
   } );
 }
+
+/**
+ * Writes a local.json file within projectDir
+ * with the basic ORM values
+ *
+ * @param  {String} projectDir
+ * @return {Promise}
+ * @api private
+ */
 
 function writeLocalJSON ( projectDir ) {
   var def = Promise.defer( );
@@ -112,7 +129,15 @@ function writeLocalJSON ( projectDir ) {
   } );
 
   return def.promise;
- }
+}
+
+/**
+ * Installs the cleverstack-node-seed as 'backend' and then writes
+ * a local JSON file through writeLocalJSON()
+ *
+ * @return {Promise}
+ * @api private
+ */
 
 function setupBackend ( ) {
   var def         = Promise.defer( )
@@ -124,12 +149,13 @@ function setupBackend ( ) {
         return def.reject( err );
       }
 
-      var proc = spawn( path.join( __dirname, ( 'clever-install' + ( !program.fetch ? '-git' : '-fetch' ) ) ), [remotes.backend, '-p', projectDir].concat( installArgs ), {stdio: 'inherit'} );
-      proc.on( 'close', function ( code ) {
-        if (code !== 0) {
-          return def.reject( );
-        }
+      var pkg = args[ args.indexOf( 'backend' ) ].split( '@' );
 
+      lib.packages.get( {
+        name: 'cleverstack-node-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ),
+        owner: 'clevertech'
+      }, projectDir )
+      .then( function ( ) {
         writeLocalJSON( projectDir )
         .then( function ( ) {
           return installDeps( projectDir )
@@ -140,6 +166,9 @@ function setupBackend ( ) {
         .catch( function ( err ) {
           def.reject( err );
         } );
+      } )
+      .catch( function ( err ) {
+        def.reject( err );
       } );
     } );
   } else {
@@ -150,57 +179,61 @@ function setupBackend ( ) {
 
   return def.promise;
 }
+
+/**
+ * Installs cleverstack-angular-seed as 'frontend'
+ *
+ * @return {Promise}
+ * @api private
+ */
 
 function setupFrontend( ) {
-  var def = Promise.defer( );
+  var def         = Promise.defer( )
+    , projectDir  = path.join( projectFolder, 'frontend' );
 
-  if (args.indexOf( 'frontend' ) !== -1) {
-    mkdirp( path.resolve( path.join( projectFolder, 'frontend' ) ), function ( err ) {
-      if (!!err) {
-        return def.reject( err );
-      }
-
-      var proc = spawn( path.join( __dirname, ( 'clever-install' + ( !program.fetch ? '-git' : '-fetch' ) ) ), [remotes.frontend, '-p', projectFolder + path.sep + 'frontend'].concat( installArgs ), {stdio: 'inherit'} );
-      proc.on( 'close', function ( code ) {
-        if (code !== 0) {
-          return def.reject( );
-        }
-
-        def.resolve( );
-      } );
-    } );
-  } else {
-    process.nextTick( function( ) {
-      return def.resolve( );
-    } );
-  }
-
-  return def.promise;
-}
-
-function setupModules( modules ) {
-  var def = Promise.defer( );
-
-  async.eachSeries( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
-    var _path = path.resolve( path.join( projectFolder, p ) );
-
-    process.chdir( _path );
-    var proc = spawn( path.join( __dirname, 'clever-install' ), modules, { cwd: _path, stdio: 'inherit' } );
-
-    proc.on( 'close', function ( ) {
-      fn( );
-    } );
-
-  }, function ( err ) {
+  mkdirp( path.resolve( projectDir ), function ( err ) {
     if (!!err) {
       return def.reject( err );
     }
 
+    var pkg = args[ args.indexOf( 'frontend' ) ].split( '@' );
+
+    lib.packages.get( { name: 'cleverstack-angular-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ), owner: 'clevertech' }, projectDir )
+    .then( function ( ) {
+      def.resolve( );
+    } )
+    .catch( function ( err ) {
+      def.reject( err );
+    } );
+  } );
+
+  return def.promise;
+}
+
+/**
+ * Helper function for running clever-install if there are modules to install
+ *
+ * @param  {String[]} modules
+ * @return {Promise}
+ * @api private
+ */
+
+function setupModules( modules ) {
+  var def   = Promise.defer( )
+    , proc  = spawn( path.join( __dirname, 'clever-install' ), modules, { cwd: projectFolder, stdio: 'inherit' } );
+
+  proc.on( 'close', function ( ) {
     def.resolve( );
   } );
 
   return def.promise;
 }
+
+/**
+ * Installs Bower and NPM (including modules within the seeds) packages
+ *
+ * @return {Promise}
+ */
 
 function setupPackages( ) {
   var def = Promise.defer( );
@@ -208,10 +241,10 @@ function setupPackages( ) {
   async.eachSeries( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
     var _path = path.resolve( path.join( projectFolder, p ) );
 
-    process.chdir( _path );
+    // process.chdir( _path );
 
     lib.utils.info( 'Installing NPM packages for ' + _path );
-    var proc = spawn( 'npm', ['install'] )
+    var proc = spawn( 'npm', [ 'install' ], { cwd: _path } )
       , err = '';
 
     proc.stderr.on('data', function ( data ) {
@@ -255,48 +288,48 @@ function setupPackages( ) {
         }
 
         var bowerPath = path.resolve( path.join( projectFolder, p, 'bower.json' ) );
-        process.chdir( path.resolve( path.join( projectFolder, p ) ) );
+        process.chdir( _path );
 
         // backend folder?
         if (!fs.existsSync( bowerPath ) ) {
           return fn( );
-          // lib.utils.warn( 'Running database migrations...' );
+        }
 
-          // var args = [ '--base', path.resolve( path.join( projectFolder, p ) ), '--gruntfile', path.resolve( path.join( projectFolder, p, 'Gruntfile.js' ) ), 'db' ]
-          //   , err  = '';
+        // todo: Separate this into it's own function
+        lib.utils.info( 'Installing bower packages for ' + _path);
 
-          // var env       = process.env;
-          // env.NODE_ENV  = 'local'; // overwriting is necessary...
+        var err  = ''
+          , proc = spawn( 'bower', [ 'install' ], { cwd: _path } );
 
-          // var proc = spawn( 'grunt', args, {stdio: 'inherit', env: env} );
+        proc.stderr.on( 'data', function ( data ) {
+          err += data + '';
+        } );
 
-          // proc.on( 'close', function ( code ) {
-          //   if (code !== 0) {
-          //     return fn( err );
-          //   }
+        proc.on( 'close', function ( code ) {
+          if (code !== 0) {
+            return fn( err );
+          }
 
-          //   process.chdir( path.join( process.cwd( ) , '..' ) );
-          //   fn( );
-          // } );
-        } else {
-          lib.utils.info( 'Installing bower packages for ' + _path);
+          lib.utils.success( 'Finished installing bower packages.' );
 
-          var err  = ''
-            , proc = spawn( 'npm', ['run', 'setup'] );
+          //todo: Separate this into it's own function
+          lib.utils.info( 'Building frontend' );
+          var buildProc = spawn( 'grunt', [ 'build' ], { cwd: _path } )
+            , buildErr  = '';
 
-          proc.stderr.on('data', function ( data ) {
-            err += data + '';
+          buildProc.stderr.on( 'data', function ( data ) {
+            buildErr += data + '';
           } );
 
-          proc.on( 'close', function ( code ) {
+          buildProc.on( 'close', function ( code ) {
             if (code !== 0) {
               return fn( err );
             }
 
-            lib.utils.success( 'Finished installing bower packages.' );
+            lib.utils.success( 'Finished building frontend' );
             fn( );
           } );
-        }
+        } );
       } );
     } );
   },
@@ -327,11 +360,19 @@ Promise.all( args )
   return def.promise;
 } )
 .then( function ( modules ) {
-  lib.utils.info( 'Fetching repositories... ' );
-  return setupBackend( );
-} )
-.then( function( ) {
-  return setupFrontend( );
+  var actions = [ ];
+
+  if (args.indexOf( 'backend' ) !== -1) {
+    lib.utils.info( 'Setting up backend seed...' );
+    actions.push( setupBackend( ) );
+  }
+
+  if (args.indexOf( 'frontend' ) !== -1) {
+    lib.utils.info( 'Setting up frontend seed...' );
+    actions.push( setupFrontend( ) );
+  }
+
+  return Promise.all( actions );
 } )
 .then( function( ) {
   var def = Promise.defer( );

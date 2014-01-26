@@ -1,20 +1,12 @@
 #!/usr/bin/env node
 
 var program = require( 'commander' )
-  , semver  = require( 'semver' )
   , Promise = require( 'bluebird' )
   , path    = require( 'path' )
-  , rimraf  = require( 'rimraf' )
   , fs      = require( 'fs' )
   , _       = require( 'lodash' )
   , async   = require( 'async' )
-  , hat     = require( 'hat' )
-  , ncp     = require( 'ncp' ).ncp
-  , spawn   = require( 'win-spawn' )
-  , github  = require( 'github-basic' )
-  , mkdirp  = require( 'mkdirp' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) )
-  , rack    = hat.rack( );
+  , lib     = require( path.join( __dirname, '..', 'index' ) );
 
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' )
@@ -26,7 +18,7 @@ program.on( '--help', function ( ) {
   console.log( '' );
   console.log( '  Examples:' );
   console.log( '    clever install clever-background-tasks' );
-  console.log( '    clever install background-tasks' );
+  console.log( '    clever install clever-background-tasks@0.0.1' );
   console.log( '' );
 } );
 
@@ -34,198 +26,56 @@ program.parse( process.argv );
 
 Promise.longStackTraces( );
 
-function convertToRepo ( repo ) {
-  var options = {};
+/**
+ * Launches the installation process
+ * Checks for seed folders depending on CWD
+ * Separates which packages we need via Bower and NPM
+ * Installs the NPM/Bower modules within the seeds
+ *
+ * @param  {Array} repos
+ * @return {Promise}
+ * @api private
+ */
 
-  if (typeof repo === "string") {
-    var split = repo.split( '/' );
-
-    if (split.length < 2) {
-      options = {
-        user: 'CleverStack',
-        repo: repo
-      }
-    } else {
-      options = {
-        user: split[0],
-        repo: split[1]
-      }
-    }
-  } else {
-    options = {
-      user: repo.user,
-      repo: repo.repo
-    }
-  }
-
-  if (typeof options.user !== "string") {
-    options.user = 'CleverStack';
-  }
-
-  if (options.user.toLowerCase( ) == "cleverstack"){
-    options.user = 'CleverStack';
-
-    if (options.repo.match(/^clever\-/i) === null) {
-      options.repo = 'clever-' + options.repo;
-    }
-  }
-
-  if (!options.repo) {
-    return lib.utils.fail( 'A repo name is required for the installation process.' );
-  }
-
-  return options;
-}
-
-// function exists ( repo, fn ) {
-//   var options = convertToRepo( repo )
-//     , def     = Promise.defer( );
-
-//   lib.cache.findRepo( options )
-//   .then( function ( data ) {
-//     if (data === true) {
-//       return def.resolve( true );
-//     }
-
-//     Promise.all( [ github( 'HEAD', '/:user/:repo', options, {
-//       host: 'github.com'
-//     } ) ] )
-//     .then( function ( ) {
-//       lib.cache.addRepo( {
-//         name: options.repo,
-//         url: 'http://github.com/' + options.user + '/' + options.repo
-//       } )
-//       .then( function () {
-//         def.resolve( true );
-//       } )
-//       .error( def.reject );
-//     }, function (err ) {
-//       def.reject( 'Repo ' + options.repo + ' does not exist within ' + options.user + '.' );
-//     } );
-//   } )
-//   .nodeify( fn );
-
-//   return def.promise;
-// }
-
-function install ( repo, fn ) {
+function install ( repos ) {
   var def = Promise.defer( );
 
-  repo = convertToRepo( repo );
-
-  lib.project.locations( )
-  .then( function ( locations ) {
-    var repoPath = path.resolve( path.join( locations[0].moduleDir, '..', 'tmp-' + rack( ) ) );
-
-    mkdirp.sync( repoPath );
-
-    var proc = spawn( path.resolve( path.join( __dirname, 'clever' ) ) + '-install-git', [ '-p', repoPath, repo.user + '/' + repo.repo ] )
-      , err  = '';
-
-    proc.stderr.on('data', function ( data ) {
-      err += data + '';
+  lib.project.useUtils( )
+  .spread( function ( locations, useNPM, useBower ) {
+    return lib.search.aggregate( repos ).spread( function ( npm, bower ) {
+      return [ locations, npm, bower ];
     } );
-
-    proc.on( 'close', function ( code ) {
-      if (code !== 0) {
-        return lib.utils.error( 'Failed to install ' + repo.repo + ' within ' + modulePath + "\n" + err );
-      }
-
-      var packagePath = path.resolve( repoPath, 'package.json'  )
-        , bowerPath   = path.resolve( repoPath, 'bower.json'    )
-        , hasPackage  = fs.existsSync( packagePath  )
-        , hasBower    = fs.existsSync( bowerPath    );
-
-      var location = _.find(locations, function ( loc ) {
-        return loc.name === (hasPackage ? "backend" : "frontend");
+  } )
+  .spread( function ( locations, npm, bower ) {
+    var actions = [ ]
+     // todo: make this into a function...
+     // todo: also make packages.locations() a prototype for .isBackend() utility functions, etc.
+      , backend = _.find( locations, function ( location ) {
+        return location.name === "backend";
+      } )
+      , frontend = _.find( locations, function ( location ) {
+        return location.name === "frontend";
       } );
 
-      if (typeof location !== "object") {
-        rimraf.sync( repoPath );
-
-        if (hasPackage) {
-          lib.utils.error( 'Couldn\'t find the CleverStack backend seed. Please ensure that you\'re installing from the project\'s root directory or within the backend seed.' );
-        }
-        else if (hasBower) {
-          lib.utils.error( 'Couldn\'t find the CleverStack frontend seed. Please ensure that you\'re installing from the project\'s root directory or within the frontend seed.' );
-        }
-      }
-
-      try {
-        var pkg = require( hasBower ? bowerPath : packagePath );
-      } catch ( _error ) {
-        lib.utils.error( 'This package doesn\'t contain a ' + path.basename( hasBower ? bowerPath : packagePath ) + ' file.' );
-      }
-
-      var name = pkg.hasOwnProperty( 'rename' ) ? pkg.rename : pkg.name;
-      var moduleLocation = path.resolve( path.join( location.moduleDir, location.modulePath, name ) );
-      ncp( repoPath, moduleLocation, function ( err ) {
-        if (!!err) {
-          return def.reject( err );
-        }
-
-        rimraf( repoPath, function ( err ) {
-          if (!!err) {
-            return def.reject( err );
-          }
-
-          if (location.name !== "backend") {
-            return def.resolve( );
-          }
-
-          lib.project.installModule( location, moduleLocation )
-          .then( function( ) {
-            lib.project.readGruntTasks( moduleLocation )
-            .spread( function ( tasks, filePath ) {
-              if (tasks.length < 1) {
-                return def.resolve( true );
-              }
-
-              if (tasks.indexOf( 'readme' ) === -1) {
-                return def.resolve( true );
-              }
-
-              var args = [ '--base', repoPath, '--gruntfile', filePath, 'readme' ];
-              var gruntProc = spawn( 'grunt', args, { stdio: 'inherit' } );
-              gruntProc.on( 'close', function ( ) {
-                def.resolve( true );
-              } );
-            } )
-            .catch( function ( err ) {
-              def.reject( err );
-            } )
-          } )
-          .catch( function ( err ) {
-            def.reject( err );
-          } );
-        } );
-      } );
-    } );
-  } );
-
-  return def.promise;
-}
-
-function setup ( repos ) {
-  var def = Promise.defer( );
-
-  async.eachSeries( repos, function ( repo, next ) {
-    // check to see if the repo exists first...
-    // exists( repo )
-    // install the repo if we do exists!
-    // .then( function ( ) {
-      install( repo ).then( function ( ) {
-        lib.utils.success( 'Installed ' + repo );
-        next( );
-      }, next );
-    // } );
-  },
-  function ( err ) {
-    if (!!err) {
-      return def.reject( err );
+    if (typeof backend === "undefined" && frontend === "undefined") {
+      lib.utils.fail( 'Couldn\'t find a CleverStack seed. Please make sure that you\'re trying to install within your CleverStack project.' );
+    }
+    else if (npm.length < 1 && bower.length < 1) {
+      lib.utils.fail( 'No modules to install, please make sure you\'re tring to install CleverStack compatible modules.' );
     }
 
-    def.resolve( 'Modules installed.' );
+    if (npm.length > 0) {
+      actions.push( lib.packages.installWithNpm( backend, npm ) );
+    }
+
+    if (bower.length > 0) {
+      actions.push( lib.packages.installWithBower( frontend, bower ) );
+    }
+
+    return Promise.all( actions );
+  } )
+  .catch( function ( err ) {
+    def.reject( err );
   } );
 
   return def.promise;
@@ -235,6 +85,9 @@ if (program.args.length < 1) {
   program.help( );
 }
 
-setup( program.args )
-.then( lib.utils.success )
-.error( lib.utils.error );
+install( program.args ).then(
+  function ( ) { },
+  function ( err ) {
+    lib.utils.error( err );
+  }
+);

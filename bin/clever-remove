@@ -5,7 +5,6 @@ var program = require( 'commander' )
   , path    = require( 'path' )
   , rimraf  = require( 'rimraf' )
   , fs      = require( 'fs' )
-  , _       = require( 'lodash' )
   , async   = require( 'async' )
   , lib     = require( path.join( __dirname, '..', 'index' ) );
 
@@ -27,7 +26,15 @@ if (program.args.length < 1) {
   program.help( );
 }
 
-function findModules( modules, fn ) {
+/**
+ * Finds all of the modules within lib.project.locations()
+ *
+ * @param  {String[]} modules
+ * @return {Promise}
+ * @api private
+ */
+
+function findModules( modules ) {
   var def = Promise.defer( );
 
   lib.project.locations( )
@@ -47,17 +54,14 @@ function findModules( modules, fn ) {
       return def.reject( 'There are no modules to remove.' );
     }
 
-    async.each( _modules, function ( module, next ) {
-      rimraf( module, next );
-    }, function ( err ) {
+    async.each( _modules, rimraf, function ( err ) {
       if (!!err) {
         return def.reject( err );
       }
 
       def.resolve( true );
     } );
-  } )
-  .nodeify( fn );
+  } );
 
   return def.promise;
 }
