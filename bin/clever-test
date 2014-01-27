@@ -49,7 +49,7 @@ function start( reporter ) {
       var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, folder.name ) ) ]
         , env  = process.env;
 
-      args.push( ( 'test' + ( typeof reporter !== "string" ? '' : ':' + reporter ) ) );
+      args.push( ( 'test' + ( typeof reporter._name !== "string" ? '' : ':' + reporter._name ) ) );
 
       if (!process.env.NODE_ENV) {
         env.NODE_ENV = 'local';
