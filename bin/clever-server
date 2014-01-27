@@ -79,5 +79,11 @@ folders.forEach( function ( folder, i )  {
   }
 
   var env = process.env;
+
+  if (fs.existsSync( path.join( folder.path, 'lib') )) {
+    var _path_ = [ path.join( folder.path, 'lib') + path.sep, path.join( folder.path, 'modules') + path.sep ].join( ':' );
+    env.NODE_PATH = process.env.NODE_PATH ? process.env.NODE_PATH + ':' + _path_ : _path_;
+  }
+
   procs[i] = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } );
 } );
