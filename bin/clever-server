@@ -79,5 +79,5 @@ folders.forEach( function ( folder, i )  {
   }
 
   var env = process.env;
-  procs[i] = spawn( 'grunt', args, { stdio: 'inherit' } );
+  procs[i] = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } );
 } );
