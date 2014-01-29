@@ -1,14 +1,24 @@
 #!/usr/bin/env node
 
-var Promise = require( 'bluebird' )
-  , program = require( 'commander' )
-  , path    = require( 'path' )
-  , mkdirp  = require( 'mkdirp' )
-  , spawn   = require( 'win-spawn' )
-  , fs      = require( 'fs' )
-  , rimraf  = require( 'rimraf' )
-  , async   = require( 'async' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) );
+var Promise   = require( 'bluebird' )
+  , program   = require( 'commander' )
+  , path      = require( 'path' )
+  , mkdirp    = require( 'mkdirp' )
+  , spawn     = require( 'win-spawn' )
+  , fs        = require( 'fs' )
+  , rimraf    = require( 'rimraf' )
+  , async     = require( 'async' )
+  , status    = require( 'node-status' )
+  , lib       = require( path.join( __dirname, '..', 'index' ) );
+
+// For node-status
+console = status.console( );
+
+var initProgress = status.addItem( "CleverStack Installation", {
+  type: [ 'bar','percentage' ],
+  max: 12,
+  precision: 0
+} );
 
 Promise.longStackTraces( );
 
@@ -125,6 +135,7 @@ function writeLocalJSON ( projectDir ) {
       return def.reject( err );
     }
 
+    initProgress.inc( );
     def.resolve( );
   } );
 
@@ -161,6 +172,7 @@ function setupBackend ( ) {
           return installDeps( projectDir )
         } )
         .then( function ( ) {
+          initProgress.inc( );
           def.resolve( );
         } )
         .catch( function ( err ) {
@@ -173,6 +185,7 @@ function setupBackend ( ) {
     } );
   } else {
     process.nextTick( function( ) {
+      initProgress.inc( );
       return def.resolve( );
     } );
   }
@@ -200,6 +213,7 @@ function setupFrontend( ) {
 
     lib.packages.get( { name: 'cleverstack-angular-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ), owner: 'clevertech' }, projectDir )
     .then( function ( ) {
+      initProgress.inc( );
       def.resolve( );
     } )
     .catch( function ( err ) {
@@ -223,6 +237,7 @@ function setupModules( modules ) {
     , proc  = spawn( path.join( __dirname, 'clever-install' ), modules, { cwd: projectFolder, stdio: 'inherit' } );
 
   proc.on( 'close', function ( ) {
+    initProgress.inc( );
     def.resolve( );
   } );
 
@@ -256,6 +271,7 @@ function setupPackages( ) {
         return fn( err );
       }
 
+      initProgress.inc( );
       lib.utils.success( 'Finished installing NPM packages for ' + _path );
 
       var modulesFolder = path.resolve( path.join( projectFolder, p, 'modules' ) )
@@ -263,6 +279,11 @@ function setupPackages( ) {
 
       if (fs.existsSync( modulesFolder )) {
         modules = fs.readdirSync( modulesFolder );
+        var keep = modules.indexOf( '.gitkeep' );
+        if (keep > -1) {
+          modules.splice( keep, 1 );
+        }
+
         lib.utils.warn( 'Installing module NPMs for ' + _path );
       }
 
@@ -283,6 +304,8 @@ function setupPackages( ) {
           return fn( err );
         }
 
+        initProgress.inc( );
+
         if (modules.length > 0) {
           lib.utils.success( 'Finished installing module NPMs' );
         }
@@ -292,6 +315,7 @@ function setupPackages( ) {
 
         // backend folder?
         if (!fs.existsSync( bowerPath ) ) {
+          initProgress.inc( );
           return fn( );
         }
 
@@ -310,6 +334,7 @@ function setupPackages( ) {
             return fn( err );
           }
 
+          initProgress.inc( );
           lib.utils.success( 'Finished installing bower packages.' );
 
           //todo: Separate this into it's own function
@@ -327,7 +352,54 @@ function setupPackages( ) {
             }
 
             lib.utils.success( 'Finished building frontend' );
-            fn( );
+
+            lib.utils.info( 'Installing protractor for frontend...' );
+            var _tick = 0
+              , procProgress = [
+                'Downloading specific Selenium Server',
+                'Downloading OS specific Chromedriver',
+                'Downloading OS specific Phantomjs'
+              ];
+
+            var procBar = status.addItem( procProgress[ _tick ], {
+              type: [ 'bar','percentage' ],
+              max: 100,
+              precision: 0
+            } );
+
+            var proProc = spawn( 'npm', [ 'run-script', 'setup-protractor' ], { cwd: _path } )
+              , procErr = '';
+
+            proProc.stderr.on( 'data', function ( data ) {
+              procErr += data + '';
+            } );
+
+            proProc.stdout.on( 'data', function ( data ) {
+              var d = data + ''
+                , match = d.match(/\d{1,2}%/);
+
+              if (match !== null) {
+                var perc = parseInt( match[ 0 ].replace( '%', '' ), 10 );
+                // console.log(procProgress[ _tick ].curr, perc, '---')
+                if (perc > procBar.count || perc >= 99) {
+                  procBar.inc( );
+                  if (procBar.count >= 100 && _tick < 2) {
+                    _tick++;
+                    procBar.name  = procProgress[ _tick ];
+                    procBar.count = 0;
+                  }
+                }
+              }
+            } );
+
+            proProc.on( 'close', function ( code ) {
+              if (code !== 0) {
+                return fn( err );
+              }
+
+              initProgress.inc( );
+              fn( );
+            } );
           } );
         } );
       } );
@@ -344,6 +416,9 @@ function setupPackages( ) {
   return def.promise;
 }
 
+
+status.start( );
+
 Promise.all( args )
 .then( function ( modules ) {
   var def = Promise.defer( );
@@ -354,6 +429,7 @@ Promise.all( args )
       return def.reject( err );
     }
 
+    initProgress.inc( );
     def.resolve( modules );
   } );
 
@@ -394,6 +470,7 @@ Promise.all( args )
     lib.utils.info( 'Installing additional modules...' );
 
     setupModules( args ).then( function ( ) {
+      initProgress.tick( );
       def.resolve( );
     }, function ( err ) {
       def.reject( err );
@@ -407,6 +484,7 @@ Promise.all( args )
   return setupPackages( );
 } )
 .then( function( ) {
+  initProgress.inc( );
   lib.utils.success( 'Project ' + project + ' has been created in ' + projectFolder );
   process.exit( 0 );
 } )
@@ -421,4 +499,4 @@ Promise.all( args )
 
     process.exit( 1 );
   } );
-} )
+} );

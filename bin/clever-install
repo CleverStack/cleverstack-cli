@@ -13,9 +13,6 @@ program.version( lib.pkg.version )
   .option( '-v, --versions [versions]', 'Install a specific package version.' )
 
 program.on( '--help', function ( ) {
-  console.log( '  Note:' );
-  console.log( '    When installing an official module from CleverStack, you can omit the cleverstack/ as well as the "cleverstack-" prefix from the modules\' name' );
-  console.log( '' );
   console.log( '  Examples:' );
   console.log( '    clever install clever-background-tasks' );
   console.log( '    clever install clever-background-tasks@0.0.1' );
