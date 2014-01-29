@@ -39,6 +39,7 @@ function install ( repos ) {
 
   lib.project.useUtils( )
   .spread( function ( locations, useNPM, useBower ) {
+    console.log('LOCO', locations);
     return lib.search.aggregate( repos ).spread( function ( npm, bower ) {
       return [ locations, npm, bower ];
     } );
@@ -61,6 +62,7 @@ function install ( repos ) {
       lib.utils.fail( 'No modules to install, please make sure you\'re tring to install CleverStack compatible modules.' );
     }
 
+    console.log('kkdkdkd', backend, frontend);
     if (npm.length > 0) {
       actions.push( lib.packages.installWithNpm( backend, npm ) );
     }
@@ -69,7 +71,13 @@ function install ( repos ) {
       actions.push( lib.packages.installWithBower( frontend, bower ) );
     }
 
-    return Promise.all( actions );
+    Promise.all( actions )
+    .then( function ( ) {
+      def.resolve( [ backend, frontend, npm, bower ] );
+    } )
+    .catch( function ( err ) {
+      def.reject( err );
+    } );
   } )
   .catch( function ( err ) {
     def.reject( err );
@@ -82,9 +90,52 @@ if (program.args.length < 1) {
   program.help( );
 }
 
-install( program.args ).then(
-  function ( ) { },
-  function ( err ) {
-    lib.utils.error( err );
+install( program.args )
+.spread( function ( backendPath, frontendPath, npm, bower ) {
+  console.log('back', backendPath);
+  if (npm.length > 0) {
+    npm = npm.map( function ( n ) {
+      return n.name;
+    } );
+
+    lib.utils.info( 'Installing any bundled dependencies if applicable... ');
+
+    var walker = require( 'findit' )( path.join( backendPath.moduleDir, backendPath.modulePath ) )
+      , dirs   = [ ];
+
+    walker.on( 'directory', function ( dir, stat, stop ) {
+      var _dir  = dir.split( path.sep );
+      _dir      = _dir.pop( );
+
+      if (_dir !== "modules") {
+        if (npm.indexOf( _dir ) === -1) {
+          return stop( );
+        }
+
+        dirs.push( dir );
+      }
+    } );
+
+    walker.on( 'end', function ( ) {
+      if (dirs.length > 0) {
+        async.each( dirs, function ( dir, next ) {
+          lib.project.installBundleDeps( dir, path.join( backendPath.moduleDir, backendPath.modulePath ) )
+          .then( function ( ) {
+            next( );
+          } )
+          .catch( function ( err ) {
+            next( err );
+          } );
+        },
+        function ( err ) {
+          if (!!err) {
+            lib.utils.fail( err );
+          }
+        } );
+      }
+    } );
   }
-);
+} )
+.catch( function ( err ) {
+  lib.utils.error( err );
+} );

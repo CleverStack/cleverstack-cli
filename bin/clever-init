@@ -77,30 +77,6 @@ if (program.fetch) {
 }
 
 /**
- * Installs bundleDependencies through lib.project.installBundledModules if applicable
- *
- * @param  {String} projectDir
- * @return {Promise}
- * @api private
- */
-
-function installDeps ( projectDir ) {
-  return new Promise( function ( res, rej ) {
-    var pkg = require( path.join( projectDir, 'package.json' ) );
-
-    if (!pkg.hasOwnProperty( 'bundledDependencies' ) || pkg.bundledDependencies.length < 1) {
-      return res( );
-    }
-
-    lib.utils.info( 'Installing bundled dependencies...' );
-    lib.project.installBundledModules( projectDir, pkg.bundledDependencies ).then( function ( ) {
-      res( );
-    } )
-    .catch( rej );
-  } );
-}
-
-/**
  * Writes a local.json file within projectDir
  * with the basic ORM values
  *
@@ -169,7 +145,7 @@ function setupBackend ( ) {
       .then( function ( ) {
         writeLocalJSON( projectDir )
         .then( function ( ) {
-          return installDeps( projectDir )
+          return lib.project.installBundleDeps( projectDir )
         } )
         .then( function ( ) {
           initProgress.inc( );
@@ -311,7 +287,6 @@ function setupPackages( ) {
         }
 
         var bowerPath = path.resolve( path.join( projectFolder, p, 'bower.json' ) );
-        process.chdir( _path );
 
         // backend folder?
         if (!fs.existsSync( bowerPath ) ) {
