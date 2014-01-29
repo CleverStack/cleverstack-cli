@@ -16,7 +16,7 @@ console = status.console( );
 
 var initProgress = status.addItem( "CleverStack Installation", {
   type: [ 'bar','percentage' ],
-  max: 12,
+  max: 14,
   precision: 0
 } );
 
@@ -355,7 +355,6 @@ function setupPackages( ) {
 
               if (match !== null) {
                 var perc = parseInt( match[ 0 ].replace( '%', '' ), 10 );
-                // console.log(procProgress[ _tick ].curr, perc, '---')
                 if (perc > procBar.count || perc >= 99) {
                   procBar.inc( );
                   if (procBar.count >= 100 && _tick < 2) {
@@ -445,7 +444,7 @@ Promise.all( args )
     lib.utils.info( 'Installing additional modules...' );
 
     setupModules( args ).then( function ( ) {
-      initProgress.tick( );
+      initProgress.inc( );
       def.resolve( );
     }, function ( err ) {
       def.reject( err );

@@ -39,7 +39,6 @@ function install ( repos ) {
 
   lib.project.useUtils( )
   .spread( function ( locations, useNPM, useBower ) {
-    console.log('LOCO', locations);
     return lib.search.aggregate( repos ).spread( function ( npm, bower ) {
       return [ locations, npm, bower ];
     } );
@@ -62,7 +61,6 @@ function install ( repos ) {
       lib.utils.fail( 'No modules to install, please make sure you\'re tring to install CleverStack compatible modules.' );
     }
 
-    console.log('kkdkdkd', backend, frontend);
     if (npm.length > 0) {
       actions.push( lib.packages.installWithNpm( backend, npm ) );
     }
@@ -92,7 +90,6 @@ if (program.args.length < 1) {
 
 install( program.args )
 .spread( function ( backendPath, frontendPath, npm, bower ) {
-  console.log('back', backendPath);
   if (npm.length > 0) {
     npm = npm.map( function ( n ) {
       return n.name;
