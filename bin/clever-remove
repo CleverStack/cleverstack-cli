@@ -6,6 +6,7 @@ var program = require( 'commander' )
   , rimraf  = require( 'rimraf' )
   , fs      = require( 'fs' )
   , async   = require( 'async' )
+  , _       = require( 'lodash' )
   , lib     = require( path.join( __dirname, '..', 'index' ) );
 
 program.version( lib.pkg.version )
@@ -24,6 +25,29 @@ Promise.longStackTraces( );
 
 if (program.args.length < 1) {
   program.help( );
+}
+
+function removeFromBundledDependencies ( backendPath, modules ) {
+  var def     = Promise.defer( )
+    , pkgPath = path.join( backendPath.moduleDir, 'package.json' )
+    , pkg     = require( pkgPath );
+
+  pkg.bundledDependencies = pkg.bundledDependencies || [ ];
+  modules.forEach( function ( module ) {
+    if (pkg.bundledDependencies.indexOf( module ) > -1) {
+      pkg.bundledDependencies.splice( module, 1 );
+    }
+  } );
+
+  fs.writeFile( pkgPath, JSON.stringify( pkg, null, '  ' ), function ( err ) {
+    if (!!err) {
+      return def.reject( err );
+    }
+
+    def.resolve( );
+  } );
+
+  return def.promise;
 }
 
 /**
@@ -59,7 +83,20 @@ function findModules( modules ) {
         return def.reject( err );
       }
 
-      def.resolve( true );
+      var backend = _.find( locations, function ( location ) {
+        return location.name === "backend";
+      } );
+
+      if (typeof backend === "undefined") {
+        return def.resolve( );
+      }
+
+      removeFromBundledDependencies( backend, modules )
+      .then( function ( ) {
+        def.resolve( );
+      }, function ( err ) {
+        def.reject( err );
+      } );
     } );
   } );
 

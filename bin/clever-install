@@ -98,9 +98,9 @@ function install ( repos ) {
  */
 
 function addToMainBundleDeps ( backendPath, modules ) {
-  var def = Promise.defer( )
+  var def     = Promise.defer( )
     , pkgPath = path.join( backendPath.moduleDir, 'package.json' )
-    , pkg = require( pkgPath );
+    , pkg     = require( pkgPath );
 
   pkg.bundledDependencies = pkg.bundledDependencies || [ ];
   modules.forEach( function ( module ) {
@@ -109,7 +109,7 @@ function addToMainBundleDeps ( backendPath, modules ) {
     }
   } );
 
-  fs.writeFile( path.join( backendPath.moduleDir, 'package.json' ), JSON.stringify( pkg, null, '  ' ), function ( err ) {
+  fs.writeFile( pkgPath, JSON.stringify( pkg, null, '  ' ), function ( err ) {
     if (!!err) {
       return def.reject( err );
     }
