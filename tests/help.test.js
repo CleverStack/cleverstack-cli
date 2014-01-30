@@ -7,6 +7,7 @@ var chai    = require( 'chai' )
 describe( 'Help documentation', function( ) {
   it( 'should be able to list the help documentation for help', function ( done ) {
     exec( path.join( binPath, 'clever-help -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-help <command> \\[options\\]',
@@ -42,6 +43,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for build', function ( done ) {
     exec( path.join( binPath, 'clever-build -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-build \\[options\\]',
@@ -62,6 +64,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for downgrade', function ( done ) {
     exec( path.join( binPath, 'clever-downgrade -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-downgrade \\[options\\]',
@@ -86,6 +89,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for init', function ( done ) {
     exec( path.join( binPath, 'clever-init -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-init \\[options\\] \\[command\\]',
@@ -116,6 +120,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for install', function ( done ) {
     exec( path.join( binPath, 'clever-install -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-install \\[options\\] \\[modules ...\\]',
@@ -138,6 +143,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for generate', function ( done ) {
     exec( path.join( binPath, 'clever-generate -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-generate \\[options\\] \\[command\\]',
@@ -175,6 +181,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for list', function ( done ) {
     exec( path.join( binPath, 'clever-list -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-list \\[options\\]',
@@ -195,6 +202,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for new', function ( done ) {
     exec( path.join( binPath, 'clever-new -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-new \\[options\\] <name>',
@@ -221,6 +229,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for remove', function ( done ) {
     exec( path.join( binPath, 'clever-remove -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-remove \\[options\\] \\[modules ...\\]',
@@ -242,6 +251,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for scaffold', function ( done ) {
     exec( path.join( binPath, 'clever-scaffold -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-scaffold \\[options\\] <name>',
@@ -272,6 +282,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for search', function ( done ) {
     exec( path.join( binPath, 'clever-search -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-search \\[options\\]',
@@ -293,6 +304,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for server', function ( done ) {
     exec( path.join( binPath, 'clever-server -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-server \\[options\\]',
@@ -317,6 +329,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for test', function ( done ) {
     exec( path.join( binPath, 'clever-test -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-test \\[options\\] \\[command\\]',
@@ -346,6 +359,7 @@ describe( 'Help documentation', function( ) {
 
   it( 'should be able to list the help documentation for upgrade', function ( done ) {
     exec( path.join( binPath, 'clever-upgrade -h' ), function ( err, stdout, stderr ) {
+      expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-upgrade \\[options\\]',
