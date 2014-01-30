@@ -23,6 +23,10 @@ program.parse( process.argv );
 
 Promise.longStackTraces( );
 
+if (program.args.length < 1) {
+  program.help( );
+}
+
 /**
  * Launches the installation process
  * Checks for seed folders depending on CWD
@@ -84,8 +88,36 @@ function install ( repos ) {
   return def.promise;
 }
 
-if (program.args.length < 1) {
-  program.help( );
+/**
+ * Adds modules to the backend's bundleDepenencies automatically
+ *
+ * @param {Object} backendPath Path to the backend folder
+ * @param {String[]} modules     Array of modules to add
+ * @return {Promise}
+ * @api private
+ */
+
+function addToMainBundleDeps ( backendPath, modules ) {
+  var def = Promise.defer( )
+    , pkgPath = path.join( backendPath.moduleDir, 'package.json' )
+    , pkg = require( pkgPath );
+
+  pkg.bundledDependencies = pkg.bundledDependencies || [ ];
+  modules.forEach( function ( module ) {
+    if (pkg.bundledDependencies.indexOf( module ) === -1) {
+      pkg.bundledDependencies.push( module );
+    }
+  } );
+
+  fs.writeFile( path.join( backendPath.moduleDir, 'package.json' ), JSON.stringify( pkg, null, '  ' ), function ( err ) {
+    if (!!err) {
+      return def.reject( err );
+    }
+
+    def.resolve( );
+  } );
+
+  return def.promise;
 }
 
 install( program.args )
@@ -119,15 +151,17 @@ install( program.args )
           lib.project.installBundleDeps( dir, path.join( backendPath.moduleDir, backendPath.modulePath ) )
           .then( function ( ) {
             next( );
-          } )
-          .catch( function ( err ) {
-            next( err );
-          } );
+          }, next );
         },
         function ( err ) {
           if (!!err) {
             lib.utils.fail( err );
           }
+
+          addToMainBundleDeps( backendPath, npm )
+          .catch( function ( err ) {
+            lib.utils.fail( err );
+          } )
         } );
       }
     } );

@@ -8,8 +8,7 @@ var Promise   = require( 'bluebird' )
   , fs        = require( 'fs' )
   , rimraf    = require( 'rimraf' )
   , async     = require( 'async' )
-  , status    = require( 'node-status' )
-  , lib       = require( path.join( __dirname, '..', 'index' ) );
+  , status    = require( 'node-status' );
 
 // For node-status
 console = status.console( );
@@ -19,6 +18,12 @@ var initProgress = status.addItem( "CleverStack Installation", {
   max: 14,
   precision: 0
 } );
+
+status.start( );
+
+// Needs to be called after changing the console
+// and adding the first bar
+var lib = require( path.join( __dirname, '..', 'index' ) );
 
 Promise.longStackTraces( );
 
@@ -389,9 +394,6 @@ function setupPackages( ) {
 
   return def.promise;
 }
-
-
-status.start( );
 
 Promise.all( args )
 .then( function ( modules ) {
