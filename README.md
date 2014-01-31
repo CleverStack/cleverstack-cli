@@ -329,8 +329,9 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Options:
 
-    -h, --help     output usage information
-    -V, --version  output the version number
+    -h, --help         output usage information
+    --skip-protractor  Skips installing protractor
+    -V, --version      output the version number
 
   Examples:
     clever init my-project

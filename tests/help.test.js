@@ -94,6 +94,7 @@ describe( 'Help documentation', function( ) {
     exec( path.join( binPath, 'clever-init -h' ), function ( err, stdout, stderr ) {
       expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
+
       expect( stdout ).to.match( new RegExp( [
         '',
         '  Usage: clever-init \\[options\\] \\[command\\]',
@@ -104,8 +105,9 @@ describe( 'Help documentation', function( ) {
         '',
         '  Options:',
         '',
-        '    -h, --help     output usage information',
-        '    -V, --version  output the version number',
+        '    -h, --help         output usage information',
+        '    --skip-protractor  Skips installing protractor',
+        '    -V, --version      output the version number',
         '',
         '  Examples:',
         '    clever init my-project',

@@ -8,26 +8,13 @@ var Promise   = require( 'bluebird' )
   , fs        = require( 'fs' )
   , rimraf    = require( 'rimraf' )
   , async     = require( 'async' )
-  , status    = require( 'node-status' );
-
-// For node-status
-console = status.console( );
-
-var initProgress = status.addItem( "CleverStack Installation", {
-  type: [ 'bar','percentage' ],
-  max: 14,
-  precision: 0
-} );
-
-status.start( );
-
-// Needs to be called after changing the console
-// and adding the first bar
-var lib = require( path.join( __dirname, '..', 'index' ) );
+  , status    = require( 'node-status' )
+  , lib       = require( path.join( __dirname, '..', 'index' ) );
 
 Promise.longStackTraces( );
 
 program
+  .option( '--skip-protractor', 'Skips installing protractor', false )
   .version( lib.pkg.version );
 
 program
@@ -47,6 +34,21 @@ program.on( '--help', function ( ) {
 } );
 
 program.parse( process.argv );
+
+// For node-status
+console = status.console( );
+
+var initProgress = status.addItem( "CleverStack Installation", {
+  type: [ 'bar','percentage' ],
+  max: 14,
+  precision: 0
+} );
+
+process.on( 'exit', function ( ) {
+  status.stop( );
+  status.removeAll( );
+  status.clear( );
+} );
 
 var project = program.args[ 0 ]
   , args    = program.args.slice( 1 );
@@ -77,9 +79,7 @@ if (program.versions) {
   installArgs.push( program.versions );
 }
 
-if (program.fetch) {
-  installArgs.push( '-f' );
-}
+status.start( );
 
 /**
  * Writes a local.json file within projectDir
@@ -333,6 +333,10 @@ function setupPackages( ) {
 
             lib.utils.success( 'Finished building frontend' );
 
+            if (program.skipProtractor) {
+              return fn( );
+            }
+
             lib.utils.info( 'Installing protractor for frontend...' );
             var _tick = 0
               , procProgress = [
@@ -417,11 +421,15 @@ Promise.all( args )
   if (args.indexOf( 'backend' ) !== -1) {
     lib.utils.info( 'Setting up backend seed...' );
     actions.push( setupBackend( ) );
+  } else {
+    initProgress.max = 7;
   }
 
   if (args.indexOf( 'frontend' ) !== -1) {
     lib.utils.info( 'Setting up frontend seed...' );
     actions.push( setupFrontend( ) );
+  } else {
+    initProgress.max = 7;
   }
 
   return Promise.all( actions );

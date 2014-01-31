@@ -65,37 +65,56 @@ function findModules( modules ) {
   .then( function ( locations ) {
     var _modules = [];
 
-    modules.forEach( function ( module ) {
-      locations.forEach( function ( location ) {
-        var moduleLocation = path.join( location.moduleDir, location.modulePath, module );
-        if (fs.existsSync( moduleLocation )) {
-          _modules.push( moduleLocation );
+    async.each( modules, function ( module, next ) {
+      async.each( locations, function ( location, fn ) {
+        var walk = require( 'findit' )( path.join( location.moduleDir, location.modulePath ) )
+          , pkg;
+
+        walk.on( 'file', function ( file ) {
+          if (path.basename( file ) === "bower.json") {
+            pkg = require( file );
+          }
+          else if (path.basename( file ) === "package.json" && !fs.existsSync( file.replace( 'package.json', 'bower.json' ) )) {
+            pkg = require( file );
+          }
+
+          if (typeof pkg !== "undefined" && pkg.name === module) {
+            var name = path.join( location.moduleDir, location.modulePath, pkg.rename || pkg.name );
+            if (_modules.indexOf( name ) === -1) {
+              _modules.push( name );
+            }
+          }
+        } );
+
+        walk.on( 'end', function ( ) {
+          fn( );
+        } );
+      }, next );
+    },
+    function ( err ) {
+      if (!!err || _modules.length < 1) {
+        return def.reject( 'There are no modules to remove.' );
+      }
+
+      async.each( _modules, rimraf, function ( err ) {
+        if (!!err) {
+          return def.reject( err );
         }
-      } );
-    } );
 
-    if (_modules.length < 1) {
-      return def.reject( 'There are no modules to remove.' );
-    }
+        var backend = _.find( locations, function ( location ) {
+          return location.name === "backend";
+        } );
 
-    async.each( _modules, rimraf, function ( err ) {
-      if (!!err) {
-        return def.reject( err );
-      }
+        if (typeof backend === "undefined") {
+          return def.resolve( );
+        }
 
-      var backend = _.find( locations, function ( location ) {
-        return location.name === "backend";
-      } );
-
-      if (typeof backend === "undefined") {
-        return def.resolve( );
-      }
-
-      removeFromBundledDependencies( backend, modules )
-      .then( function ( ) {
-        def.resolve( );
-      }, function ( err ) {
-        def.reject( err );
+        removeFromBundledDependencies( backend, modules )
+        .then( function ( ) {
+          def.resolve( );
+        }, function ( err ) {
+          def.reject( err );
+        } );
       } );
     } );
   } );

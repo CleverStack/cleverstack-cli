@@ -5,6 +5,7 @@ var path  = require( 'path' )
   , util  = require( 'util' )
   , tab   = require( 'tab' )
   , fs    = require( 'fs' )
+  , os    = require( 'os' )
   , _     = require( 'lodash' )
   , lib   = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
@@ -43,7 +44,7 @@ lib.project.locations().then( function ( projects ) {
   var env = utils.bootstrapEnv( );
 
   var processEnv = process.env;
-  processEnv.NODE_PATH = path.resolve( path.join( project.moduleDir, 'lib', 'utils' ) ) + path.sep + ':' + path.resolve( path.join( project.moduleDir, 'modules' ) ) + path.sep;
+  processEnv.NODE_PATH = path.resolve( path.join( project.moduleDir, 'lib', 'utils' ) ) + path.sep + ( os.platform( ) === "win32" ? ';' : ':' ) + path.resolve( path.join( project.moduleDir, 'modules' ) ) + path.sep;
 
   // Load all the modules
   try {

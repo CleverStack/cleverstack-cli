@@ -3,6 +3,7 @@
 var program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
+  , os      = require( 'os' )
   , spawn   = require( 'win-spawn' )
   , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
@@ -82,7 +83,7 @@ folders.forEach( function ( folder, i )  {
 
   if (fs.existsSync( path.join( folder.path, 'lib') )) {
     var _path_ = [ path.join( folder.path, 'lib') + path.sep, path.join( folder.path, 'modules') + path.sep ].join( ':' );
-    env.NODE_PATH = process.env.NODE_PATH ? process.env.NODE_PATH + ':' + _path_ : _path_;
+    env.NODE_PATH = process.env.NODE_PATH ? process.env.NODE_PATH + ( os.platform( ) === "win32" ? ';' : ':' ) + _path_ : _path_;
   }
 
   procs[i] = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } );

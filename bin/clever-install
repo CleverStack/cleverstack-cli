@@ -61,8 +61,17 @@ function install ( repos ) {
     if (typeof backend === "undefined" && frontend === "undefined") {
       lib.utils.fail( 'Couldn\'t find a CleverStack seed. Please make sure that you\'re trying to install within your CleverStack project.' );
     }
-    else if (npm.length < 1 && bower.length < 1) {
-      lib.utils.fail( 'No modules to install, please make sure you\'re tring to install CleverStack compatible modules.' );
+
+    if (typeof backend === "undefined") {
+      npm = [ ];
+    }
+
+    if (typeof frontend === "undefined") {
+      bower = [ ];
+    }
+
+    if (npm.length < 1 && bower.length < 1) {
+      lib.utils.fail( 'No modules to install, please make sure you\'re tring to install CleverStack compatible modules and that you\'re in the correct seed folder.' );
     }
 
     if (npm.length > 0) {
@@ -133,15 +142,16 @@ install( program.args )
       , dirs   = [ ];
 
     walker.on( 'directory', function ( dir, stat, stop ) {
-      var _dir  = dir.split( path.sep );
-      _dir      = _dir.pop( );
+      var _dirs = dir.split( path.sep )
+        , _dir  = _dirs.pop( )
+        , mdir  = path.dirname( dir ).split( path.sep ).pop( );
 
-      if (_dir !== "modules") {
+      if (mdir === "modules") {
         if (npm.indexOf( _dir ) === -1) {
           return stop( );
         }
 
-        dirs.push( dir );
+        dirs.push( path.join( _dirs.join( path.sep ), _dir ) );
       }
     } );
 
@@ -159,7 +169,9 @@ install( program.args )
           }
 
           addToMainBundleDeps( backendPath, npm )
-          .catch( function ( err ) {
+          .then( function ( ) {
+            process.exit( 0 );
+          }, function ( err ) {
             lib.utils.fail( err );
           } )
         } );

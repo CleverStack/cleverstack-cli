@@ -3,6 +3,7 @@
 var program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
+  , os      = require( 'os' )
   , spawn   = require( 'win-spawn' )
   , async   = require( 'async' )
   , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
@@ -59,7 +60,7 @@ function start( reporter ) {
         var paths = process.env.NODE_PATH ? [process.env.NODE_PATH] : [];
         paths.push( path.resolve( path.join( folder.path, 'lib' ) ) + path.sep );
         paths.push( path.resolve( path.join( folder.path, 'modules' ) ) + path.sep );
-        env.NODE_PATH = paths.join( ':' );
+        env.NODE_PATH = paths.join( os.platform( ) === "win32" ? ';' : ':' );
       }
 
       var proc  = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } )
