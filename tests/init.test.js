@@ -101,7 +101,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
       exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
-        expect( stdout ).to.equal('\u001b[38;5;1mCan\'t create project my-new-project due to a folder named my-new-project existing in /Users/daniel/clients/clevertech/cleverstack/tests/assets\u001b[39m\n\u001b[2B\u001b[2K\u001b[0G\u001b[?25h\u001b[2K\u001b[0G');
+        expect( stdout ).to.match( /Can't create project my-new-project due to a folder named my-new-project existing in/ );
         done( );
       } );
     } );

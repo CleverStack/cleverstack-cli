@@ -2,9 +2,7 @@
 
 ![CleverStack CLI](http://cleverstack.github.io/assets/img/logos/clevertech-seed-logo-clean.png "CleverStack CLI")
 
-<blockquote>
 A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecosystem.
-</blockquote>
 
 ## Installation
 
