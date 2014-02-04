@@ -4,7 +4,7 @@ var program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
   , os      = require( 'os' )
-  , spawn   = require( 'win-spawn' )
+  , spawn   = require( 'child_process' ).spawn
   , async   = require( 'async' )
   , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
 
