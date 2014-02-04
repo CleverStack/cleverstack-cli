@@ -37,10 +37,11 @@ program.parse( process.argv );
 
 // For node-status
 console = status.console( );
+process.stdout = status.console( );
 
 var initProgress = status.addItem( "CleverStack Installation", {
   type: [ 'bar','percentage' ],
-  max: 14,
+  max: 11,
   precision: 0
 } );
 
@@ -78,8 +79,6 @@ if (program.versions) {
   installArgs.push( '-v' );
   installArgs.push( program.versions );
 }
-
-status.start( );
 
 /**
  * Writes a local.json file within projectDir
@@ -409,7 +408,6 @@ Promise.all( args )
       return def.reject( err );
     }
 
-    initProgress.inc( );
     def.resolve( modules );
   } );
 
@@ -432,6 +430,8 @@ Promise.all( args )
     initProgress.max = 7;
   }
 
+  status.start( );
+  initProgress.inc( );
   return Promise.all( actions );
 } )
 .then( function( ) {

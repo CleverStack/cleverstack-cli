@@ -1,6 +1,7 @@
 var chai    = require( 'chai' )
   , expect  = chai.expect
   , exec    = require('child_process').exec
+  , spawn   = require('child_process').spawn
   , path    = require( 'path' )
   , rimraf  = require( 'rimraf' )
   , async   = require( 'async' )
@@ -16,16 +17,28 @@ describe( 'Remove', function ( ) {
     done( );
   } );
 
-  after( function ( done ) {
-    rimraf( path.join( assetPath, 'my-new-project' ), done );
-  } );
-
   before( function ( done ) {
     console.log( 'Installing clever-orm and clever-datatables for tests...' );
     process.chdir( path.join( assetPath, 'my-new-project' ) );
-    exec( path.join( binPath, 'clever-install' ) + ' clever-orm clever-datatables', function ( err, stdout, stderr ) {
+
+    var proc = spawn( path.join( binPath, 'clever-install' ), [ 'clever-orm' ] );
+
+    proc.stdout.on( 'data', function ( data ) {
+      var str = data + '';
+      switch ( str ) {
+      case str.match(/Database username/):
+      case str.match(/Database password/):
+      case str.match(/Database name/):
+        proc.stdin.write( 'db\n' );
+        break;
+      default:
+        proc.stdin.write( '\n' );
+      }
+    } );
+
+    proc.on( 'exit', function ( code ) {
       console.log( '... done' );
-      done( err );
+      done( );
     } );
   } );
 
@@ -33,7 +46,7 @@ describe( 'Remove', function ( ) {
     it( 'to remove a non-existant module', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project' ) );
 
-      var moduleName = crypto.randomBytes(20).toString('hex');
+      var moduleName = crypto.randomBytes( 20 ).toString( 'hex' );
       exec( path.join( binPath, 'clever-remove' ) + ' ' + moduleName, function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );

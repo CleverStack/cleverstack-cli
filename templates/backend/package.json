@@ -1,13 +1,13 @@
 {
-  "name": "{{module-name}}",
-  "version": "{{version}}",
+  "name": "{{template}}",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
   },
   "author": {
-    "name": "{{name}}",
-    "email": "{{email}}",
-    "web": "{{web}}"
+    "name": "",
+    "email": "",
+    "web": ""
   },
   "collaborators": [
   ],
