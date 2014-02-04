@@ -12,7 +12,7 @@ var chai      = require( 'chai' )
 
 chai.Assertion.includeStack = true;
 
-describe.only( 'Install', function ( ) {
+describe( 'Install', function ( ) {
   before( function ( done ) {
     if (process.env.CI === undefined || (process.env.CI !== true && process.env.CI !== "true")) {
       return done( );
