@@ -205,26 +205,6 @@ function setupFrontend( ) {
 }
 
 /**
- * Helper function for running clever-install if there are modules to install
- *
- * @param  {String[]} modules
- * @return {Promise}
- * @api private
- */
-
-function setupModules( modules ) {
-  var def   = Promise.defer( )
-    , proc  = spawn( path.join( __dirname, 'clever-install' ), modules, { cwd: projectFolder, stdio: 'inherit' } );
-
-  proc.on( 'close', function ( ) {
-    initProgress.inc( );
-    def.resolve( );
-  } );
-
-  return def.promise;
-}
-
-/**
  * Installs Bower and NPM (including modules within the seeds) packages
  *
  * @return {Promise}
@@ -451,7 +431,7 @@ Promise.all( args )
   } else {
     lib.utils.info( 'Installing additional modules...' );
 
-    setupModules( args ).then( function ( ) {
+    lib.project.setupModules( { moduleDir: projectFolder }, args ).then( function ( ) {
       initProgress.inc( );
       def.resolve( );
     }, function ( err ) {
