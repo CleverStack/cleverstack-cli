@@ -17,25 +17,10 @@ describe( 'Remove', function ( ) {
   } );
 
   before( function ( done ) {
-    console.log( 'Installing clever-orm and clever-datatables for tests...' );
+    console.log( 'Installing clever-auth and clever-datatables for tests...' );
     process.chdir( path.join( assetPath, 'my-new-project' ) );
 
-    var proc = spawn( path.join( binPath, 'clever-install' ), [ 'clever-orm' ] );
-
-    proc.stdout.on( 'data', function ( data ) {
-      var str = data + '';
-      switch ( str ) {
-      case str.match(/Database username/):
-      case str.match(/Database password/):
-      case str.match(/Database name/):
-        proc.stdin.write( 'db\n' );
-        break;
-      default:
-        proc.stdin.write( '\n' );
-      }
-    } );
-
-    proc.on( 'exit', function ( code ) {
+    exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( ) {
       console.log( '... done' );
       done( );
     } );
@@ -68,7 +53,7 @@ describe( 'Remove', function ( ) {
     it( 'to remove an existant module, but in the wrong seed (backend module)', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
 
-      exec( path.join( binPath, 'clever-remove' ) + ' clever-orm', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-remove' ) + ' clever-auth', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /There are no modules to remove./ );
@@ -81,14 +66,14 @@ describe( 'Remove', function ( ) {
     it( 'should remove a backend module', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project' ) );
 
-      exec( path.join( binPath, 'clever-remove' ) + ' clever-orm', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-remove' ) + ' clever-auth', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
         expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ) ).to.be.false;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.false;
 
         if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ]) {
           delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
@@ -96,7 +81,7 @@ describe( 'Remove', function ( ) {
 
         var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
         expect( projPkg ).to.have.property( 'bundledDependencies' );
-        expect( projPkg.bundledDependencies ).to.not.include( 'clever-orm' );
+        expect( projPkg.bundledDependencies ).to.not.include( 'clever-auth' );
 
         done( );
       } );

@@ -1,7 +1,6 @@
 var chai      = require( 'chai' )
   , expect    = chai.expect
   , exec      = require('child_process').exec
-  , spawn     = require('child_process').spawn
   , path      = require( 'path' )
   , semver    = require( 'semver' )
   , rimraf    = require( 'rimraf' )
@@ -56,14 +55,14 @@ describe( 'Install', function ( ) {
     it( 'a backend module within the frontend seed directory', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
 
-      exec( path.join( binPath, 'clever-install' ) + ' clever-orm', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
         expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ) ).to.be.false;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.false;
 
         done( );
       } );
@@ -88,35 +87,33 @@ describe( 'Install', function ( ) {
 
   describe( 'should be able to install a backend module', function ( ) {
     before( function ( done ) {
-      if (!fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) )) {
+      if (!fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) )) {
         return done( );
       }
 
-      if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ]) {
-        delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ];
+      if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ]) {
+        delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ];
       }
 
       delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
 
       async.parallel( [
-        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ),
-        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ),
-        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) )
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ),
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) )
       ],
       done );
     } );
 
     afterEach( function ( done ) {
-      if (require.cache.hasOwnProperty( require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) )) {
-        delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ];
+      if (require.cache.hasOwnProperty( require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) )) {
+        delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ];
       }
 
       delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
 
       async.parallel( [
-        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ),
-        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ),
-        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) )
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ),
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) )
       ],
       done );
     } );
@@ -124,35 +121,21 @@ describe( 'Install', function ( ) {
     it( 'within the root directory', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project' ) );
 
-      var proc = spawn( path.join( binPath, 'clever-install' ), [ 'clever-orm' ] );
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
+        expect( err ).to.be.null;
+        expect( stderr ).to.equal( '' );
 
-      proc.stdout.on( 'data', function ( data ) {
-        var str = data + '';
-        switch ( str ) {
-        case str.match(/Database username/):
-        case str.match(/Database password/):
-        case str.match(/Database name/):
-          proc.stdin.write( 'db\n' );
-          break;
-        default:
-          proc.stdin.write( '\n' );
-        }
-      } );
-
-      proc.on( 'exit', function ( code ) {
-        expect( code ).to.equal( 0 );
         expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ).to.be.true;
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
 
-        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) );
-        expect( pkg.name ).to.equal( 'clever-orm' );
+        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) );
+        expect( pkg.name ).to.equal( 'clever-auth' );
         expect( semver.gt( pkg.version, '0.0.1' ) ).to.true;
 
         // we need this here for the tests to pass despite us having a before() block
@@ -160,7 +143,7 @@ describe( 'Install', function ( ) {
 
         var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
         expect( projPkg ).to.have.property( 'bundledDependencies' );
-        expect( projPkg.bundledDependencies ).to.include( 'clever-orm' );
+        expect( projPkg.bundledDependencies ).to.include( 'clever-auth' );
 
         done( );
       } );
@@ -169,45 +152,26 @@ describe( 'Install', function ( ) {
     it( 'within the backend directory', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project', 'backend' ) );
 
-      var proc = spawn( path.join( binPath, 'clever-install' ), [ 'clever-orm' ] );
-
-      proc.stdout.on( 'data', function ( data ) {
-        var str = data + '';
-        switch ( str ) {
-        case str.match(/Database username/):
-        case str.match(/Database password/):
-        case str.match(/Database name/):
-          proc.stdin.write( 'db\n' );
-          break;
-        default:
-          proc.stdin.write( '\n' );
-        }
-      } );
-
-      proc.stderr.on('data', function (data) {
-        console.log('stderr: ' + data);
-      });
-
-      proc.on( 'exit', function ( code ) {
-        expect( code ).to.equal( 0 );
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
+        expect( err ).to.be.null;
+        expect( stderr ).to.equal( '' );
 
         expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ).to.be.true;
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
 
-        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) );
-        expect( pkg.name ).to.equal( 'clever-orm' );
+        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) );
+        expect( pkg.name ).to.equal( 'clever-auth' );
         expect( semver.gt( pkg.version, '0.0.1' ) ).to.true;
 
         var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
         expect( projPkg ).to.have.property( 'bundledDependencies' );
-        expect( projPkg.bundledDependencies ).to.include( 'clever-orm' );
+        expect( projPkg.bundledDependencies ).to.include( 'clever-auth' );
 
         done( );
       } );
@@ -216,7 +180,7 @@ describe( 'Install', function ( ) {
     it( 'with a specific version', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project' ) );
 
-      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.1', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth@0.0.1', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
 
@@ -224,19 +188,18 @@ describe( 'Install', function ( ) {
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ).to.be.true;
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
 
-        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) );
-        expect( pkg.name ).to.equal( 'clever-orm' );
+        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) );
+        expect( pkg.name ).to.equal( 'clever-auth' );
         expect( pkg.version ).to.equal( '0.0.1' );
 
         var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
         expect( projPkg ).to.have.property( 'bundledDependencies' );
-        expect( projPkg.bundledDependencies ).to.include( 'clever-orm' );
+        expect( projPkg.bundledDependencies ).to.include( 'clever-auth' );
 
         done( );
       } );
