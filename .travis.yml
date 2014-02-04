@@ -1,3 +1,6 @@
+before_install:
+  - bash ./bin/travis.sh
+
 language: node_js
 node_js:
   - '0.8'
