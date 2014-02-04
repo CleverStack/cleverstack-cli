@@ -81,6 +81,7 @@ function start( reporter ) {
       // grunt doesn't pass an error to us...
       // grunt will quit before we get to here...
       lib.utils.success( 'Tests ran successfully.' );
+      process.exit( 0 );
     } );
   } );
 }

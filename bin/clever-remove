@@ -125,4 +125,5 @@ function findModules( modules ) {
 findModules( program.args )
 .then( function ( ) {
   lib.utils.success( 'Modules have been removed from your project.' );
+  process.exit( 0 );
 }, lib.utils.error );

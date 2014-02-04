@@ -1,15 +1,16 @@
-var chai    = require( 'chai' )
-  , expect  = chai.expect
-  , exec    = require('child_process').exec
-  , spawn   = require('child_process').spawn
-  , path    = require( 'path' )
-  , semver  = require( 'semver' )
-  , rimraf  = require( 'rimraf' )
-  , async   = require( 'async' )
-  , fs      = require( 'fs' )
-  , binPath = path.join( __dirname, '..', 'bin' )
+var chai      = require( 'chai' )
+  , expect    = chai.expect
+  , exec      = require('child_process').exec
+  , spawn     = require('child_process').spawn
+  , path      = require( 'path' )
+  , semver    = require( 'semver' )
+  , rimraf    = require( 'rimraf' )
+  , async     = require( 'async' )
+  , fs        = require( 'fs' )
+  , binPath   = path.join( __dirname, '..', 'bin' )
+  , assetPath = path.join( __dirname, 'assets' );
 
-var assetPath = path.join( __dirname, 'assets' );
+chai.Assertion.includeStack = true;
 
 describe( 'Install', function ( ) {
   beforeEach( function ( done ) {
@@ -74,24 +75,24 @@ describe( 'Install', function ( ) {
   } );
 
   describe( 'should be able to install a backend module', function ( ) {
-    // before( function ( done ) {
-    //   if (!fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) )) {
-    //     return done( );
-    //   }
+    before( function ( done ) {
+      if (!fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) )) {
+        return done( );
+      }
 
-    //   if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ]) {
-    //     delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ];
-    //   }
+      if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ]) {
+        delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) ];
+      }
 
-    //   delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
+      delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
 
-    //   async.parallel( [
-    //     async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ),
-    //     async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ),
-    //     async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) )
-    //   ],
-    //   done );
-    // } );
+      async.parallel( [
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ),
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'mysql' ) ),
+        async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'sequelize' ) )
+      ],
+      done );
+    } );
 
     afterEach( function ( done ) {
       if (require.cache.hasOwnProperty( require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm', 'package.json' ) ) )) {

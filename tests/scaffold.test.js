@@ -1,15 +1,12 @@
-var chai    = require( 'chai' )
-  , expect  = chai.expect
-  , exec    = require('child_process').exec
-  , path    = require( 'path' )
-  , rimraf  = require( 'rimraf' )
-  , async   = require( 'async' )
-  , crypto  = require( 'crypto' )
-  , mkdirp  = require( 'mkdirp' )
-  , fs      = require( 'fs' )
-  , binPath = path.join( __dirname, '..', 'bin' )
+var chai      = require( 'chai' )
+  , expect    = chai.expect
+  , exec      = require('child_process').exec
+  , path      = require( 'path' )
+  , fs        = require( 'fs' )
+  , binPath   = path.join( __dirname, '..', 'bin' )
+  , assetPath = path.join( __dirname, 'assets' );
 
-var assetPath = path.join( __dirname, 'assets' );
+chai.Assertion.includeStack = true;
 
 describe( 'Scaffold', function ( ) {
   beforeEach( function ( done ) {

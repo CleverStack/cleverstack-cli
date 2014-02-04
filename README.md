@@ -43,13 +43,9 @@ The command is:
 
 `$: clever install <modules>`
 
-Where **modules** can be:
+For a list of modules, visit [CleverStack's module page](http://cleverstack.io/modules/)
 
-1. The name of the module as-is (e.g. *clever-background-tasks*)
-2. The name of the module without the clever- prefix (e.g. *background-tasks*)
-3. The name of the GitHub's username and repo (e.g. *CleverStack/clever-background-tasks*)
-
-`$: clever install background-tasks`
+`$: clever install clever-background-tasks`
 
 This will install ```clever-background-tasks``` within the ```backend/modules``` folder.
 
@@ -59,8 +55,6 @@ When removing a module, CleverStack will:
 
 1. Check to see which directory that you're in. If it detects both a backend and a frontend directory then it'll try to remove the module from both seeds.
 2. Remain quiet / do nothing if the module does not exist within the module folders (unless there's absolutely nothing to remove).
-
-**Note:** The module name must be the exact name as indicated within the folder
 
 `$: clever remove clever-background-tasks`
 

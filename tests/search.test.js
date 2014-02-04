@@ -3,7 +3,9 @@ var chai    = require( 'chai' )
   , exec    = require('child_process').exec
   , path    = require( 'path' )
   , crypto  = require( 'crypto' )
-  , binPath = path.join( __dirname, '..', 'bin' )
+  , binPath = path.join( __dirname, '..', 'bin' );
+
+chai.Assertion.includeStack = true;
 
 describe( 'Search', function( ) {
   it( 'should be able to list a backend module', function ( done ) {

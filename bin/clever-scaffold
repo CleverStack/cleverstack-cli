@@ -46,4 +46,11 @@ if (filterOut.length === filters.length) {
 }
 
 var args = program.rawArgs.splice( 2 );
-scaffold( args[0], filterOut );
+scaffold( args[ 0 ], filterOut, function ( err ) {
+  if (!!err) {
+    lib.utils.fail( err );
+    process.exit( 1 );
+  }
+
+  process.exit( 0 );
+} );

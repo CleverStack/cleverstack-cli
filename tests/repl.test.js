@@ -1,35 +1,19 @@
-var chai    = require( 'chai' )
-  , expect  = chai.expect
-  , spawn   = require('child_process').spawn
-  , path    = require( 'path' )
-  , rimraf  = require( 'rimraf' )
-  , async   = require( 'async' )
-  , crypto  = require( 'crypto' )
-  , mkdirp  = require( 'mkdirp' )
-  , fs      = require( 'fs' )
-  , binPath = path.join( __dirname, '..', 'bin' )
-
-var assetPath = path.join( __dirname, 'assets' );
+var chai      = require( 'chai' )
+  , expect    = chai.expect
+  , spawn     = require('child_process').spawn
+  , path      = require( 'path' )
+  , fs        = require( 'fs' )
+  , binPath   = path.join( __dirname, '..', 'bin' )
+  , assetPath = path.join( __dirname, 'assets' );
 
 chai.Assertion.includeStack = true;
 
 describe( 'REPL', function ( ) {
-  beforeEach( function ( done ) {
-    process.chdir( assetPath );
-    done( );
-  } );
-
-  after( function ( done ) {
-    rimraf( path.join( assetPath, 'my-new-project' ), done );
-  } );
-
   it( 'should be able to go into the REPL and execute some commands', function ( done ) {
     var stdout = ''
       , help   = false;
 
-    process.chdir( path.join( assetPath, 'my-new-project' ) );
-
-    var proc = spawn( path.join( binPath, 'clever-repl' ) );
+    var proc = spawn( path.join( binPath, 'clever-repl' ), [ ], { cwd: path.join( assetPath, 'my-new-project', 'backend' ) } );
     proc.stdout.on( 'data', function ( data ) {
       var str = data + '';
       stdout += str;

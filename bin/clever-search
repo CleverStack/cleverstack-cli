@@ -33,6 +33,7 @@ lib.search.aggregate( args ).spread( function ( npm, bower ) {
   console.log( '' );
 
   repos.forEach( lib.repos.display );
+  process.exit( 0 );
 } )
 .catch( function ( err ) {
   lib.utils.fail( err );

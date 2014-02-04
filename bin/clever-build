@@ -74,4 +74,6 @@ function ( err ) {
   if (!!err) {
     lib.utils.fail( err );
   }
+
+  process.exit( 0 );
 } );

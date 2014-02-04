@@ -2,7 +2,9 @@ var chai    = require( 'chai' )
   , expect  = chai.expect
   , exec    = require('child_process').exec
   , path    = require( 'path' )
-  , binPath = path.join( __dirname, '..', 'bin' )
+  , binPath = path.join( __dirname, '..', 'bin' );
+
+chai.Assertion.includeStack = true;
 
 describe( 'Help documentation', function( ) {
   it( 'should be able to list the help documentation for help', function ( done ) {

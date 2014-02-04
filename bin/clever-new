@@ -63,6 +63,8 @@ lib.project.locations( ).then( function ( projects ) {
     folders.forEach( function ( folder ) {
       lib.utils.success( 'Module has been created successfully within ' + folder );
     } );
+
+    process.exit( 0 );
   } );
 } )
 .error( lib.utils.error );

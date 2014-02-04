@@ -1,15 +1,14 @@
-var chai    = require( 'chai' )
-  , expect  = chai.expect
-  , exec    = require('child_process').exec
-  , spawn   = require('child_process').spawn
-  , path    = require( 'path' )
-  , rimraf  = require( 'rimraf' )
-  , async   = require( 'async' )
-  , crypto  = require( 'crypto' )
-  , fs      = require( 'fs' )
-  , binPath = path.join( __dirname, '..', 'bin' )
+var chai      = require( 'chai' )
+  , expect    = chai.expect
+  , exec      = require('child_process').exec
+  , spawn     = require('child_process').spawn
+  , path      = require( 'path' )
+  , crypto    = require( 'crypto' )
+  , fs        = require( 'fs' )
+  , binPath   = path.join( __dirname, '..', 'bin' )
+  , assetPath = path.join( __dirname, 'assets' );
 
-var assetPath = path.join( __dirname, 'assets' );
+chai.Assertion.includeStack = true;
 
 describe( 'Remove', function ( ) {
   beforeEach( function ( done ) {
@@ -90,6 +89,10 @@ describe( 'Remove', function ( ) {
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-orm' ) ) ).to.be.false;
+
+        if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ]) {
+          delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
+        }
 
         var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
         expect( projPkg ).to.have.property( 'bundledDependencies' );

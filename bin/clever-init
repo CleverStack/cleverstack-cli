@@ -233,10 +233,8 @@ function setupModules( modules ) {
 function setupPackages( ) {
   var def = Promise.defer( );
 
-  async.eachSeries( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
+  async.each( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
     var _path = path.resolve( path.join( projectFolder, p ) );
-
-    // process.chdir( _path );
 
     lib.utils.info( 'Installing NPM packages for ' + _path );
     var proc = spawn( 'npm', [ 'install' ], { cwd: _path } )
@@ -267,7 +265,7 @@ function setupPackages( ) {
         lib.utils.warn( 'Installing module NPMs for ' + _path );
       }
 
-      async.eachSeries( modules, function ( m, next ) {
+      async.each( modules, function ( m, next ) {
         lib.project.installModule( {
           moduleDir: modulesFolder,
           modulePath: ''
