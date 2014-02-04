@@ -12,7 +12,19 @@ var chai      = require( 'chai' )
 
 chai.Assertion.includeStack = true;
 
-describe( 'Install', function ( ) {
+describe.only( 'Install', function ( ) {
+  before( function ( done ) {
+    if (process.env.CI === undefined || (process.env.CI !== true && process.env.CI !== "true")) {
+      return done( );
+    }
+
+    console.log( 'Whew! That was a lot of installing... Pausing for 30 seconds to prevent DDOS/ECONNRESET errors.' );
+    setTimeout( function ( ) {
+      console.log( 'Done taking a break, let\'s move on.' );
+      done( );
+    }, 30 * 1000 );
+  } );
+
   beforeEach( function ( done ) {
     process.chdir( assetPath );
     done( );

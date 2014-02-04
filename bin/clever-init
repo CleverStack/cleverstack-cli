@@ -436,7 +436,7 @@ Promise.all( args )
   var def = Promise.defer( );
 
   // we no longer need backend/frontend
-  var filters = ['clever-backend', 'clever-frontend', 'backend', 'frontend'];
+  var filters = [ 'clever-backend', 'clever-frontend', 'backend', 'frontend' ];
   filters.forEach( function ( filter ) {
     var find = args.indexOf( filter );
     if (find > -1) {
@@ -469,8 +469,7 @@ Promise.all( args )
   initProgress.inc( );
   lib.utils.success( 'Project ' + project + ' has been created in ' + projectFolder );
   process.exit( 0 );
-} )
-.catch( function ( err ) {
+}, function ( err ) {
   lib.utils.fail( err );
 
   // remove the project folder if we failed...

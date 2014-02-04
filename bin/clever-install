@@ -171,9 +171,9 @@ install( program.args )
           addToMainBundleDeps( backendPath, npm )
           .then( function ( ) {
             // needs to be a series just in case if we ask for user input/prompt
-            async.eachSeries( npm, function ( module, next ) {
+            async.eachSeries( npm, function ( module, _next ) {
               lib.project.runGruntTasks( backendPath.moduleDir, path.join( backendPath.moduleDir, backendPath.modulePath, module ) )
-              .then(next, next);
+              .then( _next, _next );
             },
             function ( _err ) {
               if (!!_err) {
@@ -189,7 +189,7 @@ install( program.args )
       }
     } );
   }
-} )
-.catch( function ( err ) {
+}, function ( err ) {
   lib.utils.error( err );
+  process.exit( 1 );
 } );

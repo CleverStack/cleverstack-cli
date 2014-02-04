@@ -64,7 +64,9 @@ lib.project.locations( )
     lib.packages.findConfigAndVersionForModule( locations, moduleName, moduleVersion, 'lt' )
     .then( function ( m ) {
       filter( null, m );
-    }, filter );
+    }, function ( err ) {
+      filter( err );
+    } );
   },
   function ( err, modulesToInstall ) {
     var modulesInstall = modulesToInstall.filter( function ( m ) {
