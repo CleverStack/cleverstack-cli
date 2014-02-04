@@ -1,5 +1,7 @@
 # CleverStack CLI
 
+[![Build Status](https://travis-ci.org/CleverStack/cleverstack-cli.png?branch=master)](https://travis-ci.org/CleverStack/cleverstack-cli)
+
 ![CleverStack CLI](http://cleverstack.github.io/assets/img/logos/clevertech-seed-logo-clean.png "CleverStack CLI")
 
 A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecosystem.
