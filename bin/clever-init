@@ -310,7 +310,7 @@ function setupPackages( ) {
 
             lib.utils.success( 'Finished building frontend' );
 
-            if (program.skipProtractor) {
+            if (program.skipProtractor === true) {
               return fn( );
             }
 

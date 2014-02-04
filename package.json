@@ -21,6 +21,9 @@
   "bin": {
     "clever": "./bin/clever"
   },
+  "engines": {
+    "node": ">=0.10.0"
+  },
   "dependencies": {
     "commander": "~2.1.0",
     "mkdirp": "~0.3.5",
