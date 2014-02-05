@@ -1,0 +1,23 @@
+{
+  "name": "{{Template}}",
+  "version": "0.0.0",
+  "homepage": "",
+  "authors": [
+  ],
+  "description": "",
+  "main": "main.js",
+  "keywords": [
+    "cleverstack",
+    "cleverstack-module",
+    "cleverstack-frontend",
+    "frontend"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

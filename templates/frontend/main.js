@@ -3,7 +3,9 @@
  */
 define([
 
-  // Controllers
-  './scripts/{{template_name}}_controller'
+  './services/{{template_name}}_service',
+  './directives/{{template_name}}_directive',
+  './factories/{{template_name}}_factory',
+  './controllers/{{template_name}}_controller'
 
 ], function() {});

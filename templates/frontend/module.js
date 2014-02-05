@@ -7,18 +7,20 @@ define(['angular'], function (ng) {
   ng.module('{{template_name}}.controllers', []);
   ng.module('{{template_name}}.providers', []);
   ng.module('{{template_name}}.services', []);
+  ng.module('{{template_name}}.factories', []);
 
   var module = ng.module('{{template_name}}', [
     'cs_common',
     '{{template_name}}.controllers',
     '{{template_name}}.providers',
-    '{{template_name}}.services'
+    '{{template_name}}.services',
+    '{{template_name}}.factories'
   ]);
 
   module.config([
     '$routeProvider',
-    '{{Template}}emplateProvider',
-    function ($routeProvider, Template) {
+    'CSTemplateProvider',
+    function ($routeProvider, CSTemplate) {
 
       // Set the subfolder of your module that contains all your view templates.
       CSTemplate.setPath('/modules/{{template_name}}/views');
@@ -26,7 +28,7 @@ define(['angular'], function (ng) {
       // Register any routes you need for your module.
       $routeProvider
         .when('/example', {
-          templateUrl: Template.view('index'),
+          templateUrl: CSTemplate.view('{{Template}}-view'),
           controller: '{{Template}}ExampleController',
           public: true
         });

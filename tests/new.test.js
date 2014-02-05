@@ -116,17 +116,35 @@ describe( 'New', function ( ) {
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'scripts' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'scripts', 'testing_new_controller.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'controllers' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'controllers', 'testing_new_controller.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'directives' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'directives', 'testing_new_directive.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'factories' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'factories', 'testing_new_factory.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'services' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'services', 'testing_new_service.js' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'views' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'views', 'index.html' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'views', 'testing_new-view.html' ) ) ).to.be.true;
 
-        var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'scripts', 'testing_new_controller.js' ) );
+        var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'controllers', 'testing_new_controller.js' ) );
         expect( controller ).to.match( /ng\.module\('testing_new.controllers'\)/ );
         expect( controller ).to.match( /\.controller\('TestingNewController', \[/ );
 
-        var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'views', 'index.html' ) );
-        expect( html ).to.match( /<h1>Example Module<\/h1>/ );
+        var directive = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'directives', 'testing_new_directive.js' ) );
+        expect( directive ).to.match( /ng\.module\('testing_new.directives'\)/ );
+        expect( directive ).to.match( /\.directive\('TestingNewDirective', function\(\) {/ );
+
+        var factory = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'factories', 'testing_new_factory.js' ) );
+        expect( factory ).to.match( /ng\.module\('testing_new.factories'\)/ );
+        expect( factory ).to.match( /\.factory\('TestingNewFactory', function\(\){/ );
+
+        var service = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'services', 'testing_new_service.js' ) );
+        expect( service ).to.match( /ng\.module\('testing_new.services'\)/ );
+        expect( service ).to.match( /\.service\('TestingNewService', \[/ );
+
+        var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingNew', 'views', 'testing_new-view.html' ) );
+        expect( html ).to.match( /<h1>TestingNew Module<\/h1>/ );
 
         done( );
       } );

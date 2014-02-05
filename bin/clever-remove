@@ -27,6 +27,15 @@ if (program.args.length < 1) {
   program.help( );
 }
 
+/**
+ * Removed a module from package.json's bundledDependencies
+ *
+ * @param  {Object} backendPath Object from project.locations( )
+ * @param  {String[]} modules   Array of module names
+ * @return {Promise}            Promise from bluebird
+ * @api private
+ */
+
 function removeFromBundledDependencies ( backendPath, modules ) {
   var def     = Promise.defer( )
     , pkgPath = path.join( backendPath.moduleDir, 'package.json' )

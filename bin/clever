@@ -4,4 +4,4 @@ var path    = require( 'path' )
   , lib     = require( path.join( __dirname, '..', 'index' ) );
 
 // avoid the command within process.argv
-lib.command( __dirname, process.argv[2], process.argv.slice( 3 ) );
+lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );

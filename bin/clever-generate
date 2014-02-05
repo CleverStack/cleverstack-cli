@@ -12,23 +12,25 @@ var program   = require( 'commander' )
 program.version( lib.pkg.version );
 
 // Generate our commands with singular and plural lingo
-['service', 'controller', 'model', 'task', 'view', 'script'].forEach( function ( tmpl ) {
+[ 'service', 'controller', 'model', 'task', 'view', 'factory', 'service', 'directive' ].forEach( function ( tmpl ) {
+  var tmpl2 = (tmpl === "factory" ? 'factories' : tmpl + 's' );
+
   program
     .command( tmpl + ' <name>' )
     .usage( tmpl + ' <name>' )
-    .description( 'Generates a ' + tmpl + ' as <name> within ' + path.join( process.cwd( ), tmpl ) + 's' )
+    .description( 'Generates a ' + tmpl + ' as <name> within ' + path.join( process.cwd( ), tmpl2 ) )
     .action( function ( name ) {
-      generate( tmpl + 's', name, function ( ) {
+      generate( tmpl2, name, function ( ) {
         lib.utils.success( tmpl + ' generated within ' + path.join( process.cwd( ), tmpl ) );
       } );
     } );
 
   program
-    .command( tmpl + 's' + ' <names>' )
-    .usage( tmpl + 's' + ' <names>' )
-    .description( 'Generates ' + tmpl + 's specified with <name ...> within ' + process.cwd( ) + path.sep + tmpl + 's' )
+    .command( tmpl2 + ' <names>' )
+    .usage( tmpl2 + ' <names>' )
+    .description( 'Generates ' + tmpl2 + ' specified with <name ...> within ' + path.join( process.cwd( ), tmpl2 ) )
     .action( function ( name, prog ) {
-      generate( tmpl + 's', prog.parent.rawArgs.splice( 3 ), function ( ) {
+      generate( tmpl2, prog.parent.rawArgs.splice( 3 ), function ( ) {
         lib.utils.success( tmpl + ' generated within ' + path.join( process.cwd( ), tmpl ) );
       } );
     } );

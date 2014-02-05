@@ -5,6 +5,7 @@ define(['angular', '../module'], function (ng) {
   .controller('{{Template}}Controller', [
     '$scope',
     function ($scope) {
+      $scope.something = 'Example Module';
     }
 
   ]);

@@ -279,7 +279,7 @@ describe( 'Generate', function ( ) {
         rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
       } );
 
-      it( 'should be able to scaffold within the frontend seed', function ( done ) {
+      it( 'should be able to generate a controller within the frontend seed', function ( done ) {
         process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
 
         exec( path.join( binPath, 'clever-generate' ) + ' controller Testing2', function ( err, stdout, stderr ) {
@@ -294,11 +294,10 @@ describe( 'Generate', function ( ) {
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ) ) ).to.be.true;
-          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'scripts' ) ) ).to.be.true;
-          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'scripts', 'testing2_controller.js' ) ) ).to.be.true;
-          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'views' ) ) ).to.be.false;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'controllers' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'controllers', 'testing2_controller.js' ) ) ).to.be.true;
 
-          var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'scripts', 'testing2_controller.js' ) );
+          var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'controllers', 'testing2_controller.js' ) );
           expect( controller ).to.match( /ng\.module\('testing2.controllers'\)/ );
           expect( controller ).to.match( /\.controller\('Testing2Controller', \[/ );
 
@@ -318,12 +317,141 @@ describe( 'Generate', function ( ) {
       } );
     } );
 
+    describe( 'directive', function ( ) {
+      after( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
+      it( 'should be able to generate a directive within the frontend seed', function ( done ) {
+        process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
+
+        exec( path.join( binPath, 'clever-generate' ) + ' directive Testing2', function ( err, stdout, stderr ) {
+          expect( err ).to.be.null;
+          expect( stderr ).to.equal( '' );
+
+          expect( stdout ).to.not.match( /already exists within/ );
+
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'directives' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'directives', 'testing2_directive.js' ) ) ).to.be.true;
+
+          var directive = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'directives', 'testing2_directive.js' ) );
+          expect( directive ).to.match( /ng\.module\('testing2.directives'\)/ );
+          expect( directive ).to.match( /\.directive\('Testing2Directive', function\(\) {/ );
+
+          done( );
+        } );
+      } );
+
+      it( 'should have trouble creating an existant directive', function ( done ) {
+        process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
+
+        exec( path.join( binPath, 'clever-generate' ) + ' directive Testing2', function ( err, stdout, stderr ) {
+          expect( err ).to.be.null;
+          expect( stderr ).to.equal( '' );
+          expect( stdout ).to.match( /already exists within/ );
+          done( );
+        } );
+      } );
+    } );
+
+    describe( 'factory', function ( ) {
+      after( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
+      it( 'should be able to generate a factory within the frontend seed', function ( done ) {
+        process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
+
+        exec( path.join( binPath, 'clever-generate' ) + ' factory Testing2', function ( err, stdout, stderr ) {
+          expect( err ).to.be.null;
+          expect( stderr ).to.equal( '' );
+
+          expect( stdout ).to.not.match( /already exists within/ );
+
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'factories' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'factories', 'testing2_factory.js' ) ) ).to.be.true;
+
+          var factory = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'factories', 'testing2_factory.js' ) );
+          expect( factory ).to.match( /ng\.module\('testing2.factories'\)/ );
+          expect( factory ).to.match( /\.factory\('Testing2Factory', function\(\){/ );
+
+          done( );
+        } );
+      } );
+
+      it( 'should have trouble creating an existant factory', function ( done ) {
+        process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
+
+        exec( path.join( binPath, 'clever-generate' ) + ' factory Testing2', function ( err, stdout, stderr ) {
+          expect( err ).to.be.null;
+          expect( stderr ).to.equal( '' );
+          expect( stdout ).to.match( /already exists within/ );
+          done( );
+        } );
+      } );
+    } );
+
+    describe( 'service', function ( ) {
+      after( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
+      it( 'should be able to generate a service within the frontend seed', function ( done ) {
+        process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
+
+        exec( path.join( binPath, 'clever-generate' ) + ' service Testing2', function ( err, stdout, stderr ) {
+          expect( err ).to.be.null;
+          expect( stderr ).to.equal( '' );
+
+          expect( stdout ).to.not.match( /already exists within/ );
+
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'services' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'services', 'testing2_service.js' ) ) ).to.be.true;
+
+          var service = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'services', 'testing2_service.js' ) );
+          expect( service ).to.match( /ng\.module\('testing2.services'\)/ );
+          expect( service ).to.match( /\.service\('Testing2Service', \[/ );
+
+          done( );
+        } );
+      } );
+
+      it( 'should have trouble creating an existant service', function ( done ) {
+        process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
+
+        exec( path.join( binPath, 'clever-generate' ) + ' service Testing2', function ( err, stdout, stderr ) {
+          expect( err ).to.be.null;
+          expect( stderr ).to.equal( '' );
+          expect( stdout ).to.match( /already exists within/ );
+          done( );
+        } );
+      } );
+    } );
+
     describe( 'views', function ( ) {
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
       } );
 
-      it( 'should be able to scaffold within the frontend seed', function ( done ) {
+      it( 'should be able to generate a view within the frontend seed', function ( done ) {
         process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
 
         exec( path.join( binPath, 'clever-generate' ) + ' views Testing2', function ( err, stdout, stderr ) {
@@ -337,12 +465,11 @@ describe( 'Generate', function ( ) {
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ) ) ).to.be.true;
-          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'scripts' ) ) ).to.be.false;
           expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'views' ) ) ).to.be.true;
-          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'views', 'index.html' ) ) ).to.be.true;
+          expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'views', 'testing2-view.html' ) ) ).to.be.true;
 
-          var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'views', 'index.html' ) );
-          expect( html ).to.match( /<h1>Example Module<\/h1>/ );
+          var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'views', 'testing2-view.html' ) );
+          expect( html ).to.match( /<h1>Testing2 Module<\/h1>/ );
 
           done( );
         } );

@@ -116,17 +116,35 @@ describe( 'Scaffold', function ( ) {
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'scripts' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'scripts', 'testing_scaff_controller.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'controllers' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'controllers', 'testing_scaff_controller.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'directives' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'directives', 'testing_scaff_directive.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'factories' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'factories', 'testing_scaff_factory.js' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'services' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'services', 'testing_scaff_service.js' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views', 'index.html' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views', 'testing_scaff-view.html' ) ) ).to.be.true;
 
-        var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'scripts', 'testing_scaff_controller.js' ) );
+        var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'controllers', 'testing_scaff_controller.js' ) );
         expect( controller ).to.match( /ng\.module\('testing_scaff.controllers'\)/ );
         expect( controller ).to.match( /\.controller\('TestingScaffController', \[/ );
 
-        var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views', 'index.html' ) );
-        expect( html ).to.match( /<h1>Example Module<\/h1>/ );
+        var directive = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'directives', 'testing_scaff_directive.js' ) );
+        expect( directive ).to.match( /ng\.module\('testing_scaff.directives'\)/ );
+        expect( directive ).to.match( /\.directive\('TestingScaffDirective', function\(\) {/ );
+
+        var factory = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'factories', 'testing_scaff_factory.js' ) );
+        expect( factory ).to.match( /ng\.module\('testing_scaff.factories'\)/ );
+        expect( factory ).to.match( /\.factory\('TestingScaffFactory', function\(\){/ );
+
+        var service = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'services', 'testing_scaff_service.js' ) );
+        expect( service ).to.match( /ng\.module\('testing_scaff.services'\)/ );
+        expect( service ).to.match( /\.service\('TestingScaffService', \[/ );
+
+        var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views', 'testing_scaff-view.html' ) );
+        expect( html ).to.match( /<h1>TestingScaff Module<\/h1>/ );
 
         done( );
       } );
