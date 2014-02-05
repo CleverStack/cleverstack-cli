@@ -35,7 +35,7 @@ function removeFromBundledDependencies ( backendPath, modules ) {
   pkg.bundledDependencies = pkg.bundledDependencies || [ ];
   modules.forEach( function ( module ) {
     if (pkg.bundledDependencies.indexOf( module ) > -1) {
-      pkg.bundledDependencies.splice( module, 1 );
+      pkg.bundledDependencies.splice( pkg.bundledDependencies.indexOf( module ), 1 );
     }
   } );
 
