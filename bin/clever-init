@@ -5,6 +5,7 @@ var Promise   = require( 'bluebird' )
   , path      = require( 'path' )
   , mkdirp    = require( 'mkdirp' )
   , spawn     = require( 'child_process' ).spawn
+  , exec      = require( 'child_process' ).exec
   , fs        = require( 'fs' )
   , rimraf    = require( 'rimraf' )
   , async     = require( 'async' )
@@ -14,7 +15,7 @@ var Promise   = require( 'bluebird' )
 Promise.longStackTraces( );
 
 program
-  .option( '--skip-protractor', 'Skips installing protractor', false )
+  .option( '--skip-protractor', 'Skips installing protractor' )
   .version( lib.pkg.version );
 
 program
@@ -43,12 +44,6 @@ var initProgress = status.addItem( "CleverStack Installation", {
   type: [ 'bar','percentage' ],
   max: 11,
   precision: 0
-} );
-
-process.on( 'exit', function ( ) {
-  status.stop( );
-  status.removeAll( );
-  status.clear( );
 } );
 
 var project = program.args[ 0 ]
@@ -296,69 +291,69 @@ function setupPackages( ) {
 
           //todo: Separate this into it's own function
           lib.utils.info( 'Building frontend' );
-          var buildProc = spawn( 'grunt', [ 'build' ], { cwd: _path } )
-            , buildErr  = '';
 
-          buildProc.stderr.on( 'data', function ( data ) {
-            buildErr += data + '';
-          } );
-
-          buildProc.on( 'close', function ( code ) {
-            if (code !== 0) {
+          exec( 'grunt bootstrap', { cwd: _path }, function ( err, stderr, stdout ) {
+            if (!!err) {
               return fn( err );
             }
 
-            lib.utils.success( 'Finished building frontend' );
+            exec( 'grunt build', { cwd: _path }, function ( _err, _stderr, _stdout ) {
+              if (!!_err) {
+                return fn( _err );
+              }
 
-            if (program.skipProtractor === true) {
-              return fn( );
-            }
+              lib.utils.success( 'Finished building frontend' );
 
-            lib.utils.info( 'Installing protractor for frontend...' );
-            var _tick = 0
-              , procProgress = [
-                'Downloading specific Selenium Server',
-                'Downloading OS specific Chromedriver',
-                'Downloading OS specific Phantomjs'
-              ];
+              if (program.skipProtractor === true) {
+                return fn( );
+              }
 
-            var procBar = status.addItem( procProgress[ _tick ], {
-              type: [ 'bar','percentage' ],
-              max: 100,
-              precision: 0
-            } );
+              lib.utils.info( 'Installing protractor for frontend...' );
+              var _tick = 0
+                , procProgress = [
+                  'Downloading specific Selenium Server',
+                  'Downloading OS specific Chromedriver',
+                  'Downloading OS specific Phantomjs'
+                ];
 
-            var proProc = spawn( 'npm', [ 'run-script', 'setup-protractor' ], { cwd: _path } )
-              , procErr = '';
+              var procBar = status.addItem( procProgress[ _tick ], {
+                type: [ 'bar','percentage' ],
+                max: 100,
+                precision: 0
+              } );
 
-            proProc.stderr.on( 'data', function ( data ) {
-              procErr += data + '';
-            } );
+              var proProc = spawn( 'npm', [ 'run-script', 'setup-protractor' ], { cwd: _path } )
+                , procErr = '';
 
-            proProc.stdout.on( 'data', function ( data ) {
-              var d = data + ''
-                , match = d.match(/\d{1,2}%/);
+              proProc.stderr.on( 'data', function ( data ) {
+                procErr += data + '';
+              } );
 
-              if (match !== null) {
-                var perc = parseInt( match[ 0 ].replace( '%', '' ), 10 );
-                if (perc > procBar.count || perc >= 99) {
-                  procBar.inc( );
-                  if (procBar.count >= 100 && _tick < 2) {
-                    _tick++;
-                    procBar.name  = procProgress[ _tick ];
-                    procBar.count = 0;
+              proProc.stdout.on( 'data', function ( data ) {
+                var d = data + ''
+                  , match = d.match(/\d{1,2}%/);
+
+                if (match !== null) {
+                  var perc = parseInt( match[ 0 ].replace( '%', '' ), 10 );
+                  if (perc > procBar.count || perc >= 99) {
+                    procBar.inc( );
+                    if (procBar.count >= 100 && _tick < 2) {
+                      _tick++;
+                      procBar.name  = procProgress[ _tick ];
+                      procBar.count = 0;
+                    }
                   }
                 }
-              }
-            } );
+              } );
 
-            proProc.on( 'close', function ( code ) {
-              if (code !== 0) {
-                return fn( err );
-              }
+              proProc.on( 'close', function ( code ) {
+                if (code !== 0) {
+                  return fn( err );
+                }
 
-              initProgress.inc( );
-              fn( );
+                initProgress.inc( );
+                fn( );
+              } );
             } );
           } );
         } );
