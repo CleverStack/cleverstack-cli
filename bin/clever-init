@@ -42,7 +42,7 @@ process.stdout = status.console( );
 
 var initProgress = status.addItem( "CleverStack Installation", {
   type: [ 'bar','percentage' ],
-  max: ( program.skipProtractor === true ? 10 : 11 ),
+  max: ( program.skipProtractor === true ? 9 : 10 ),
   precision: 0
 } );
 
