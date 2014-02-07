@@ -14,6 +14,18 @@ program
   .option( '--skip-protractor', 'Skips installing protractor' )
   .version( lib.pkg.version );
 
+program.on( '--help', function ( ) {
+  console.log( '  Description:' );
+  console.log( '' );
+  console.log( '    Installs all NPM and Bower components for each module as well as building bundleDependencies.');
+  console.log( '    This command will also install Protractor unless explicitly skipping.' );
+  console.log( '' );
+  console.log( '  Examples:' );
+  console.log( '' );
+  console.log( '    clever setup' );
+  console.log( '' );
+} );
+
 program.parse( process.argv );
 
 /**
