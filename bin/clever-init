@@ -42,7 +42,7 @@ process.stdout = status.console( );
 
 var initProgress = status.addItem( "CleverStack Installation", {
   type: [ 'bar','percentage' ],
-  max: 11,
+  max: ( program.skipProtractor === true ? 10 : 11 ),
   precision: 0
 } );
 
@@ -203,12 +203,13 @@ function setupFrontend( ) {
  * Installs Bower and NPM (including modules within the seeds) packages
  *
  * @return {Promise}
+ * @api private
  */
 
 function setupPackages( ) {
   var def = Promise.defer( );
 
-  async.each( fs.readdirSync( path.resolve( path.join( projectFolder ) ) ), function ( p, fn ) {
+  async.each( fs.readdirSync( projectFolder ), function ( p, fn ) {
     var _path = path.resolve( path.join( projectFolder, p ) );
 
     lib.utils.info( 'Installing NPM packages for ' + _path );
@@ -257,8 +258,6 @@ function setupPackages( ) {
           return fn( err );
         }
 
-        initProgress.inc( );
-
         if (modules.length > 0) {
           lib.utils.success( 'Finished installing module NPMs' );
         }
@@ -271,33 +270,23 @@ function setupPackages( ) {
           return fn( );
         }
 
-        // todo: Separate this into it's own function
-        lib.utils.info( 'Installing bower packages for ' + _path);
-
-        var err  = ''
-          , proc = spawn( 'bower', [ 'install' ], { cwd: _path } );
-
-        proc.stderr.on( 'data', function ( data ) {
-          err += data + '';
-        } );
-
-        proc.on( 'close', function ( code ) {
-          if (code !== 0) {
-            return fn( err );
-          }
-
+        lib.project.installBowerComponents( {
+          moduleDir: _path,
+          modulePath: 'app/modules' // todo: Call locations( ) after population
+        } )
+        .then( function ( ) {
           initProgress.inc( );
           lib.utils.success( 'Finished installing bower packages.' );
 
           //todo: Separate this into it's own function
           lib.utils.info( 'Building frontend' );
 
-          exec( 'grunt bootstrap', { cwd: _path }, function ( err, stderr, stdout ) {
+          exec( 'grunt bootstrap', { cwd: _path }, function ( err ) {
             if (!!err) {
               return fn( err );
             }
 
-            exec( 'grunt build', { cwd: _path }, function ( _err, _stderr, _stdout ) {
+            exec( 'grunt build', { cwd: _path }, function ( _err ) {
               if (!!_err) {
                 return fn( _err );
               }
@@ -356,7 +345,7 @@ function setupPackages( ) {
               } );
             } );
           } );
-        } );
+        }, fn );
       } );
     } );
   },
