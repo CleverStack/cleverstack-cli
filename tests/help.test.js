@@ -34,6 +34,7 @@ describe( 'Help documentation', function( ) {
         '    repl - Starts the CleverStack REPL',
         '    scaffold <name> - Generates a controller, service, model, etc.',
         '    search [query] - Searches for a cleverstack module',
+        '    setup - Installs NPM & Bower packages for each module and adds modules to bundleDependencies',
         '    server - Starts the CleverStack server',
         '    test - Runs tests within your CleverStack environment',
         '    upgrade - Upgrades a CleverStack implementation',
@@ -318,6 +319,35 @@ describe( 'Help documentation', function( ) {
         '  Examples:',
         '    clever search users',
         '    clever search users auth email',
+        '',
+        ''
+      ].join( '\\n' ) ) );
+      done( );
+    } );
+  } );
+
+  it( 'should be able to list the help documentation for setup', function ( done ) {
+    exec( path.join( binPath, 'clever-setup -h' ), function ( err, stdout, stderr ) {
+      expect( err ).to.be.null;
+      expect( stderr ).to.equal( '' );
+      expect( stdout ).to.match( new RegExp( [
+        '',
+        '  Usage: clever-setup \\[options\\]',
+        '',
+        '  Options:',
+        '',
+        '    -h, --help         output usage information',
+        '    --skip-protractor  Skips installing protractor',
+        '    -V, --version      output the version number',
+        '',
+        '  Description:',
+        '',
+        '    Installs all NPM and Bower components for each module as well as building bundleDependencies.',
+        '    This command will also install Protractor unless explicitly skipping.',
+        '',
+        '  Examples:',
+        '',
+        '    clever setup',
         '',
         ''
       ].join( '\\n' ) ) );

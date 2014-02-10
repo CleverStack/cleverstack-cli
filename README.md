@@ -10,6 +10,12 @@ A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecos
 
 ```npm install cleverstack-cli -g```
 
+## Prerequisites
+
+cleverstack-cli depends on [NPM](http://npmjs.org/) and [Bower](http://bower.io/) and for "npm" and "bower" to be located in your `$PATH`
+
+```npm install bower -g```
+
 ## Quick Setup Tutorial
 
 ### Initialize a new project
@@ -248,6 +254,7 @@ In order to interact with your environment's models directly, simply type in:
     repl - Starts the CleverStack REPL
     scaffold <name> - Generates a controller, service, model, etc.
     search [query] - Searches for a cleverstack module
+    setup - Installs NPM & Bower packages for each module and adds modules to bundleDependencies
     server - Starts the CleverStack server
     test - Runs tests within your CleverStack environment
     upgrade - Upgrades a CleverStack implementation
@@ -464,6 +471,29 @@ cleverstack::local> .quit
     clever search users auth email
 ```
 
+### setup
+
+`$: clever setup -h`
+
+```
+  Usage: clever-setup [options]
+
+  Options:
+
+    -h, --help         output usage information
+    --skip-protractor  Skips installing protractor
+    -V, --version      output the version number
+
+  Description:
+
+    Installs all NPM and Bower components for each module as well as building bundleDependencies.
+    This command will also install Protractor unless explicitly skipping.
+
+  Examples:
+
+    clever setup
+```
+
 ### server (serve)
 
 `$: clever server -h`
@@ -548,3 +578,42 @@ An online Wiki which can provide support for install, configurations and trouble
 ### Official CleverStack Frontend Seed
 
 [cleverstack-angular-seed](https://github.com/clevertech/cleverstack-angular-seed)
+
+## Running Tests
+
+To run the test suite, first invoke the following command within the repo, installing the development dependencies:
+
+    $ npm install
+
+Then run the tests:
+
+    $ make test
+
+## Contributors
+
+  https://github.com/CleverStack/cleverstack-cli/graphs/contributors
+
+## License
+
+(The MIT License)
+
+Copyright (c) 2014 CleverTech http://www.clevertech.biz/contact-form/
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

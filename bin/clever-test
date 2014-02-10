@@ -11,6 +11,13 @@ var program = require( 'commander' )
 var folders = [ ]
   , cwd     = process.cwd( );
 
+/**
+ * Looks for a Gruntfile within seeds folder for grunt test
+ *
+ * @param  {String} reporter What type of reporter do you want to display (Mocha reporters)
+ * @return {Undefined}       process.exit( 0 )
+ */
+
 function start( reporter ) {
   lib.utils.info( 'Scanning folders for Gruntfiles...' );
 

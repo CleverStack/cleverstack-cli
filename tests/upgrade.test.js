@@ -16,10 +16,6 @@ describe( 'Upgrade', function ( ) {
     done( );
   } );
 
-  after( function ( done ) {
-    rimraf( path.join( assetPath, 'my-new-project' ), done );
-  } );
-
   describe( 'backend', function ( ) {
     it( 'shouldn\'t be able to upgrade if we\'re not in the correct seed (for backend module)', function ( done ) {
       process.chdir( path.join( assetPath ) );
@@ -87,7 +83,7 @@ describe( 'Upgrade', function ( ) {
     it( 'shouldn\'t be able to upgrade if we\'re not in the correct seed', function ( done ) {
       process.chdir( path.join( assetPath ) );
 
-      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-datatables@0.0.2', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-datatables@0.0.3', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /Couldn't find a seed directory within/ );
@@ -109,7 +105,7 @@ describe( 'Upgrade', function ( ) {
     it( 'should be able to upgrade', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
 
-      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-datatables@0.0.2', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-datatables@0.0.3', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
 
@@ -127,7 +123,7 @@ describe( 'Upgrade', function ( ) {
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) );
         expect( pkg.name ).to.equal( 'clever-datatables' );
-        expect( semver.eq( pkg.version, '0.0.2' ) ).to.true;
+        expect( semver.eq( pkg.version, '0.0.3' ) ).to.true;
 
         done( );
       } );
@@ -136,10 +132,10 @@ describe( 'Upgrade', function ( ) {
     it( 'should give us an error if we\'re trying to upgrade to a version that we already have', function ( done ) {
       process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
 
-      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-datatables@0.0.2', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-datatables@0.0.3', function ( err, stdout, stderr ) {
         expect( err ).to.be.null;
         expect( stderr ).to.equal( '' );
-        expect( stdout ).to.match( /clever-datatables is already at version0.0.2/ );
+        expect( stdout ).to.match( /clever-datatables is already at version0.0.3/ );
         done( );
       } );
     } );
