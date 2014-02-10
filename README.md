@@ -1,6 +1,6 @@
 # CleverStack CLI
 
-[![Build Status](https://travis-ci.org/CleverStack/cleverstack-cli.png?branch=master)](https://travis-ci.org/CleverStack/cleverstack-cli)
+[![Build Status](http://img.shields.io/travis/CleverStack/cleverstack-cli.svg)](https://travis-ci.org/CleverStack/cleverstack-cli) [![Dependency Status](https://david-dm.org/CleverStack/cleverstack-cli.svg?theme=shields.io)](https://david-dm.org/CleverStack/cleverstack-cli) [![devDependency Status](https://david-dm.org/CleverStack/cleverstack-cli/dev-status.svg?theme=shields.io)](https://david-dm.org/CleverStack/cleverstack-cli#info=devDependencies) [![CleverTech](http://img.shields.io/badge/clever-tech-ff9933.svg)](http://www.clevertech.biz/)
 
 ![CleverStack CLI](http://cleverstack.github.io/assets/img/logos/clevertech-seed-logo-clean.png "CleverStack CLI")
 
@@ -12,9 +12,10 @@ A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecos
 
 ## Prerequisites
 
-cleverstack-cli depends on [NPM](http://npmjs.org/) and [Bower](http://bower.io/) and for "npm" and "bower" to be located in your `$PATH`
+cleverstack-cli depends on [NPM](http://npmjs.org/), [GruntJS](http://gruntjs.com) and [Bower](http://bower.io/) and for "npm", "grunt" and "bower" to be located in your `$PATH`
 
 ```npm install bower -g```
+```npm install grunt-cli -g```
 
 ## Quick Setup Tutorial
 
