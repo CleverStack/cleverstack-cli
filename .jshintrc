@@ -24,5 +24,6 @@
     "evil": false,
     "laxcomma": true,
     "quotmark": false,
-    "strict": false
+    "strict": false,
+    "expr": true
 }
