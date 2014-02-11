@@ -1,0 +1,7 @@
+docs
+examples
+tests
+.watchr.js
+changelog.md
+Makefile
+coverage*
