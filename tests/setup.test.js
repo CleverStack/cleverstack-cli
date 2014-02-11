@@ -12,7 +12,9 @@ chai.Assertion.includeStack = true;
 
 describe( 'Setup', function ( ) {
   after( function ( done ) {
-    rimraf( path.join( assetPath, 'my-new-project' ), done );
+    rimraf( path.join( assetPath, 'my-new-project' ), function ( ) {
+      done( );
+    } );
   } );
 
   before( function ( done ) {
