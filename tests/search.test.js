@@ -10,7 +10,6 @@ chai.Assertion.includeStack = true;
 describe( 'Search', function( ) {
   it( 'should be able to list a backend module', function ( done ) {
     exec( path.join( binPath, 'clever-search' ) + ' clever-orm', function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
 
       expect( stdout ).to.match( new RegExp( [
@@ -26,13 +25,12 @@ describe( 'Search', function( ) {
         '\\u001b\\[38;5;250mClevertech ORM \\(SQL\\) Module for CleverStack\\u001b\\[39m'
       ].join( '\\n' ) ) );
 
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list a frontend module', function ( done ) {
     exec( path.join( binPath, 'clever-search' ) + ' clever-datatables', function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
 
       expect( stdout ).to.match( new RegExp( [
@@ -48,13 +46,12 @@ describe( 'Search', function( ) {
         '\\u001b\\[38;5;250mThis module provides a directive to create jQuery dataTables.\\u001b\\[39m'
       ].join( '\\n' ) ) );
 
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to search for both frontend and backend modules', function ( done ) {
     exec( path.join( binPath, 'clever-search' ) + ' clever-orm clever-datatables', function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
 
       expect( stdout ).to.match( new RegExp( [
@@ -77,14 +74,13 @@ describe( 'Search', function( ) {
         '\\u001b\\[38;5;250mClevertech ORM \\(SQL\\) Module for CleverStack\\u001b\\[39m'
       ].join( '\\n' ) ) );
 
-      done( );
+      done( err );
     } );
   } );
 
   it( 'shouldn\'t be able to find a non existant module', function ( done ) {
     var pkgName = 'clever-' + crypto.randomBytes( 12 ).toString( 'hex' );
     exec( path.join( binPath, 'clever-search' ) + ' ' + pkgName, function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
 
       expect( stdout ).to.match( new RegExp( [
@@ -94,7 +90,7 @@ describe( 'Search', function( ) {
         '\\u001b\\[38;5;1mCouldn\'t find any modules that were compatible with CleverStack.\\u001b\\[39m'
       ].join( '\\n' ) ) );
 
-      done( );
+      done( err );
     } );
   } );
 } );

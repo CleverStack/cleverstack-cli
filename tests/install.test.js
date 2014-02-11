@@ -12,63 +12,36 @@ var chai      = require( 'chai' )
 chai.Assertion.includeStack = true;
 
 describe( 'Install', function ( ) {
-  beforeEach( function ( done ) {
-    process.chdir( assetPath );
-    done( );
-  } );
-
   describe( 'should have trouble installing a module', function ( ) {
     it( 'outside of the project\'s scope', function ( done ) {
-      process.chdir( path.join( assetPath ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.2', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.2', { cwd: assetPath }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /Couldn't find a seed directory within/ );
-        done( );
+        done( err );
       } );
     } );
 
     it( 'with a non-existant version', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.2', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.2', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /Invalid version 0.0.2 for module clever-orm/ );
-        done( );
+        done( err );
       } );
     } );
 
     it( 'a backend module within the frontend seed directory', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', { cwd: path.join( assetPath, 'my-new-project', 'frontend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.false;
-
-        done( );
+        done( err );
       } );
     } );
 
     it( 'a frontend module within the backend seed directory', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'backend' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables' ) ) ).to.be.false;
-
-        done( );
+        done( err );
       } );
     } );
   } );
@@ -107,19 +80,10 @@ describe( 'Install', function ( ) {
     } );
 
     it( 'within the root directory', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ).to.be.true;
-
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) );
@@ -133,24 +97,15 @@ describe( 'Install', function ( ) {
         expect( projPkg ).to.have.property( 'bundledDependencies' );
         expect( projPkg.bundledDependencies ).to.include( 'clever-auth' );
 
-        done( );
+        done( err );
       } );
     } );
 
     it( 'within the backend directory', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'backend' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ).to.be.true;
-
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) );
@@ -161,24 +116,15 @@ describe( 'Install', function ( ) {
         expect( projPkg ).to.have.property( 'bundledDependencies' );
         expect( projPkg.bundledDependencies ).to.include( 'clever-auth' );
 
-        done( );
+        done( err );
       } );
     } );
 
     it( 'with a specific version', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-auth@0.0.1', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth@0.0.1', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) ) ).to.be.true;
-
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth', 'package.json' ) );
@@ -189,7 +135,7 @@ describe( 'Install', function ( ) {
         expect( projPkg ).to.have.property( 'bundledDependencies' );
         expect( projPkg.bundledDependencies ).to.include( 'clever-auth' );
 
-        done( );
+        done( err );
       } );
     } );
   } );
@@ -204,71 +150,41 @@ describe( 'Install', function ( ) {
     } );
 
     it( 'within the root directory', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) ) ).to.be.true;
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) );
         expect( pkg.name ).to.equal( 'clever-datatables' );
         expect( pkg.version ).to.not.equal( '0.0.1' );
 
-        done( );
+        done( err );
       } );
     } );
 
     it( 'within the frontend directory', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', { cwd: path.join( assetPath, 'my-new-project', 'frontend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) ) ).to.be.true;
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) );
         expect( pkg.name ).to.equal( 'clever-datatables' );
         expect( pkg.version ).to.not.equal( '0.0.1' );
 
-        done( );
+        done( err );
       } );
     } );
 
     it( 'with a specific version', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project' ) );
-
-      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables@0.0.1', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables@0.0.1', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) ) ).to.be.true;
 
         var pkg = require( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' ) );
         expect( pkg.name ).to.equal( 'clever-datatables' );
         expect( pkg.version ).to.equal( '0.0.1' );
 
-        done( );
+        done( err );
       } );
     } );
   } );

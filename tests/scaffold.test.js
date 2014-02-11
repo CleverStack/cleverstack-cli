@@ -9,44 +9,20 @@ var chai      = require( 'chai' )
 chai.Assertion.includeStack = true;
 
 describe( 'Scaffold', function ( ) {
-  beforeEach( function ( done ) {
-    process.chdir( assetPath );
-    done( );
-  } );
-
   describe( 'backend seed', function ( ) {
     it( 'should be able to scaffold within the backend seed', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) );
-
-      exec( path.join( binPath, 'clever-scaffold' ) + ' Testing', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-scaffold' ) + ' Testing', { cwd: path.join( assetPath, 'my-new-project', 'backend', 'modules' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.not.match( /already exists within/ );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'config' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'config', 'default.json' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'controllers' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'controllers', 'TestingController.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'models' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'models', 'odm' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'models', 'odm', 'TestingModel.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'models', 'orm' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'models', 'orm', 'TestingModel.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'schema' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'schema', 'seedData.json' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'services' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'services', 'TestingService.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tasks' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tasks', 'TestingTask.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tests' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tests', 'integration' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tests', 'integration', 'TestingTest.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tests', 'unit' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'tests', 'unit', 'TestingTest.js' ) ) ).to.be.true;
 
         var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing', 'controllers', 'TestingController.js' ) );
@@ -84,47 +60,30 @@ describe( 'Scaffold', function ( ) {
         expect( testUnit ).to.match( /testEnv \( function \( TestingController, TestingService \) \{/ );
         expect( testUnit ).to.match( /message: 'Hello from customAction inside TestingController'/ );
 
-        done( );
+        done( err );
       } );
     } );
 
     it( 'should have trouble trying to scaffold with the same name', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'backend', 'modules' ) );
-
-      exec( path.join( binPath, 'clever-scaffold' ) + ' Testing', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-scaffold' ) + ' Testing', { cwd: path.join( assetPath, 'my-new-project', 'backend', 'modules' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /already exists within/ );
-        done( );
+        done( err );
       } );
     } );
   } );
 
   describe( 'frontend seed', function ( ) {
     it( 'should be able to scaffold within the frontend seed', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
-
-      exec( path.join( binPath, 'clever-scaffold' ) + ' TestingScaff', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-scaffold' ) + ' TestingScaff', { cwd: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
         expect( stdout ).to.not.match( /already exists within/ );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'controllers' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'controllers', 'testing_scaff_controller.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'directives' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'directives', 'testing_scaff_directive.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'factories' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'factories', 'testing_scaff_factory.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'services' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'services', 'testing_scaff_service.js' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views', 'testing_scaff-view.html' ) ) ).to.be.true;
 
         var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'controllers', 'testing_scaff_controller.js' ) );
@@ -146,18 +105,15 @@ describe( 'Scaffold', function ( ) {
         var html = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'TestingScaff', 'views', 'testing_scaff-view.html' ) );
         expect( html ).to.match( /<h1>TestingScaff Module<\/h1>/ );
 
-        done( );
+        done( err );
       } );
     } );
 
     it( 'should have trouble trying to scaffold with the same name', function ( done ) {
-      process.chdir( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) );
-
-      exec( path.join( binPath, 'clever-scaffold' ) + ' TestingScaff', function ( err, stdout, stderr ) {
-        expect( err ).to.be.null;
+      exec( path.join( binPath, 'clever-scaffold' ) + ' TestingScaff', { cwd: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /already exists within/ );
-        done( );
+        done( err );
       } );
     } );
   } );

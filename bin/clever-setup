@@ -98,14 +98,14 @@ function setupPackages( projectFolder ) {
         //todo: Separate this into it's own function
         lib.utils.info( 'Building frontend' );
 
-        exec( 'grunt bootstrap', { cwd: _path }, function ( err, stderr, stdout ) {
-          if (!!err) {
-            return def.reject( err );
+        exec( 'grunt bootstrap', { cwd: _path }, function ( err, stderr ) {
+          if (!!err || stderr.trim( ) !== "") {
+            return def.reject( err || stderr.trim( ) );
           }
 
-          exec( 'grunt build', { cwd: _path }, function ( _err, _stderr, _stdout ) {
-            if (!!_err) {
-              return def.reject( _err );
+          exec( 'grunt build', { cwd: _path }, function ( _err, _stderr ) {
+            if (!!_err || _stderr.trim( ) !== "") {
+              return def.reject( _err || _stderr.trim( ) );
             }
 
             lib.utils.success( 'Finished building frontend' );
@@ -132,7 +132,9 @@ function setupPackages( projectFolder ) {
             } );
           } );
         } );
-      }, def.reject );
+      }, function ( err ) {
+        def.reject( err );
+      } );
     } );
   } );
 

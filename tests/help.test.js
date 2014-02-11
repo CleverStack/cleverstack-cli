@@ -9,7 +9,6 @@ chai.Assertion.includeStack = true;
 describe( 'Help documentation', function( ) {
   it( 'should be able to list the help documentation for help', function ( done ) {
     exec( path.join( binPath, 'clever-help -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -41,13 +40,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for build', function ( done ) {
     exec( path.join( binPath, 'clever-build -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -63,13 +61,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for downgrade', function ( done ) {
     exec( path.join( binPath, 'clever-downgrade -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -89,13 +86,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for init', function ( done ) {
     exec( path.join( binPath, 'clever-init -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
 
       expect( stdout ).to.match( new RegExp( [
@@ -123,13 +119,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for install', function ( done ) {
     exec( path.join( binPath, 'clever-install -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -147,13 +142,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for generate', function ( done ) {
     exec( path.join( binPath, 'clever-generate -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -194,13 +188,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for list', function ( done ) {
     exec( path.join( binPath, 'clever-list -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -216,13 +209,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for new', function ( done ) {
     exec( path.join( binPath, 'clever-new -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -244,13 +236,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for remove', function ( done ) {
     exec( path.join( binPath, 'clever-remove -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -267,13 +258,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for scaffold', function ( done ) {
     exec( path.join( binPath, 'clever-scaffold -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -299,13 +289,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for search', function ( done ) {
     exec( path.join( binPath, 'clever-search -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -322,13 +311,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for setup', function ( done ) {
     exec( path.join( binPath, 'clever-setup -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -351,13 +339,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for server', function ( done ) {
     exec( path.join( binPath, 'clever-server -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -377,13 +364,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for test', function ( done ) {
     exec( path.join( binPath, 'clever-test -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -408,13 +394,12 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 
   it( 'should be able to list the help documentation for upgrade', function ( done ) {
     exec( path.join( binPath, 'clever-upgrade -h' ), function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( new RegExp( [
         '',
@@ -434,7 +419,7 @@ describe( 'Help documentation', function( ) {
         '',
         ''
       ].join( '\\n' ) ) );
-      done( );
+      done( err );
     } );
   } );
 } );

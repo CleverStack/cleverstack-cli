@@ -11,11 +11,6 @@ var chai      = require( 'chai' )
 chai.Assertion.includeStack = true;
 
 describe( 'Setup', function ( ) {
-  beforeEach( function ( done ) {
-    process.chdir( assetPath );
-    done( );
-  } );
-
   after( function ( done ) {
     rimraf( path.join( assetPath, 'my-new-project' ), done );
   } );
@@ -29,11 +24,10 @@ describe( 'Setup', function ( ) {
 
   it( 'should be able to setup a new environment', function ( done ) {
     exec( path.join( binPath, 'clever-setup --skip-protractor' ), { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
-      expect( err ).to.be.null;
       expect( stderr ).to.equal( '' );
       expect(fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'passport' ) ) ).to.be.true;
       expect(fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'components', 'datatables' ) ) ).to.be.true;
-      done( );
+      done( err );
     } );
   } );
 } );
