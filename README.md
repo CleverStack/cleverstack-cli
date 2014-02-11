@@ -15,7 +15,47 @@ A command line interface (CLI) for the [CleverStack](http://cleverstack.io) ecos
 cleverstack-cli depends on [NPM](http://npmjs.org/), [GruntJS](http://gruntjs.com) and [Bower](http://bower.io/) and for "npm", "grunt" and "bower" to be located in your `$PATH`
 
 ```npm install bower -g```
+
 ```npm install grunt-cli -g```
+
+## Table of Contents
+
+[Quick Setup Tutorial](https://github.com/CleverStack/cleverstack-cli#quick-setup-tutorial)
+  1. [Initialize a new project](https://github.com/CleverStack/cleverstack-cli#initialize-a-new-project)
+  2. [Installing a module](https://github.com/CleverStack/cleverstack-cli#installing-a-module)
+  3. [Removing a module](https://github.com/CleverStack/cleverstack-cli#removing-a-module)
+  4. [Running tests](https://github.com/CleverStack/cleverstack-cli#running-tests)
+
+[Quick Tutorial for Building a New Module](https://github.com/CleverStack/cleverstack-cli#quick-tutorial-for-building-a-new-module)
+  1. [generate](https://github.com/CleverStack/cleverstack-cli#generate)
+  2. [scaffold](https://github.com/CleverStack/cleverstack-cli#scaffold)
+  3. [new](https://github.com/CleverStack/cleverstack-cli#new)
+  4. [repl](https://github.com/CleverStack/cleverstack-cli#repl)
+
+[Commands](https://github.com/CleverStack/cleverstack-cli#commands)
+  1. [help](https://github.com/CleverStack/cleverstack-cli#help)
+  2. [downgrade](https://github.com/CleverStack/cleverstack-cli#downgrade)
+  3. [generate (g)](https://github.com/CleverStack/cleverstack-cli#generate-g)
+  4. [init](https://github.com/CleverStack/cleverstack-cli#init)
+  5. [list](https://github.com/CleverStack/cleverstack-cli#list)
+  6. [new](https://github.com/CleverStack/cleverstack-cli#new-1)
+  7. [remove](https://github.com/CleverStack/cleverstack-cli#remove)
+  8. [repl](https://github.com/CleverStack/cleverstack-cli#repl-1)
+  9. [scaffold (s)](https://github.com/CleverStack/cleverstack-cli#scaffold-s)
+  10. [search](https://github.com/CleverStack/cleverstack-cli#search)
+  11. [setup](https://github.com/CleverStack/cleverstack-cli#setup)
+  12. [server (serve)](https://github.com/CleverStack/cleverstack-cli#server-serve)
+  13. [test (tests)](https://github.com/CleverStack/cleverstack-cli#test-tests)
+  14. [upgrade](https://github.com/CleverStack/cleverstack-cli#upgrade)
+
+[Help & Resources](https://github.com/CleverStack/cleverstack-cli#help--resources)
+  1. [CleverStack Website](https://github.com/CleverStack/cleverstack-cli#cleverstack-website)
+  2. [CleverStack Wiki](https://github.com/CleverStack/cleverstack-cli#cleverstack-wiki)
+  3. [Official CleverStack Backend Seed](https://github.com/CleverStack/cleverstack-cli#official-cleverstack-backend-seed)
+  4. [Official CleverStack Frontend Seed](https://github.com/CleverStack/cleverstack-cli#official-cleverstack-frontend-seed)
+[Running Tests](https://github.com/CleverStack/cleverstack-cli#running-tests-1)
+[Contributors](https://github.com/CleverStack/cleverstack-cli#contributors)
+[License](https://github.com/CleverStack/cleverstack-cli#license)
 
 ## Quick Setup Tutorial
 
@@ -570,7 +610,7 @@ cleverstack::local> .quit
 
 An online Wiki which can provide support for install, configurations and troubleshooting.
 
-[http://wiki.cleverstack.io](http://wiki.cleverstack.io)
+https://github.com/CleverStack/cleverstack-cli/wiki
 
 ### Official CleverStack Backend Seed
 
