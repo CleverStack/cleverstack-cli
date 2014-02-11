@@ -4,7 +4,6 @@
         "it": false,
         "console": false,
         "describe": false,
-        "expect": false,
         "beforeEach": false,
         "afterEach": false,
         "before": false,

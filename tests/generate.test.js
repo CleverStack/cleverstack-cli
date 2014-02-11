@@ -16,7 +16,7 @@ describe( 'Generate', function ( ) {
   } );
 
   describe( 'backend seed', function ( ) {
-    describe( 'controller', function ( done ) {
+    describe( 'controller', function ( ) {
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
       } );

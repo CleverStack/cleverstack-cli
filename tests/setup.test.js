@@ -3,7 +3,6 @@ var chai      = require( 'chai' )
   , exec      = require('child_process').exec
   , path      = require( 'path' )
   , rimraf    = require( 'rimraf' )
-  , semver    = require( 'semver' )
   , async     = require( 'async' )
   , fs        = require( 'fs' )
   , binPath   = path.join( __dirname, '..', 'bin' )

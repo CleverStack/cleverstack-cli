@@ -19,7 +19,7 @@ describe( 'Downgrade', function ( ) {
     before( function ( done ) {
       console.log( 'Installing clever-auth for tests...' );
       process.chdir( path.join( assetPath, 'my-new-project', 'backend' ) );
-      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-install' ) + ' clever-auth', function ( ) {
         console.log( 'Done with installing clever-auth' );
         done( );
       } );
@@ -91,7 +91,7 @@ describe( 'Downgrade', function ( ) {
     before( function ( done ) {
       console.log( 'Installing clever-datatables for tests...' );
       process.chdir( path.join( assetPath, 'my-new-project', 'frontend' ) );
-      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-install' ) + ' clever-datatables', function ( ) {
         console.log( 'Done with installing clever-datatables' );
         done( );
       } );

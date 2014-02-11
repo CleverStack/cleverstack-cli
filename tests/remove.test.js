@@ -1,7 +1,6 @@
 var chai      = require( 'chai' )
   , expect    = chai.expect
   , exec      = require('child_process').exec
-  , spawn     = require('child_process').spawn
   , path      = require( 'path' )
   , crypto    = require( 'crypto' )
   , fs        = require( 'fs' )

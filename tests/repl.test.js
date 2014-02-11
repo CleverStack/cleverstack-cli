@@ -2,7 +2,6 @@ var chai      = require( 'chai' )
   , expect    = chai.expect
   , spawn     = require('child_process').spawn
   , path      = require( 'path' )
-  , fs        = require( 'fs' )
   , binPath   = path.join( __dirname, '..', 'bin' )
   , assetPath = path.join( __dirname, 'assets' );
 

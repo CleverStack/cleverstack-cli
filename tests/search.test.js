@@ -91,7 +91,7 @@ describe( 'Search', function( ) {
         '\\u001b\\[38;5;68mSearching through NPM packages...\\u001b\\[39m',
         '\\u001b\\[38;5;68mSearching through Bower packages\\u001b\\[39m',
         '\\u001b\\[38;5;68mSearching through Bower packages for ' + pkgName.replace( '-', '\\-' ) + '...\\u001b\\[39m',
-        '\\u001b\\[38;5;1mCouldn\'t find any modules that were compatible with CleverStack\.\\u001b\\[39m'
+        '\\u001b\\[38;5;1mCouldn\'t find any modules that were compatible with CleverStack.\\u001b\\[39m'
       ].join( '\\n' ) ) );
 
       done( );

@@ -49,7 +49,6 @@ describe( 'Init (these tests will take a long time)', function ( ) {
 
         var pkgJson   = require( pkgPath );
         var pkgJson2  = require( pkgPath2 );
-        var bowerJson = require( bowerPath );
 
         expect( pkgJson.name ).to.equal( 'cleverstack-node-seed' );
         expect( pkgJson2.name ).to.equal( 'cleverstack-angular-seed' );
@@ -77,7 +76,6 @@ describe( 'Init (these tests will take a long time)', function ( ) {
 
         var pkgJson   = require( pkgPath );
         var pkgJson2  = require( pkgPath2 );
-        var bowerJson = require( bowerPath );
 
         expect( pkgJson.name).to.equal( 'cleverstack-node-seed' );
         expect( pkgJson2.name).to.equal( 'cleverstack-angular-seed' );
