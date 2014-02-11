@@ -11,8 +11,8 @@ chai.Assertion.includeStack = true;
 
 describe( 'Remove', function ( ) {
   before( function ( done ) {
-    console.log( 'Installing clever-auth and clever-datatables for tests...' );
-    exec( path.join( binPath, 'clever-install' ) + ' clever-auth', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err ) {
+    console.log( 'Installing clever-background-tasks and clever-datatables for tests...' );
+    exec( path.join( binPath, 'clever-install' ) + ' clever-background-tasks', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err ) {
       console.log( '... done' );
       done( err );
     } );
@@ -37,7 +37,7 @@ describe( 'Remove', function ( ) {
     } );
 
     it( 'to remove an existant module, but in the wrong seed (backend module)', function ( done ) {
-      exec( path.join( binPath, 'clever-remove' ) + ' clever-auth', { cwd: path.join( assetPath, 'my-new-project', 'frontend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-remove' ) + ' clever-background-tasks', { cwd: path.join( assetPath, 'my-new-project', 'frontend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /There are no modules to remove./ );
         done( err );
@@ -47,9 +47,9 @@ describe( 'Remove', function ( ) {
 
   describe( 'should not fail', function ( ) {
     it( 'should remove a backend module', function ( done ) {
-      exec( path.join( binPath, 'clever-remove' ) + ' clever-auth', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-remove' ) + ' clever-background-tasks', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-auth' ) ) ).to.be.false;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks' ) ) ).to.be.false;
 
         if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ]) {
           delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
@@ -57,7 +57,7 @@ describe( 'Remove', function ( ) {
 
         var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
         expect( projPkg ).to.have.property( 'bundledDependencies' );
-        expect( projPkg.bundledDependencies ).to.not.include( 'clever-auth' );
+        expect( projPkg.bundledDependencies ).to.not.include( 'clever-background-tasks' );
 
         done( err );
       } );
