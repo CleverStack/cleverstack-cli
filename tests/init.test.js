@@ -50,7 +50,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
       } );
     } );
 
-    it.skip( 'with modules', function ( done ) {
+    it( 'with modules', function ( done ) {
       exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project2 clever-orm clever-datatables', { cwd: assetPath }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend' ) ) ).to.be.true;
@@ -85,7 +85,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
       } );
     } );
 
-    it.skip( 'should not be able to initialize a new project with the same name', function ( done ) {
+    it( 'should not be able to initialize a new project with the same name', function ( done ) {
       exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project', { cwd: assetPath }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /Can't create project my-new-project due to a folder named my-new-project existing in/ );
@@ -94,7 +94,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
     } );
   } );
 
-  describe.skip( 'should be able to initialize a new project with just the', function ( ) {
+  describe( 'should be able to initialize a new project with just the', function ( ) {
     it( 'backend', function ( done ) {
       exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project3 backend', { cwd: assetPath }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );

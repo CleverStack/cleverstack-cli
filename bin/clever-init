@@ -144,7 +144,7 @@ function setupBackend ( ) {
       .then( function ( ) {
         writeLocalJSON( projectDir )
         .then( function ( ) {
-          return lib.project.installBundleDeps( projectDir )
+          return lib.util.dependencies.installBundleDeps( projectDir )
         } )
         .then( function ( ) {
           initProgress.inc( );
