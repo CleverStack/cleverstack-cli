@@ -52,6 +52,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'models', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
       } );
@@ -90,6 +94,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'services', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
       } );
@@ -127,6 +135,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'tasks', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
       } );
@@ -161,6 +173,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'test', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
       } );
@@ -210,6 +226,10 @@ describe( 'Generate', function ( ) {
 
   describe( 'frontend seed', function ( ) {
     describe( 'controller', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
       } );
@@ -239,6 +259,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'directive', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
       } );
@@ -268,6 +292,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'factory', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
       } );
@@ -297,6 +325,10 @@ describe( 'Generate', function ( ) {
     } );
 
     describe( 'service', function ( ) {
+      before( function ( done ) {
+        rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
+      } );
+
       after( function ( done ) {
         rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
       } );
