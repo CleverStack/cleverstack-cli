@@ -5,8 +5,8 @@ var chai      = require( 'chai' )
   , rimraf    = require( 'rimraf' )
   , async     = require( 'async' )
   , fs        = require( 'fs' )
-  , binPath   = path.join( __dirname, '..', 'bin' )
-  , assetPath = path.join( __dirname, 'assets' );
+  , binPath   = path.join( __dirname, '..', '..', 'bin' )
+  , assetPath = path.join( __dirname, '..', 'assets' );
 
 chai.Assertion.includeStack = true;
 

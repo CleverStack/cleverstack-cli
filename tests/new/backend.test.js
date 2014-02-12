@@ -3,8 +3,8 @@ var chai      = require( 'chai' )
   , exec      = require('child_process').exec
   , path      = require( 'path' )
   , fs        = require( 'fs' )
-  , binPath   = path.join( __dirname, '..', 'bin' )
-  , assetPath = path.join( __dirname, 'assets' );
+  , binPath   = path.join( __dirname, '..', '..', 'bin' )
+  , assetPath = path.join( __dirname, '..', 'assets' );
 
 chai.Assertion.includeStack = true;
 
