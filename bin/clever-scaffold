@@ -32,11 +32,11 @@ if (program.rawArgs.length < 3) {
   program.help( );
 }
 
-var filterOut = []
-  , filters   = ['service', 'controller', 'model', 'task', 'test'];
+var filterOut = [ ]
+  , filters   = [ 'service', 'controller', 'model', 'task', 'test' ];
 
 filters.forEach( function ( filter ) {
-  if (program[filter] === false) {
+  if (program[ filter ] === false) {
     filterOut.push( filter );
   }
 } );
