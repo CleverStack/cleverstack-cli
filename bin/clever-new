@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-var program   = require( 'commander' )
-  , path      = require( 'path' )
-  , fs        = require( 'fs' )
-  , lib       = require( path.join( __dirname, '..', 'index' ) )
-  , scaffold  = lib.generator.newModule
+var program     = require( 'commander' )
+  , path        = require( 'path' )
+  , fs          = require( 'fs' )
+  , lib         = require( path.join( __dirname, '..', 'index' ) )
+  , scaffold    = lib.generator.newModule
+  , paths       = require( path.join( __dirname, '..', 'lib', 'generate', 'paths' ) );
 
 program.version( lib.pkg.version );
 
@@ -48,7 +49,7 @@ lib.project.locations( ).then( function ( projects ) {
     , name    = args[ 0 ];
 
   projects.forEach( function ( project ) {
-    var folder = lib.generator.getModulePath( project, name );
+    var folder = paths.getModulePath( project, name );
 
     if (fs.existsSync( folder )) {
       lib.utils.fail( 'Module already exists within ' + folder );

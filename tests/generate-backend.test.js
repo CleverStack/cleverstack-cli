@@ -12,11 +12,11 @@ chai.Assertion.includeStack = true;
 describe( 'Generate backend seed', function ( ) {
   describe( 'controller', function ( ) {
     before( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     after( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     it( 'should be able to create', function ( done ) {
@@ -47,11 +47,11 @@ describe( 'Generate backend seed', function ( ) {
 
   describe( 'models', function ( ) {
     before( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     after( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     it( 'should be able to create', function ( done ) {
@@ -84,11 +84,11 @@ describe( 'Generate backend seed', function ( ) {
 
   describe( 'services', function ( ) {
     before( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     after( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     it( 'should be able to create', function ( done ) {
@@ -120,11 +120,11 @@ describe( 'Generate backend seed', function ( ) {
 
   describe( 'tasks', function ( ) {
     before( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     after( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     it( 'should be able to create', function ( done ) {
@@ -153,11 +153,11 @@ describe( 'Generate backend seed', function ( ) {
 
   describe( 'test', function ( ) {
     before( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     after( function ( done ) {
-      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), done );
+      rimraf( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2' ), function ( ) { done( ); } );
     } );
 
     it( 'should be able to create', function ( done ) {
