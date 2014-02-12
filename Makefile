@@ -16,7 +16,8 @@ TESTS = ./tests/help.test.js \
         ./tests/generate-backend-tests.test.js \
         ./tests/generate-frontend.test.js \
         ./tests/scaffold.test.js \
-        ./tests/new.test.js \
+        ./tests/new-backend.test.js \
+        ./tests/new-frontend.test.js \
         ./tests/repl.test.js \
         ./tests/downgrade.test.js \
         ./tests/upgrade.test.js \
