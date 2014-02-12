@@ -31,7 +31,7 @@ program.parse( process.argv );
 /**
  * Installs Bower and NPM (including modules within the seeds) packages
  *
- * @param {Object} projectFolder Path to a CleverStack seed file from project.locations( )
+ * @param {Object} projectFolder Path to a CleverStack seed file from util.locations.get( )
  * @return {Promise}
  * @api private
  */
@@ -141,7 +141,7 @@ function setupPackages( projectFolder ) {
   return def.promise;
 }
 
-lib.project.locations( ).then( function ( projects ) {
+lib.util.locations.get( ).then( function ( projects ) {
   var backend = _.find( projects, function ( p ) {
     return p.name === "backend";
   } );

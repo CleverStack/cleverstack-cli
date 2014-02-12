@@ -44,7 +44,7 @@ if (filterOut.length === filters.length) {
   program.help( );
 }
 
-lib.project.locations( ).then( function ( projects ) {
+lib.util.locations.get( ).then( function ( projects ) {
   var folders = []
     , name    = args[ 0 ];
 

@@ -49,7 +49,7 @@ if (args.length < 1) {
   modules = args;
 }
 
-lib.project.locations( )
+lib.util.locations.get( )
 .then ( function ( locations ) {
   // Filter for module's existence
   async.map( modules, function ( module, filter ) {

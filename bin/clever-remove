@@ -30,7 +30,7 @@ if (program.args.length < 1) {
 /**
  * Removed a module from package.json's bundledDependencies
  *
- * @param  {Object} backendPath Object from project.locations( )
+ * @param  {Object} backendPath Object from util.locations.get( )
  * @param  {String[]} modules   Array of module names
  * @return {Promise}            Promise from bluebird
  * @api private
@@ -60,7 +60,7 @@ function removeFromBundledDependencies ( backendPath, modules ) {
 }
 
 /**
- * Finds all of the modules within lib.project.locations()
+ * Finds all of the modules within lib.util.locations.get()
  *
  * @param  {String[]} modules
  * @return {Promise}
@@ -70,7 +70,7 @@ function removeFromBundledDependencies ( backendPath, modules ) {
 function findModules( modules ) {
   var def = Promise.defer( );
 
-  lib.project.locations( )
+  lib.util.locations.get( )
   .then( function ( locations ) {
     var _modules = [];
 
