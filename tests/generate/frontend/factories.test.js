@@ -9,7 +9,7 @@ var chai      = require( 'chai' )
 
 chai.Assertion.includeStack = true;
 
-describe( 'Generate frontend seed (factories)', function ( ) {
+describe( 'Create/generate a factory for the frontend', function ( ) {
   before( function ( done ) {
     rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
   } );

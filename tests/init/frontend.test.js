@@ -8,7 +8,7 @@ var chai    = require( 'chai' )
   , binPath   = path.join( __dirname, '..', '..', 'bin' )
   , assetPath = path.join( __dirname, '..', 'assets' );
 
-describe( 'Init with just the frontend', function ( ) {
+describe( 'Initialize with the just the frontend seed', function ( ) {
   after( function ( done ) {
     fs.readdir( assetPath, function ( err, dirs ) {
       async.each( dirs, function ( dir, next ) {

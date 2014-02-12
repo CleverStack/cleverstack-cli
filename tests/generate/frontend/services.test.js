@@ -9,7 +9,7 @@ var chai      = require( 'chai' )
 
 chai.Assertion.includeStack = true;
 
-describe( 'Generate frontend seed (services)', function ( ) {
+describe( 'Generate a service for the frontend', function ( ) {
   before( function ( done ) {
     rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
   } );
