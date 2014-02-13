@@ -1,6 +1,7 @@
 var chai      = require( 'chai' )
   , path      = require( 'path' )
   , rimraf    = require( 'rimraf' )
+  , exec      = require('child_process').exec
   , assetPath = path.join( __dirname, '..', '..', 'assets' )
   , controllers = require( path.join( __dirname, 'controllers' ) )
   , directives  = require( path.join( __dirname, 'directives' ) )
@@ -9,6 +10,10 @@ var chai      = require( 'chai' )
   , views       = require( path.join( __dirname, 'views' ) );
 
 chai.Assertion.includeStack = true;
+
+function run ( cmd, fn ) {
+  exec( path.join( __dirname, '..', '..', '..', 'bin', 'clever-generate' ) + ' ' + cmd + ' Testing2', { cwd: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) }, fn );
+}
 
 describe( 'Generate frontend', function ( ) {
   before( function ( done ) {
@@ -20,42 +25,62 @@ describe( 'Generate frontend', function ( ) {
   } );
 
   it( 'should be able to generate a controller within the frontend seed', function ( done ) {
-    controllers.tap( done );
+    run( 'controller', function ( err, stderr, stdout ) {
+      controllers.tap( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should have trouble creating an existant controller', function ( done ) {
-    controllers.tapfail( done );
+    run( 'controller', function ( err, stderr, stdout ) {
+      controllers.tapfail( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should be able to generate a directive within the frontend seed', function ( done ) {
-    directives.tap( done );
+    run( 'directive', function ( err, stderr, stdout ) {
+      directives.tap( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should have trouble creating an existant directive', function ( done ) {
-    directives.tapfail( done );
+    run( 'directive', function ( err, stderr, stdout ) {
+      directives.tapfail( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should be able to generate a factory within the frontend seed', function ( done ) {
-    factories.tap( done );
+    run( 'factory', function ( err, stderr, stdout ) {
+      factories.tap( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should have trouble creating an existant factory', function ( done ) {
-    factories.tapfail( done );
+    run( 'factory', function ( err, stderr, stdout ) {
+      factories.tapfail( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should be able to generate a service within the frontend seed', function ( done ) {
-    services.tap( done );
+    run( 'serivce', function ( err, stderr, stdout ) {
+      services.tap( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should have trouble creating an existant service', function ( done ) {
-    services.tapfail( done );
+    run( 'service', function ( err, stderr, stdout ) {
+      services.tapfail( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should be able to generate a view within the frontend seed', function ( done ) {
-    views.tap( done );
+    run( 'views', function ( err, stderr, stdout ) {
+      views.tap( err, stderr, stdout, done );
+    } );
   } );
 
   it( 'should have trouble creating an existant controller', function ( done ) {
-    views.tapfail( done );
+    run( 'views', function ( err, stderr, stdout ) {
+      views.tapfail( err, stderr, stdout, done );
+    } );
   } );
 } );
