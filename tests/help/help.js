@@ -18,6 +18,7 @@ exports.tap = [
   '    new <name> - Scaffolds into a specific directory called <name>',
   '    remove <modules> - Removes a module within CleverStack',
   '    repl - Starts the CleverStack REPL',
+  '    routes - Displays your project\'s routes',
   '    scaffold <name> - Generates a controller, service, model, etc.',
   '    search [query] - Searches for a cleverstack module',
   '    setup - Installs NPM & Bower packages for each module and adds modules to bundleDependencies',
