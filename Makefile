@@ -4,9 +4,7 @@ REPORTER ?= spec
 TESTS = ./tests/help/index.test.js \
         ./tests/list.test.js \
         ./tests/search.test.js \
-        ./tests/init/init.test.js \
-        ./tests/init/backend.test.js \
-        ./tests/init/frontend.test.js \
+        ./tests/init.test.js \
         ./tests/install/install.test.js \
         ./tests/install/backend.test.js \
         ./tests/install/frontend.test.js \

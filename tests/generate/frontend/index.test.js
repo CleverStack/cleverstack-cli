@@ -8,7 +8,7 @@ var chai      = require( 'chai' )
     controller: require( path.join( __dirname, 'controllers' ) ),
     directive:  require( path.join( __dirname, 'directives' ) ),
     factory:    require( path.join( __dirname, 'factories' ) ),
-    service:    require( path.join( __dirname, 'services' ) ),
+    services:   require( path.join( __dirname, 'services' ) ),
     views:      require( path.join( __dirname, 'views' ) )
   }
 
@@ -28,24 +28,22 @@ var tap = {
 };
 
 function run ( cmd, status, fn ) {
-  exec( path.join( __dirname, '..', '..', '..', 'bin', 'clever-generate' ) + ' ' + cmd + ' Testing2', { cwd: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) }, function ( err, stderr, stdout ) {
+  exec( path.join( __dirname, '..', '..', '..', 'bin', 'clever-generate' ) + ' ' + cmd + ' Testing2', { cwd: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) }, function ( err, stdout, stderr ) {
     if (!!err) {
       return fn( err );
     }
 
-    tap[ status ]( stderr, stdout, fn );
+    tap[ status ]( cmd, err, stderr, stdout, function ( _err ) {
+      if (status === "success" || !!_err) {
+        return fn ( _err );
+      }
+
+      rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), fn );
+    } );
   } );
 }
 
 describe( 'Generate frontend', function ( ) {
-  beforeEach( function ( done ) {
-    rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
-  } );
-
-  afterEach( function ( done ) {
-    rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
-  } );
-
   it( 'controller', function ( done ) {
     run( 'controller', 'success', done );
   } );
@@ -70,12 +68,12 @@ describe( 'Generate frontend', function ( ) {
     run( 'factory', 'fail', done );
   } );
 
-  it( 'service', function ( done ) {
-    run( 'serivce', 'success', done );
+  it( 'services', function ( done ) {
+    run( 'services', 'success', done );
   } );
 
-  it( 'service fail', function ( done ) {
-    run( 'service', 'fail', done );
+  it( 'services fail', function ( done ) {
+    run( 'services', 'fail', done );
   } );
 
   it( 'views', function ( done ) {

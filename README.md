@@ -620,6 +620,12 @@ https://github.com/CleverStack/cleverstack-cli/wiki
 
 [cleverstack-angular-seed](https://github.com/clevertech/cleverstack-angular-seed)
 
+### Communication
+
+* IRC: `#cleverstack` on `irc.freenode.net`
+* Stackoverflow: [http://stackoverflow.com/questions/tagged/cleverstack](http://stackoverflow.com/questions/tagged/cleverstack)
+* Google Groups/Mailing list: [https://groups.google.com/forum/#!forum/cleverstack](https://groups.google.com/forum/#!forum/cleverstack)
+
 ## Running Tests
 
 To run the test suite, first invoke the following command within the repo, installing the development dependencies:
