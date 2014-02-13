@@ -4,7 +4,6 @@ var chai      = require( 'chai' )
   , fs        = require( 'fs' )
   , assetPath = path.join( __dirname, '..', '..', 'assets' );
 
-
 exports.tap = function ( err, stderr, stdout, done ) {
   expect( stderr ).to.equal( '' );
 
@@ -15,11 +14,5 @@ exports.tap = function ( err, stderr, stdout, done ) {
   expect( factory ).to.match( /ng\.module\('testing2.factories'\)/ );
   expect( factory ).to.match( /\.factory\('Testing2Factory', function\(\){/ );
 
-  done( err );
-}
-
-exports.tapfail = function ( err, stderr, stdout, done ) {
-  expect( stderr ).to.equal( '' );
-  expect( stdout ).to.match( /already exists within/ );
   done( err );
 }

@@ -15,9 +15,3 @@ exports.tap = function ( err, stderr, stdout, done ) {
 
   done( err );
 }
-
-exports.tapfail = function ( err, stderr, stdout, done ) {
-  expect( stderr ).to.equal( '' );
-  expect( stdout ).to.match( /already exists within/ );
-  done( err );
-}

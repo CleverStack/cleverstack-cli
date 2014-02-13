@@ -15,6 +15,12 @@ function run ( cmd, fn ) {
   exec( path.join( __dirname, '..', '..', '..', 'bin', 'clever-generate' ) + ' ' + cmd + ' Testing2', { cwd: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules' ) }, fn );
 }
 
+function tapfail ( err, stderr, stdout, done ) {
+  expect( stderr ).to.equal( '' );
+  expect( stdout ).to.match( /already exists within/ );
+  done( err );
+}
+
 describe( 'Generate frontend', function ( ) {
   before( function ( done ) {
     rimraf( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2' ), done );
@@ -32,7 +38,7 @@ describe( 'Generate frontend', function ( ) {
 
   it( 'should have trouble creating an existant controller', function ( done ) {
     run( 'controller', function ( err, stderr, stdout ) {
-      controllers.tapfail( err, stderr, stdout, done );
+      tapfail( err, stderr, stdout, done );
     } );
   } );
 
@@ -44,7 +50,7 @@ describe( 'Generate frontend', function ( ) {
 
   it( 'should have trouble creating an existant directive', function ( done ) {
     run( 'directive', function ( err, stderr, stdout ) {
-      directives.tapfail( err, stderr, stdout, done );
+      tapfail( err, stderr, stdout, done );
     } );
   } );
 
@@ -56,7 +62,7 @@ describe( 'Generate frontend', function ( ) {
 
   it( 'should have trouble creating an existant factory', function ( done ) {
     run( 'factory', function ( err, stderr, stdout ) {
-      factories.tapfail( err, stderr, stdout, done );
+      tapfail( err, stderr, stdout, done );
     } );
   } );
 
@@ -68,7 +74,7 @@ describe( 'Generate frontend', function ( ) {
 
   it( 'should have trouble creating an existant service', function ( done ) {
     run( 'service', function ( err, stderr, stdout ) {
-      services.tapfail( err, stderr, stdout, done );
+      tapfail( err, stderr, stdout, done );
     } );
   } );
 
@@ -80,7 +86,7 @@ describe( 'Generate frontend', function ( ) {
 
   it( 'should have trouble creating an existant controller', function ( done ) {
     run( 'views', function ( err, stderr, stdout ) {
-      views.tapfail( err, stderr, stdout, done );
+      tapfail( err, stderr, stdout, done );
     } );
   } );
 } );
