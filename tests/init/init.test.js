@@ -50,7 +50,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
     } );
 
     it( 'with modules', function ( done ) {
-      exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project2 clever-orm clever-datatables', { cwd: assetPath }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project2 clever-background-tasks clever-datatables', { cwd: assetPath }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'frontend' ) ) ).to.be.true;
@@ -69,8 +69,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
         expect( pkgJson.name).to.equal( 'cleverstack-node-seed' );
         expect( pkgJson2.name).to.equal( 'cleverstack-angular-seed' );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend', 'node_modules', 'sequelize' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend', 'modules', 'clever-orm' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend', 'modules', 'clever-background-tasks' ) ) ).to.be.true;
 
         expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'frontend', 'app', 'modules', 'cs_datatables' ) ) ).to.be.true;
 
