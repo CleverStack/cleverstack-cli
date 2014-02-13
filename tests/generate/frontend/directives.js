@@ -1,15 +1,12 @@
-var chai      = require( 'chai' )
-  , expect    = chai.expect
-  , path      = require( 'path' )
-  , fs        = require( 'fs' )
+var path      = require( 'path' )
   , assetPath = path.join( __dirname, '..', '..', 'assets' );
 
 exports.tap = function ( done ) {
-  expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'directives', 'testing2_directive.js' ) ) ).to.be.true;
-
-  var directive = fs.readFileSync( path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'directives', 'testing2_directive.js' ) );
-  expect( directive ).to.match( /ng\.module\('testing2.directives'\)/ );
-  expect( directive ).to.match( /\.directive\('Testing2Directive', function\(\) {/ );
-
-  done( );
+  done( null, {
+    file: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'directives', 'testing2_directive.js' ),
+    matches: [
+      /ng\.module\('testing2.directives'\)/,
+      /\.directive\('Testing2Directive', function\(\) {/
+    ]
+  } );
 }

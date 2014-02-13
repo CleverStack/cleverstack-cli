@@ -1,6 +1,7 @@
 var chai      = require( 'chai' )
   , expect    = chai.expect
   , path      = require( 'path' )
+  , fs        = require( 'fs' )
   , rimraf    = require( 'rimraf' )
   , exec      = require('child_process').exec
   , assetPath = path.join( __dirname, '..', '..', 'assets' )
@@ -18,7 +19,16 @@ var tap = {
   success: function ( cmd, err, stderr, stdout, done ) {
     expect( stderr ).to.equal( '' );
     expect( stdout ).to.not.match( /already exists within/ );
-    keg[ cmd ].tap( done );
+    keg[ cmd ].tap( function ( e, options ) {
+      expect( fs.existsSync( options.file ) ).to.be.true;
+
+      var file = fs.readFileSync( options.file );
+      options.matches.forEach( function ( match ) {
+        expect( file ).to.match( match );
+      } );
+
+      done( err );
+    } );
   },
   fail: function ( cmd, err, stderr, stdout, done ) {
     expect( stderr ).to.equal( '' );
