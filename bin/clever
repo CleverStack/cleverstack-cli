@@ -1,7 +1,32 @@
 #!/usr/bin/env node
 
 var path    = require( 'path' )
+  , shell   = require( 'shelljs' )
   , lib     = require( path.join( __dirname, '..', 'index' ) );
+
+/**
+ * Check for bower, grunt and npm within $PATH
+ *
+ * @param  {String}   cmd Which command to look up
+ * @return {Boolean}      Returns whether or not the command was found
+ * @private
+ */
+
+function checkCmd ( cmd ) {
+  return shell.which( cmd );
+}
+
+var checks = [
+  { cmd: 'npm', name: 'NPM', install: '. Please install Node.JS before proceeding.' },
+  { cmd: 'bower', name: 'Bower', install: ' please type: npm install -g bower' },
+  { cmd: 'grunt', name: 'Grunt-CLI', install: ' please type: npm install -g grunt' }
+];
+
+checks.forEach( function ( check ) {
+  if (!checkCmd( check.cmd )) {
+    lib.utils.error( check.name + ' is required before using CleverStack-CLI' + check.install );
+  }
+} );
 
 // avoid the command within process.argv
 lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );

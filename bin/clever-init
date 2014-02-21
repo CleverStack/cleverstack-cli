@@ -303,68 +303,66 @@ function setupPackages( ) {
         //todo: Separate this into it's own function
         lib.utils.info( 'Building frontend' );
 
-        exec( 'grunt bootstrap', { cwd: _path }, function ( err ) {
+        exec( 'grunt bootstrap build', { cwd: _path }, function ( err ) {
           if (!!err) {
             return fn( err );
           }
 
-          exec( 'grunt build', { cwd: _path }, function ( _err ) {
-            if (!!_err) {
-              return fn( _err );
-            }
+          lib.utils.success( 'Finished building frontend' );
 
-            lib.utils.success( 'Finished building frontend' );
+          if (program.skipProtractor === true) {
+            return fn( );
+          }
 
-            if (program.skipProtractor === true) {
-              return fn( );
-            }
+          initProgress.inc( );
 
-            lib.utils.info( 'Installing protractor for frontend...' );
-            var _tick = 0
-              , procProgress = [
-                'Downloading specific Selenium Server',
-                'Downloading OS specific Chromedriver',
-                'Downloading OS specific Phantomjs'
-              ];
+          lib.utils.info( 'Installing protractor for frontend...' );
+          var _tick = 0
+            , procProgress = [
+              'Downloading specific Selenium Server',
+              'Downloading OS specific Chromedriver',
+              'Downloading OS specific Phantomjs'
+            ];
 
-            var procBar = bar.addItem( procProgress[ _tick ], {
-              type: [ 'bar','percentage' ],
-              max: 100,
-              precision: 0
-            } );
+          var procBar = bar.addItem( procProgress[ _tick ], {
+            type: [ 'bar','percentage' ],
+            max: 100,
+            precision: 0
+          } );
 
-            var proProc = spawn( 'npm', [ 'run-script', 'setup-protractor' ], { cwd: _path } )
-              , procErr = '';
+          var proProc = spawn( 'npm', [ 'run-script', 'setup-protractor' ], { cwd: _path } )
+            , procErr = '';
 
-            proProc.stderr.on( 'data', function ( data ) {
-              procErr += data + '';
-            } );
+          proProc.stderr.on( 'data', function ( data ) {
+            procErr += data + '';
+          } );
 
-            proProc.stdout.on( 'data', function ( data ) {
-              var d = data + ''
-                , match = d.match(/\d{1,2}%/);
+          proProc.stdout.on( 'data', function ( data ) {
+            var d = data + ''
+              , match = d.match(/\d{1,2}%/);
 
-              if (match !== null) {
-                var perc = parseInt( match[ 0 ].replace( '%', '' ), 10 );
-                if (perc > procBar.count || perc >= 99) {
-                  procBar.inc( );
-                  if (procBar.count >= 100 && _tick < 2) {
-                    _tick++;
-                    procBar.name  = procProgress[ _tick ];
-                    procBar.count = 0;
-                  }
+            if (match !== null) {
+              var perc = parseInt( match[ 0 ].replace( '%', '' ), 10 );
+              if (perc > procBar.count || perc >= 99) {
+                procBar.inc( );
+                if (procBar.count >= 100 && _tick < 2) {
+                  _tick++;
+                  procBar.name  = procProgress[ _tick ];
+                  procBar.count = 0;
                 }
               }
-            } );
+            }
+          } );
 
-            proProc.on( 'close', function ( code ) {
-              if (code !== 0) {
-                return fn( err );
-              }
+          proProc.on( 'close', function ( code ) {
+            if (code !== 0) {
+              return fn( err );
+            }
 
-              initProgress.inc( );
-              fn( );
-            } );
+            // two because it's a big chunk of the %
+            initProgress.inc( );
+            initProgress.inc( );
+            fn( );
           } );
         } );
       }, fn );

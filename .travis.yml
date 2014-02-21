@@ -4,6 +4,5 @@ node_js:
   - '0.10'
 
 before_install:
-  - 'bash ./bin/travis.sh'
   - 'npm install -g grunt-cli'
   - 'npm install -g bower'
