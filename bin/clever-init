@@ -311,6 +311,8 @@ function setupPackages( ) {
           lib.utils.success( 'Finished building frontend' );
 
           if (program.skipProtractor === true) {
+            initProgress.inc( );
+            initProgress.inc( );
             return fn( );
           }
 
