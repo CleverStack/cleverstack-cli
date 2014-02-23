@@ -61,7 +61,7 @@ lib.util.locations.get( )
       moduleVersion = moduleSplit[ 1 ];
     }
 
-    lib.packages.findConfigAndVersionForModule( locations, moduleName, moduleVersion, 'lt' )
+    lib.util.module.findConfigAndVersionForModule( locations, moduleName, moduleVersion, 'lt' )
     .then( function ( m ) {
       filter( null, m );
     }, function ( err ) {
