@@ -16,6 +16,7 @@ Promise.longStackTraces( );
 
 program
   .option( '--skip-protractor', 'Skips installing protractor' )
+  .option( '--allow-root', 'Tells Bower to allow root' )
   .version( lib.pkg.version );
 
 program
@@ -267,7 +268,7 @@ function setupPackages( ) {
       lib.project.installModule( {
         moduleDir: modulesFolder,
         modulePath: ''
-      }, path.resolve( path.join( modulesFolder, m ) ) )
+      }, path.resolve( path.join( modulesFolder, m ) ), program )
       .then( function ( ) {
         next( );
       } )
@@ -295,7 +296,7 @@ function setupPackages( ) {
       lib.project.installBowerComponents( {
         moduleDir: _path,
         modulePath: 'app/modules' // todo: Call locations( ) after population
-      } )
+      }, program )
       .then( function ( ) {
         initProgress.inc( );
         lib.utils.success( 'Finished installing bower packages.' );

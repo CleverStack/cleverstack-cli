@@ -9,6 +9,7 @@ exports.tap = [
   '',
   '    -h, --help         output usage information',
   '    --skip-protractor  Skips installing protractor',
+  '    --allow-root       Tells Bower to allow root',
   '    -V, --version      output the version number',
   '',
   '  Examples:',
