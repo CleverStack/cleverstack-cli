@@ -1,6 +1,6 @@
 {
   "name": "cleverstack-cli",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "description": "Command line interface for CleverTech's CleverStack",
   "main": "./index.js",
   "scripts": {
