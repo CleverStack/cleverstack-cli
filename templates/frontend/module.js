@@ -8,13 +8,15 @@ define(['angular'], function (ng) {
   ng.module('{{template_name}}.providers', []);
   ng.module('{{template_name}}.services', []);
   ng.module('{{template_name}}.factories', []);
+  ng.module('{{template_name}}.directives', []);
 
   var module = ng.module('{{template_name}}', [
     'cs_common',
     '{{template_name}}.controllers',
     '{{template_name}}.providers',
     '{{template_name}}.services',
-    '{{template_name}}.factories'
+    '{{template_name}}.factories',
+    '{{template_name}}.directives'
   ]);
 
   module.config([
