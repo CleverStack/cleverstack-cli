@@ -31,7 +31,7 @@ define(['angular'], function (ng) {
       $routeProvider
         .when('/example', {
           templateUrl: CSTemplate.view('{{Template}}-view'),
-          controller: '{{Template}}ExampleController',
+          controller: '{{Template}}Controller',
           public: true
         });
     }
