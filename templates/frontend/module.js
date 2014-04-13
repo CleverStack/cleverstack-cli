@@ -30,7 +30,7 @@ define(['angular'], function (ng) {
       // Register any routes you need for your module.
       $routeProvider
         .when('/example', {
-          templateUrl: CSTemplate.view('{{Template}}-view'),
+          templateUrl: CSTemplate.view('{{template_name}}-view'),
           controller: '{{Template}}Controller',
           public: true
         });
