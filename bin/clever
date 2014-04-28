@@ -19,7 +19,7 @@ function checkCmd ( cmd ) {
 var checks = [
   { cmd: 'npm', name: 'NPM', install: '. Please install Node.JS before proceeding.' },
   { cmd: 'bower', name: 'Bower', install: ' please type: npm install -g bower' },
-  { cmd: 'grunt', name: 'Grunt-CLI', install: ' please type: npm install -g grunt' }
+  { cmd: 'grunt', name: 'Grunt-CLI', install: ' please type: npm install -g grunt-cli' }
 ];
 
 checks.forEach( function ( check ) {
