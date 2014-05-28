@@ -41,7 +41,7 @@ dir.filter( function ( d ) {
     // we only need to know if it's an official cleverstack repo or not...
     // since the grunt server option is the same, we just literally need to
     // use indexOf
-    if (hasPkgName && ['cleverstack-angular-seed'].indexOf( readPkg.name ) > -1) {
+    if (hasPkgName && ['angular-seed'].indexOf( readPkg.name ) > -1) {
       folders.push( {
         path: path.resolve( path.join( pkg, '..' ) )
       } );

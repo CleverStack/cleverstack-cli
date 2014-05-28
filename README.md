@@ -61,7 +61,7 @@ cleverstack-cli depends on [NPM](http://npmjs.org/), [GruntJS](http://gruntjs.co
 
 ### Initialize a new project
 
-Initializing a new project will download and grab CleverStack's [cleverstack-angular-seed](https://github.com/clevertech/cleverstack-angular-seed) and [cleverstack-node-seed](https://github.com/clevertech/cleverstack-node-seed) seeds. After initializing the project, cleverstack-cli will automatically install any depedencies that are required through [NPM](http://npmjs.org) and [Bower](http://bower.io).
+Initializing a new project will download and grab CleverStack's [angular-seed](https://github.com/CleverStack/angular-seed) and [node-seed](https://github.com/CleverStack/node-seed) seeds. After initializing the project, cleverstack-cli will automatically install any depedencies that are required through [NPM](http://npmjs.org) and [Bower](http://bower.io).
 
 `$: clever init my-new-project`
 
@@ -614,11 +614,11 @@ https://github.com/CleverStack/cleverstack-cli/wiki
 
 ### Official CleverStack Backend Seed
 
-[cleverstack-node-seed](https://github.com/clevertech/cleverstack-node-seed)
+[node-seed](https://github.com/CleverStack/node-seed)
 
 ### Official CleverStack Frontend Seed
 
-[cleverstack-angular-seed](https://github.com/clevertech/cleverstack-angular-seed)
+[angular-seed](https://github.com/CleverStack/angular-seed)
 
 ### Communication
 

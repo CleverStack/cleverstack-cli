@@ -114,7 +114,7 @@ function writeLocalJSON ( projectDir ) {
 }
 
 /**
- * Installs the cleverstack-node-seed as 'backend' and then writes
+ * Installs the node-seed as 'backend' and then writes
  * a local JSON file through writeLocalJSON()
  *
  * @return {Promise}
@@ -186,7 +186,7 @@ function setupBackend ( ) {
 }
 
 /**
- * Installs cleverstack-angular-seed as 'frontend'
+ * Installs angular-seed as 'frontend'
  *
  * @return {Promise}
  * @api private
