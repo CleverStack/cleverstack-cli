@@ -134,8 +134,8 @@ function setupBackend ( ) {
       var pkg = args[ args.indexOf( 'backend' ) ].split( '@' );
 
       lib.packages.get( {
-        name: 'cleverstack-node-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ),
-        owner: 'clevertech'
+        name: 'node-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ),
+        owner: 'cleverstack'
       }, projectDir )
       .then( function ( ) {
         writeLocalJSON( projectDir )
