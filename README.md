@@ -1,6 +1,6 @@
 # CleverStack CLI
 
-[![Build Status](http://img.shields.io/travis/CleverStack/cleverstack-cli.svg)](https://travis-ci.org/CleverStack/cleverstack-cli) [![Code Climate](http://img.shields.io/codeclimate/github/CleverStack/cleverstack-cli.svg)](https://codeclimate.com/github/CleverStack/cleverstack-cli) [![Dependency Status](https://david-dm.org/CleverStack/cleverstack-cli.svg?theme=shields.io)](https://david-dm.org/CleverStack/cleverstack-cli) [![devDependency Status](https://david-dm.org/CleverStack/cleverstack-cli/dev-status.svg?theme=shields.io)](https://david-dm.org/CleverStack/cleverstack-cli#info=devDependencies) [![CleverTech](http://img.shields.io/badge/clever-tech-ff9933.svg)](http://www.clevertech.biz/)
+[![Build Status](http://img.shields.io/travis/CleverStack/cleverstack-cli.svg)](https://travis-ci.org/CleverStack/cleverstack-cli.svg) [![Code Climate](http://img.shields.io/codeclimate/github/CleverStack/cleverstack-cli.svg)](https://codeclimate.com/github/CleverStack/cleverstack-cli) [![Dependency Status](https://david-dm.org/CleverStack/cleverstack-cli.svg?theme=shields.io)](https://david-dm.org/CleverStack/cleverstack-cli) [![devDependency Status](https://david-dm.org/CleverStack/cleverstack-cli/dev-status.svg?theme=shields.io)](https://david-dm.org/CleverStack/cleverstack-cli#info=devDependencies) [![CleverTech](http://img.shields.io/badge/clever-tech-ff9933.svg)](http://www.clevertech.biz/)
 
 ![CleverStack CLI](http://cleverstack.github.io/assets/img/logos/clevertech-seed-logo-clean.png "CleverStack CLI")
 
