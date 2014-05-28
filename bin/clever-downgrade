@@ -32,19 +32,19 @@ var _args = args.map( function ( a ) {
 var findBackend = _args.indexOf( 'backend' );
 if (findBackend > -1) {
   var backendVersion = args[ findBackend ].split( '@' )[ 1 ];
-  args[ findBackend ] = 'cleverstack-node-seed' + ( typeof backendVersion !== "undefined" ? '@' + backendVersion : '' );
+  args[ findBackend ] = 'node-seed' + ( typeof backendVersion !== "undefined" ? '@' + backendVersion : '' );
 }
 
 var findFrontend = _args.indexOf( 'frontend' );
 if (findFrontend > -1) {
   var frontendVersion = args[ findFrontend ].split( '@' )[ 1 ];
-  args[ findFrontend ] = 'cleverstack-node-seed' + ( typeof frontendVersion !== "undefined" ? '@' + frontendVersion : '' );
+  args[ findFrontend ] = 'node-seed' + ( typeof frontendVersion !== "undefined" ? '@' + frontendVersion : '' );
 }
 
 var modules = [ ];
 if (args.length < 1) {
-  modules.push( 'cleverstack-node-seed' );
-  modules.push( 'cleverstack-angular-seed' );
+  modules.push( 'node-seed' );
+  modules.push( 'angular-seed' );
 } else {
   modules = args;
 }
