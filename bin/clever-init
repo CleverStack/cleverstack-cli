@@ -203,7 +203,7 @@ function setupFrontend( ) {
 
     var pkg = args[ args.indexOf( 'frontend' ) ].split( '@' );
 
-    lib.packages.get( { name: 'cleverstack-angular-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ), owner: 'clevertech' }, projectDir )
+    lib.packages.get( { name: 'angular-seed' + ( typeof pkg[ 1 ] !== "undefined" ? '@' + pkg[ 1 ] : '' ), owner: 'CleverStack' }, projectDir )
     .then( function ( ) {
       var res = Promise.defer( );
 
