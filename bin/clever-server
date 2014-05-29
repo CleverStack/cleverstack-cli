@@ -45,7 +45,7 @@ dir.filter( function ( d ) {
     // we only need to know if it's an official cleverstack repo or not...
     // since the grunt server option is the same, we just literally need to
     // use indexOf
-    if (hasPkgName && ['cleverstack-angular-seed', 'cleverstack-node-seed'].indexOf( readPkg.name ) > -1) {
+    if (hasPkgName && ['angular-seed', 'node-seed'].indexOf( readPkg.name ) > -1) {
       folders.push( {
         name: readPkg.name,
         path: path.resolve( path.join( pkg, '..' ) )
@@ -73,7 +73,7 @@ folders.forEach( function ( folder, i )  {
     args.push( program.port );
   }
 
-  if (folder.name === "cleverstack-node-seed") {
+  if (folder.name === "node-seed") {
     args.push( 'server:web' );
   } else {
     args.push( 'server' );

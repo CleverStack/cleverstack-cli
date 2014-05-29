@@ -20,7 +20,7 @@ function tap ( options, done ) {
         , pkgJson = require( pkgPath );
 
       expect( fs.existsSync( pkgPath ) ).to.be.true;
-      expect( pkgJson.name ).to.equal( 'cleverstack-node-seed' );
+      expect( pkgJson.name ).to.equal( 'node-seed' );
     } else {
       expect( fs.existsSync( path.join( assetPath, options.name, 'backend' ) ) ).to.be.false;
     }
@@ -34,7 +34,7 @@ function tap ( options, done ) {
       expect( fs.existsSync( bowerPath ) ).to.be.true;
 
       var pkgJson2  = require( pkgPath2 );
-      expect( pkgJson2.name ).to.equal( 'cleverstack-angular-seed' );
+      expect( pkgJson2.name ).to.equal( 'angular-seed' );
     } else {
       expect( fs.existsSync( path.join( assetPath, options.name, 'frontend' ) ) ).to.be.false;
     }
