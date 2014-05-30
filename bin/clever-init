@@ -2,7 +2,7 @@
 
 GLOBAL.bar = require( 'node-status' );
 GLOBAL.console = process.stdout = process.stderr = bar.console();
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) )
+GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
 
 var path            = require( 'path' )
   , fs              = require( 'fs' )
@@ -41,7 +41,7 @@ GLOBAL.program = require( 'commander' );
 
 // Define CleverStack-CLI
 program
-  .option( '-f, --force', 'delete/overwrite existing projects in your current directory ' + process.cwd() )
+  .option( '-f, --force', 'delete existing projects in your current directory ' + process.cwd() )
   .option( '-v, --verbose', 'verbose output useful for debugging' )
   .option( '-A, --allow-root', 'allow root for bower' )
   .option( '-S, --skip-protractor', 'skips installing protractor (Frontend only)' )
@@ -250,6 +250,8 @@ function setupFrontend( ) {
       return deferred.reject( err );
     }
 
+    lib.utils.info( [ '  Downloading and extracting ', csPackage.name, '...' ].join( '' ) );
+    running.text = 'Downloading and extracting...';
     lib.packages
       .get( csPackage, projectDir )
       .then(function() {
@@ -470,7 +472,7 @@ async.waterfall(
         singleSeed = false;
         seedsToInstall.push( { name: 'Backend', install: setupBackend } );
         seedsToInstall.push( { name: 'Frontend', install: setupFrontend } );
-        progress.max = 15;
+        progress.max = 16;
 
       } else if ( installFrontend ) {
 
@@ -479,6 +481,7 @@ async.waterfall(
 
       } else if ( installBackend ) {
 
+        progress.max = 9;
         seedsToInstall.push( { name: 'Backend', install: setupBackend }  );
       }
 

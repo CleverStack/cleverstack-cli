@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
+GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
+
 var program   = require( 'commander' )
   , path      = require( 'path' )
   , mkdirp    = require( 'mkdirp' )
   , async     = require( 'async' )
   , es        = require( 'event-stream' )
   , fs        = require( 'fs' )
-  , lib       = require( path.join( __dirname, '..', 'index' ) )
   , generate  = lib.generator.generate;
 
 program.version( lib.pkg.version );

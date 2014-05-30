@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
+GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
+
 var program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
   , spawn   = require( 'child_process' ).spawn
-  , async   = require( 'async' )
-  , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
+  , async   = require( 'async' );
 
 program
   .version( lib.pkg.version )

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
+GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
+
 var program = require( 'commander' )
   , Promise = require( 'bluebird' )
   , path    = require( 'path' )
   , rimraf  = require( 'rimraf' )
   , fs      = require( 'fs' )
   , async   = require( 'async' )
-  , _       = require( 'lodash' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) );
+  , _       = require( 'lodash' );
 
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' );

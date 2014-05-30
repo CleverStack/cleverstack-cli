@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
+GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
+
 var path  = require( 'path' )
   , fs    = require( 'fs' )
   , os    = require( 'os' )
   , _     = require( 'lodash' )
-  , lib   = require( path.resolve( path.join( __dirname, '..', 'index' ) ) )
   , replFile = path.join(__dirname, '..', 'lib', 'repl.js');
 
 lib.util.locations.get( ).then( function ( projects ) {

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
+GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
+
 var program     = require( 'commander' )
   , path        = require( 'path' )
   , fs          = require( 'fs' )
-  , lib         = require( path.join( __dirname, '..', 'index' ) )
   , scaffold    = lib.generator.newModule
   , paths       = require( path.join( __dirname, '..', 'lib', 'generate', 'paths' ) );
 
