@@ -9,9 +9,11 @@ var chai      = require( 'chai' )
   , assetPath = path.join( __dirname, 'assets' );
 
 function tap ( options, done ) {
-  var modules = [ ].concat( options.args || [ ], options.backendModules || [ ], options.frontendModules || [ ] );
+  var modules = [ ].concat( options.args || [ ], options.backendModules || [ ], options.frontendModules || [ ] )
+    , command = path.join( binPath, 'clever-init' ) + ' --skip-protractor ' + options.name + (modules.length > 0 ? ' ' + modules.join( ' ' ) : '' );
 
-  exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor ' + options.name + (modules.length > 0 ? ' ' + modules.join( ' ' ) : '' ), { cwd: assetPath }, function ( err, stdout, stderr ) {
+  console.log(command);
+  exec( command, { cwd: assetPath }, function ( err, stdout, stderr ) {
     expect( stderr ).to.equal( '' );
 
     if (options.backend === true) {
