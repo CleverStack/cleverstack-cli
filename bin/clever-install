@@ -30,6 +30,7 @@ if ( program.args.length < 1 ) {
   program.help();
 }
 
+// Tell promise we want long stack traces for easier debugging
 Promise.longStackTraces( );
 
 /**  Start Installation

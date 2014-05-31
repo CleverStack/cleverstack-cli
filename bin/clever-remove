@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
-
-var program = require( 'commander' )
-  , Promise = require( 'bluebird' )
-  , path    = require( 'path' )
+var path    = require( 'path' )
+  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program = GLOBAL.program = require( 'commander' )
+  , Promise = require( 'bluebird' )\
   , rimraf  = require( 'rimraf' )
   , fs      = require( 'fs' )
   , async   = require( 'async' )
   , _       = require( 'lodash' );
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' );
 
+/**  Define CLI Help
+================================*/
 program.on( '--help', function ( ) {
   console.log( '  Examples:' );
   console.log( '    clever remove clever-background-tasks' );
@@ -20,13 +23,15 @@ program.on( '--help', function ( ) {
   console.log( '' );
 } );
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
-Promise.longStackTraces( );
-
-if (program.args.length < 1) {
-  program.help( );
+if ( program.args.length < 1 ) {
+  program.help();
 }
+
+// Tell promise we want long stack traces for easier debugging
+Promise.longStackTraces();
 
 /**
  * Removed a module from package.json's bundledDependencies
@@ -132,6 +137,8 @@ function findModules( modules ) {
   return def.promise;
 }
 
+/**  Start Removing
+================================*/
 findModules( program.args )
 .then( function ( ) {
   lib.utils.success( 'Modules have been removed from your project.' );
