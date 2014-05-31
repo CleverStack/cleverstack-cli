@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
-
-var program = require( 'commander' )
-  , path    = require( 'path' )
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
   , Promise = require( 'bluebird' )
   , async   = require( 'async' )
   , _       = require( 'lodash' );
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version );
 
-program.on( '--help', function ( ) {
+/**  Define CLI Help
+================================*/
+program.on( '--help', function() {
   console.log( '  Examples:' );
   console.log( '' );
   console.log( '    clever downgrade clever-orm' );
@@ -18,16 +21,20 @@ program.on( '--help', function ( ) {
   console.log( '    clever downgrade backend' );
   console.log( '    clever downgrade frontend' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
 var args = process.argv.slice( 2 );
 
+
+/**  Start Downgrading
+================================*/
 // We don't need version numbers when we're checking for backend or frontend...
-var _args = args.map( function ( a ) {
+var _args = args.map( function( a ) {
   return a.split( '@' )[ 0 ];
-} );
+});
 
 // Figure out what we're trying to upgrade...
 var findBackend = _args.indexOf( 'backend' );
