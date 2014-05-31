@@ -10,14 +10,18 @@ var chai      = require( 'chai' )
 
 function tap ( options, done ) {
   var modules = [ ].concat( options.args || [ ], options.backendModules || [ ], options.frontendModules || [ ] )
-    , command = path.join( binPath, 'clever-init' ) + ' --skip-protractor ' + options.name + (modules.length > 0 ? ' ' + modules.join( ' ' ) : '' );
+    , command = path.join( binPath, 'clever-init' ) + ' -f -S ' + options.name + (modules.length > 0 ? ' ' + modules.join( ' ' ) : '' );
 
   exec( command, { cwd: assetPath }, function ( err, stdout, stderr ) {
     expect( stderr ).to.equal( '' );
 
     if (options.backend === true) {
-      expect( fs.existsSync( path.join( assetPath, options.name, 'backend' ) ) ).to.be.true;
-      var pkgPath = path.join( assetPath, options.name, 'backend', 'package.json' )
+      var backendPath = ( options.frontend === true )
+            ? path.join( assetPath, options.name, 'backend' )
+            : path.join( assetPath, options.name );
+
+      expect( fs.existsSync( backendPath ) ).to.be.true;
+      var pkgPath = path.join( backendPath, 'package.json' )
         , pkgJson = require( pkgPath );
 
       expect( fs.existsSync( pkgPath ) ).to.be.true;
@@ -27,9 +31,13 @@ function tap ( options, done ) {
     }
 
     if (options.frontend === true) {
-      expect( fs.existsSync( path.join( assetPath, options.name, 'frontend' ) ) ).to.be.true;
-      var pkgPath2  = path.join( assetPath, options.name, 'frontend', 'package.json' )
-        , bowerPath = path.join( assetPath, options.name, 'frontend', 'bower.json' );
+      var frontendPath = ( options.backend === true )
+            ? path.join( assetPath, options.name, 'frontend' )
+            : path.join( assetPath, options.name );
+
+      expect( fs.existsSync( frontendPath ) ).to.be.true;
+      var pkgPath2  = path.join( frontendPath, 'package.json' )
+        , bowerPath = path.join( frontendPath, 'bower.json' );
 
       expect( fs.existsSync( pkgPath2 ) ).to.be.true;
       expect( fs.existsSync( bowerPath ) ).to.be.true;
@@ -109,7 +117,7 @@ describe( 'Init (these tests will take a long time)', function ( ) {
 
     it( 'should not be able to initialize a new project with the same name', function ( done ) {
       exec( path.join( binPath, 'clever-init' ) + ' --skip-protractor my-new-project', { cwd: assetPath }, function ( err, stdout ) {
-        expect( stdout ).to.match( /Can't create project my-new-project due to a folder named my-new-project existing in/ );
+        expect( stdout ).to.match( /folder already exists/ );
         done( err );
       } );
     } );

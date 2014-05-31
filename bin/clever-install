@@ -2,12 +2,15 @@
 
 GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
 
-var program = require( 'commander' )
-  , Promise = require( 'bluebird' )
+var Promise = require( 'bluebird' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
   , _       = require( 'lodash' )
   , async   = require( 'async' );
+
+/**  CLI Program
+================================*/
+GLOBAL.program = require( 'commander' );
 
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' )
@@ -22,16 +25,24 @@ program.on( '--help', function ( ) {
 
 program.parse( process.argv );
 
-Promise.longStackTraces( );
-
 if (program.args.length < 1) {
   program.help( );
 }
 
-lib.install.run( program.args )
-.then( function ( ) {
-  process.exit( 0 );
-}, function ( err ) {
-  lib.utils.fail( err );
-  process.exit( 1 );
-} );
+Promise.longStackTraces( );
+
+lib.utils.initBar();
+lib.utils.installing( 'Modules' );
+lib.utils.expandProgress( program.args.length );
+
+lib.utils.startBar(function() {
+  lib.utils.info( 'Attempting to install ' + program.args + '...' );
+  lib.install
+    .run( program.args )
+    .then(function() {
+      process.exit( 0 );
+    }, function ( err ) {
+      lib.utils.fail( err );
+      process.exit( 1 );
+    });
+});
