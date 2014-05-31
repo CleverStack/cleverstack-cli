@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-var lib             = GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) )
+var path            = require( 'path' )
+  , lib             = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
   , program         = GLOBAL.program = require( 'commander' )
   , utils           = lib.utils
-  , path            = require( 'path' )
   , fs              = require( 'fs' )
   , mkdirp          = require( 'mkdirp' )
   , rimraf          = require( 'rimraf' )
@@ -237,16 +237,14 @@ async.waterfall(
 
   ],
   function finishedInstallation( err ) {
-    setTimeout(function() {
-      if ( !err ) {
-        utils.running( 'Installation completed' );
-        utils.installing( 'Done' );
-        utils.success( '\nProject ' + project + ' has been created in ' + projectFolder + '\n' );
-        process.exit( 0 );
-      } else {
-        utils.fail( err )
-      }
-    }, 2000);
+    if ( !err ) {
+      utils.running( 'Installation completed' );
+      utils.installing( 'Done' );
+      utils.success( '\nProject ' + project + ' has been created in ' + projectFolder + '\n' );
+      process.exit( 0 );
+    } else {
+      utils.fail( err )
+    }
   }
 );
 

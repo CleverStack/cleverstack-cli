@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
-
-var program = require( 'commander' )
+var lib     = GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) )
+  , program = GLOBAL.program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
   , exec    = require( 'child_process' ).exec
@@ -15,7 +14,7 @@ program.on( '--help', function( ) {
   console.log( '  Example:' );
   console.log( '    clever build' );
   console.log( '' );
-} );
+});
 
 program.parse( process.argv );
 
@@ -65,7 +64,7 @@ async.each(
         next();
       }
     });
-
+    
     proc.stdout.pipe( process.stdout );
     proc.stderr.pipe( process.stderr );
   },

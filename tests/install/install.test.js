@@ -11,7 +11,7 @@ chai.Assertion.includeStack = true;
 describe( 'Install (generic)', function ( ) {
   describe( 'should have trouble installing a module', function ( ) {
     it( 'outside of the project\'s scope', function ( done ) {
-      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.2', { cwd: assetPath }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-install' ) + ' clever-orm@0.0.2', { cwd: path.resolve( path.join( assetPath, '..' ) ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /Couldn't find a seed directory within/ );
         done( err );

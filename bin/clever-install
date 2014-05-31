@@ -1,48 +1,54 @@
 #!/usr/bin/env node
 
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
-
-var Promise = require( 'bluebird' )
-  , path    = require( 'path' )
+var path    = require( 'path' )
+  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program = GLOBAL.program = require( 'commander' )
+  , Promise = require( 'bluebird' )
   , fs      = require( 'fs' )
   , _       = require( 'lodash' )
   , async   = require( 'async' );
 
-/**  CLI Program
+/**  Define CLI Usage
 ================================*/
-GLOBAL.program = require( 'commander' );
-
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' )
   .option( '-v, --versions [versions]', 'Install a specific package version.' )
 
+/**  Define CLI Help
+================================*/
 program.on( '--help', function ( ) {
   console.log( '  Examples:' );
   console.log( '    clever install clever-background-tasks' );
   console.log( '    clever install clever-background-tasks@0.0.1' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
-if (program.args.length < 1) {
-  program.help( );
+if ( program.args.length < 1 ) {
+  program.help();
 }
 
 Promise.longStackTraces( );
 
-lib.utils.initBar();
-lib.utils.installing( 'Modules' );
-lib.utils.expandProgress( program.args.length );
+/**  Start Installation
+================================*/
 
-lib.utils.startBar(function() {
+// Disabling progress bar until we find a way to resume stdin for user input!
+// lib.utils.initBar();
+// lib.utils.installing( 'Modules' );
+// lib.utils.expandProgress( program.args.length );
+// lib.utils.startBar(function() {
   lib.utils.info( 'Attempting to install ' + program.args + '...' );
   lib.install
     .run( program.args )
     .then(function() {
+      lib.utils.success( 'Successfully installed.' );
       process.exit( 0 );
-    }, function ( err ) {
+    })
+    .catch(function( err ) {
       lib.utils.fail( err );
       process.exit( 1 );
-    });
-});
+    })
+// });
