@@ -3,7 +3,7 @@
 var path    = require( 'path' )
   , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
   , program = GLOBAL.program = require( 'commander' )
-  , Promise = require( 'bluebird' )\
+  , Promise = require( 'bluebird' )
   , rimraf  = require( 'rimraf' )
   , fs      = require( 'fs' )
   , async   = require( 'async' )
