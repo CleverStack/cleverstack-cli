@@ -1,16 +1,14 @@
 #!/usr/bin/env node
 
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
-
-var program = require( 'commander' )
-  , path    = require( 'path' )
-  , fs      = require( 'fs' )
-  , os      = require( 'os' )
-  , spawn   = require( 'child_process' ).spawn
-  , async   = require( 'async' );
-
-var folders = [ ]
-  , cwd     = process.cwd( );
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
+  , fs        = require( 'fs' )
+  , os        = require( 'os' )
+  , spawn     = require( 'child_process' ).spawn
+  , async     = require( 'async' )
+  , folders   = [ ]
+  , cwd       = process.cwd( );
 
 /**
  * Looks for a Gruntfile within seeds folder for grunt test
@@ -94,6 +92,8 @@ function start( reporter ) {
   } );
 }
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version );
 
 var reporters = [ 'e2e', 'unit', 'coverage' ];
@@ -105,17 +105,24 @@ reporters.forEach( function ( reporter ) {
     .action( start );
 } );
 
-program.on( '--help', function ( ) {
+/**  Define CLI Help
+================================*/
+program.on( '--help', function() {
   console.log( '  Examples:' );
   console.log( '' );
   console.log( '    clever test coverage' );
   console.log( '    clever test e2e' );
   console.log( '    clever test unit' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
 
-if (!program.args.length) {
+
+/**  Start tests
+================================*/
+if ( !program.args.length ) {
   start( 'unit' );
 }

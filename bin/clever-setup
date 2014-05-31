@@ -1,21 +1,24 @@
 #!/usr/bin/env node
 
-GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) );
-
-var program   = require( 'commander' )
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
   , Promise   = require( 'bluebird' )
-  , path      = require( 'path' )
   , async     = require( 'async' )
   , spawn     = require( 'child_process' ).spawn
   , exec      = require( 'child_process' ).exec
   , fs        = require( 'fs' )
   , _         = require( 'lodash' );
 
+/**  Define CLI Usage
+================================*/
 program
   .option( '--skip-protractor', 'Skips installing protractor' )
   .version( lib.pkg.version );
 
-program.on( '--help', function ( ) {
+/**  Define CLI Help
+================================*/
+program.on( '--help', function () {
   console.log( '  Description:' );
   console.log( '' );
   console.log( '    Installs all NPM and Bower components for each module as well as building bundleDependencies.');
@@ -25,8 +28,10 @@ program.on( '--help', function ( ) {
   console.log( '' );
   console.log( '    clever setup' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
 
 /**
@@ -142,6 +147,8 @@ function setupPackages( projectFolder ) {
   return def.promise;
 }
 
+/**  Start Setup
+================================*/
 lib.util.locations.get( ).then( function ( projects ) {
   var backend = _.find( projects, function ( p ) {
     return p.name === "backend";
