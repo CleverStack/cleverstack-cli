@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 var path    = require( 'path' )
-  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) );
+  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program = require( 'commander' );
 
 program.version( lib.pkg.version );
 
