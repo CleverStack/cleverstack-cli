@@ -27,8 +27,7 @@ program
   .option( '-v, --verbose', 'verbose output useful for debugging' )
   .option( '-A, --allow-root', 'allow root for bower' )
   .option( '-S, --skip-protractor', 'skips installing protractor (Frontend only)' )
-  .version( lib.pkg.version )
-  .parse( process.argv );
+  .version( lib.pkg.version );
 
 /**  Define CLI Command
 ================================*/
@@ -54,6 +53,9 @@ program.on( '--help', function() {
   console.log( '' );
 });
 
+/**  Parse CLI Arguments
+================================*/
+program.parse( process.argv );
 if ( !program.args[ 0 ] || program.args[ 0 ].toString().trim() === "" ) {
   program.help();
 }
@@ -165,9 +167,9 @@ async.waterfall(
         }
 
         if ( !program.skipProtractor ) {
-          utils.expandProgress( 9 );
+          utils.expandProgress( 8 );
         } else {
-          utils.expandProgress( 7 );
+          utils.expandProgress( 6 );
         }
 
         seedsToInstall.push( { name: 'Frontend', install: setupFrontend }  );
