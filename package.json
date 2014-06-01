@@ -40,7 +40,6 @@
     "ncp": "~0.5.0",
     "node-status": "~0.1.3",
     "rimraf": "~2.2.5",
-    "rmdir-recursive": "0.0.0",
     "semver": "~2.2.1",
     "shelljs": "^0.2.6",
     "t-case": "~0.1.0",
