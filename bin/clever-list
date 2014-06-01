@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-var program   = require( 'commander' )
-  , path      = require( 'path' )
-  , lib       = require( path.join( __dirname, '..', 'index' ) );
+var path    = require( 'path' )
+  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program = require( 'commander' );
 
 program.version( lib.pkg.version );
 
-program.on( '--help', function ( ) {
+program.on( '--help', function() {
   console.log( '  Example:' );
   console.log( '    clever list' );
   console.log( '' );
-} );
+});
 
 program.parse( process.argv );
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-var program = require( 'commander' )
+var lib     = GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) )
+  , program = GLOBAL.program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
-  , spawn   = require( 'child_process' ).spawn
-  , async   = require( 'async' )
-  , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
+  , exec    = require( 'child_process' ).exec
+  , async   = require( 'async' );
 
 program
   .version( lib.pkg.version )
@@ -14,7 +14,7 @@ program.on( '--help', function( ) {
   console.log( '  Example:' );
   console.log( '    clever build' );
   console.log( '' );
-} );
+});
 
 program.parse( process.argv );
 
@@ -53,27 +53,26 @@ if (folders.length < 1) {
   lib.utils.fail( 'CleverStack couldn\'t find the frontend seed directory within ' + process.cwd( ) );
 }
 
-async.each( folders, function ( folder, next ) {
-  var proc  = spawn( 'grunt', [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ), 'build' ], { stdio: 'inherit' } )
-    , error = '';
-
-  proc.on( 'error', function ( err ) {
-    error += err;
-  } );
-
-  proc.on( 'close', function ( code ) {
-    if (code !== 0) {
-      return next( err );
+async.each(
+  folders,
+  function run( folder, next ) {
+    var proc = exec( [ 'grunt', '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ), 'build' ].join( ' ' ), function( err ) {
+      if ( err ) {
+        next( err );
+      } else {
+        lib.utils.success( 'Build for ' + folder.path + ' was successful' );
+        next();
+      }
+    });
+    
+    proc.stdout.pipe( process.stdout );
+    proc.stderr.pipe( process.stderr );
+  },
+  function handleErr( err ) {
+    if (!!err) {
+      lib.utils.fail( err );
     }
 
-    lib.utils.success( 'Build for ' + folder.path + ' was successful' );
-    next( );
-  } );
-},
-function ( err ) {
-  if (!!err) {
-    lib.utils.fail( err );
+    process.exit( 0 );
   }
-
-  process.exit( 0 );
-} );
+);

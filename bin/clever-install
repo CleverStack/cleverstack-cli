@@ -1,36 +1,55 @@
 #!/usr/bin/env node
 
-var program = require( 'commander' )
+var path    = require( 'path' )
+  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program = GLOBAL.program = require( 'commander' )
   , Promise = require( 'bluebird' )
-  , path    = require( 'path' )
   , fs      = require( 'fs' )
   , _       = require( 'lodash' )
-  , async   = require( 'async' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) );
+  , async   = require( 'async' );
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version )
   .usage( '[options] [modules ...]' )
   .option( '-v, --versions [versions]', 'Install a specific package version.' )
 
+/**  Define CLI Help
+================================*/
 program.on( '--help', function ( ) {
   console.log( '  Examples:' );
   console.log( '    clever install clever-background-tasks' );
   console.log( '    clever install clever-background-tasks@0.0.1' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
-Promise.longStackTraces( );
-
-if (program.args.length < 1) {
-  program.help( );
+if ( program.args.length < 1 ) {
+  program.help();
 }
 
-lib.install.run( program.args )
-.then( function ( ) {
-  process.exit( 0 );
-}, function ( err ) {
-  lib.utils.fail( err );
-  process.exit( 1 );
-} );
+// Tell promise we want long stack traces for easier debugging
+Promise.longStackTraces( );
+
+/**  Start Installation
+================================*/
+
+// Disabling progress bar until we find a way to resume stdin for user input!
+// lib.utils.initBar();
+// lib.utils.installing( 'Modules' );
+// lib.utils.expandProgress( program.args.length );
+// lib.utils.startBar(function() {
+  lib.utils.info( 'Attempting to install ' + program.args + '...' );
+  lib.install
+    .run( program.args )
+    .then(function() {
+      lib.utils.success( 'Successfully installed.' );
+      process.exit( 0 );
+    })
+    .catch(function( err ) {
+      lib.utils.fail( err );
+      process.exit( 1 );
+    })
+// });

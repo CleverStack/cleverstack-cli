@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-var program     = require( 'commander' )
-  , path        = require( 'path' )
-  , fs          = require( 'fs' )
-  , lib         = require( path.join( __dirname, '..', 'index' ) )
-  , scaffold    = lib.generator.newModule
-  , paths       = require( path.join( __dirname, '..', 'lib', 'generate', 'paths' ) );
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
+  , fs        = require( 'fs' )
+  , scaffold  = lib.generator.newModule
+  , paths     = require( path.join( __dirname, '..', 'lib', 'generate', 'paths' ) );
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version );
-
 program
   .usage( '[options] <name>' )
   .option( '--no-service', 'Disables generating a service.' )
@@ -17,19 +18,24 @@ program
   .option( '--no-task', 'Disables generating a task.' )
   .option( '--no-test', 'Disables generating a test.' );
 
-program.on( '--help', function ( ) {
+/**  Define CLI Help
+================================*/
+program.on( '--help', function() {
   console.log( '  Example:' );
   console.log( '    clever new my_module' );
   console.log( '    clever new myModule' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
-if (program.rawArgs.length < 3) {
-  program.help( );
+if ( program.rawArgs.length < 3 ) {
+  program.help();
 }
 
+/**  Start generating
+================================*/
 var filterOut = [ ]
   , filters   = [ 'service', 'controller', 'model', 'task', 'test', 'script', 'view' ]
   , args      = program.rawArgs.splice( 2 );

@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 
-var program = require( 'commander' )
-  , path    = require( 'path' )
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
   , Promise = require( 'bluebird' )
   , async   = require( 'async' )
-  , _       = require( 'lodash' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) );
+  , _       = require( 'lodash' );
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version );
 
-program.on( '--help', function ( ) {
+/**  Define CLI Help
+================================*/
+program.on( '--help', function() {
   console.log( '  Examples:' );
   console.log( '' );
   console.log( '    clever upgrade clever-orm' );
@@ -17,12 +21,15 @@ program.on( '--help', function ( ) {
   console.log( '    clever upgrade backend' );
   console.log( '    clever upgrade frontend' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
 var args = process.argv.slice( 2 );
 
+/**  Start Upgrading
+================================*/
 // We don't need version numbers when we're checking for backend or frontend...
 var _args = args.map( function ( a ) {
   return a.split( '@' )[ 0 ];

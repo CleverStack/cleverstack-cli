@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
-var program   = require( 'commander' )
-  , path      = require( 'path' )
-  , lib       = require( path.join( __dirname, '..', 'index' ) )
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
   , scaffold  = lib.generator.scaffold;
 
+/**  Define CLI Usage
+================================*/
 program.version( lib.pkg.version );
 
 program
@@ -15,6 +17,8 @@ program
   .option( '--no-task', 'Disables generating a task.' )
   .option( '--no-test', 'Disables generating a test.' );
 
+/**  Define CLI Help
+================================*/
 program.on( '--help', function ( ) {
   console.log( '  Note:' );
   console.log( '    Scaffold will generate templates within ' + process.cwd( ) );
@@ -26,31 +30,34 @@ program.on( '--help', function ( ) {
   console.log( '' );
 } );
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
-
-if (program.rawArgs.length < 3) {
-  program.help( );
+if ( program.rawArgs.length < 3 ) {
+  program.help();
 }
 
+/**  Start Scaffolding
+================================*/
 var filterOut = [ ]
   , filters   = [ 'service', 'controller', 'model', 'task', 'test' ];
 
-filters.forEach( function ( filter ) {
-  if (program[ filter ] === false) {
+filters.forEach( function( filter ) {
+  if ( program[ filter ] === false ) {
     filterOut.push( filter );
   }
-} );
+});
 
-if (filterOut.length === filters.length) {
-  program.help( );
+if ( filterOut.length === filters.length ) {
+  program.help();
 }
 
 var args = program.rawArgs.splice( 2 );
-scaffold( args[ 0 ], filterOut, function ( err ) {
-  if (!!err) {
+scaffold( args[ 0 ], filterOut, function( err ) {
+  if ( !!err ) {
     lib.utils.fail( err );
     process.exit( 1 );
   }
 
   process.exit( 0 );
-} );
+});

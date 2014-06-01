@@ -1,27 +1,36 @@
 #!/usr/bin/env node
 
-var program = require( 'commander' )
-  , path    = require( 'path' )
+var path    = require( 'path' )
+  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program = GLOBAL.program = require( 'commander' )
   , fs      = require( 'fs' )
   , os      = require( 'os' )
-  , spawn   = require( 'child_process' ).spawn
-  , lib     = require( path.resolve( path.join( __dirname, '..', 'index' ) ) );
+  , spawn   = require( 'child_process' ).spawn;
 
+/**  Define CLI Usage
+================================*/
 program
   .version( lib.pkg.version )
   .option( '-x, --host [host]', 'Set the host for grunt server' )
   .option( '-p, --port [port]', 'Set the port for grunt server' );
 
-program.on( '--help', function( ) {
+/**  Define CLI Help
+================================*/
+program.on( '--help', function() {
   console.log( '  Example:' );
   console.log( '    clever server' );
   console.log( '    clever --host 10.0.0.0 server' );
   console.log( '    clever --port 7777 server' );
   console.log( '' );
-} );
+});
 
+/**  Parse CLI Arguments
+================================*/
 program.parse( process.argv );
 
+
+/**  Start Servers
+================================*/
 // get a list of directories within $CWD (or package.json if we're inside the directory...)
 var currentDir  = path.resolve( process.cwd( ) )
   , dir         = fs.readdirSync( currentDir )

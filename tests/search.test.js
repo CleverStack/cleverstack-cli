@@ -13,9 +13,8 @@ describe( 'Search', function( ) {
     exec( path.join( binPath, 'clever-search' ) + ' clever-orm', { cwd: assetPath }, function ( err, stdout, stderr ) {
       expect( stderr ).to.equal( '' );
 
-      expect( stdout ).to.match( /Searching through NPM packages\.\.\./ );
-      expect( stdout ).to.match( /Searching through Bower packages/ );
-      expect( stdout ).to.match( /Searching through Bower packages for clever\-orm\.\.\./)
+      expect( stdout ).to.match( /Searching NPM\.\.\./ );
+      expect( stdout ).to.match( /Searching Bower\.\.\./ );
       expect( stdout ).to.match( /Found 1 module/ );
 
       expect( stdout ).to.match( /clever\-orm/ );
@@ -30,9 +29,8 @@ describe( 'Search', function( ) {
     exec( path.join( binPath, 'clever-search' ) + ' clever-datatables', { cwd: assetPath }, function ( err, stdout, stderr ) {
       expect( stderr ).to.equal( '' );
 
-      expect( stdout ).to.match( /Searching through NPM packages\.\.\./ );
-      expect( stdout ).to.match( /Searching through Bower packages/ );
-      expect( stdout ).to.match( /Searching through Bower packages for clever\-datatables\.\.\./)
+      expect( stdout ).to.match( /Searching NPM\.\.\./ );
+      expect( stdout ).to.match( /Searching Bower\.\.\./ );
       expect( stdout ).to.match( /Found 1 module/ );
 
       expect( stdout ).to.match( /clever\-datatables/ );
@@ -47,10 +45,8 @@ describe( 'Search', function( ) {
     exec( path.join( binPath, 'clever-search' ) + ' clever-orm clever-datatables', { cwd: assetPath }, function ( err, stdout, stderr ) {
       expect( stderr ).to.equal( '' );
 
-      expect( stdout ).to.match( /Searching through NPM packages\.\.\./ );
-      expect( stdout ).to.match( /Searching through Bower packages/ );
-      expect( stdout ).to.match( /Searching through Bower packages for clever\-orm\.\.\./)
-      expect( stdout ).to.match( /Searching through Bower packages for clever\-datatables\.\.\./)
+      expect( stdout ).to.match( /Searching NPM\.\.\./ );
+      expect( stdout ).to.match( /Searching Bower\.\.\./ );
       expect( stdout ).to.match( /Found 2 modules/ );
 
       expect( stdout ).to.match( /clever\-datatables/ );
@@ -70,10 +66,8 @@ describe( 'Search', function( ) {
     exec( path.join( binPath, 'clever-search' ) + ' ' + pkgName, { cwd: assetPath }, function ( err, stdout, stderr ) {
       expect( stderr ).to.equal( '' );
 
-      expect( stdout ).to.match( /Searching through NPM packages\.\.\./ );
-      expect( stdout ).to.match( /Searching through Bower packages/ );
-
-      expect( stdout ).to.match( new RegExp( 'Searching through Bower packages for ' + pkgName.replace( '-', '\\-' ) + '...' ) );
+      expect( stdout ).to.match( /Searching NPM\.\.\./ );
+      expect( stdout ).to.match( /Searching Bower\.\.\./ );
       expect( stdout ).to.match( /Couldn't find any modules that were compatible with CleverStack\./ );
 
       done( err );

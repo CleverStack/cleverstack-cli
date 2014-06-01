@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-var program   = require( 'commander' )
-  , path      = require( 'path' )
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
   , mkdirp    = require( 'mkdirp' )
   , async     = require( 'async' )
   , es        = require( 'event-stream' )
   , fs        = require( 'fs' )
-  , lib       = require( path.join( __dirname, '..', 'index' ) )
   , generate  = lib.generator.generate;
 
 program.version( lib.pkg.version );

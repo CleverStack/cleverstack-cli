@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 
-var path  = require( 'path' )
-  , fs    = require( 'fs' )
-  , os    = require( 'os' )
-  , _     = require( 'lodash' )
-  , lib   = require( path.resolve( path.join( __dirname, '..', 'index' ) ) )
-  , replFile = path.join(__dirname, '..', 'lib', 'repl.js');
+var path      = require( 'path' )
+  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
+  , program   = GLOBAL.program = require( 'commander' )
+  , fs        = require( 'fs' )
+  , os        = require( 'os' )
+  , _         = require( 'lodash' )
+  , replFile  = path.join(__dirname, '..', 'lib', 'repl.js');
 
 lib.util.locations.get( ).then( function ( projects ) {
   var project = _.find( projects, function ( p ) {
     return p.name === "backend";
-  } );
+  });
 
   if (typeof project === "undefined") {
     lib.utils.fail( 'Couldn\'t find the backend CleverStack directory! Possible reasons could include:\n* Not running the REPL command within the root folder of the project\n* Not setting the correct NODE_PATH environment variable' );
@@ -28,5 +29,7 @@ lib.util.locations.get( ).then( function ( projects ) {
   var proc = require( 'child_process' ).spawn( 'node', [ replFile ], { cwd: process.cwd(), env: processEnv, stdio: 'inherit' } );
   proc.on( 'exit', function( ) {
     process.exit( );
-  } );
-} );
+  });
+}).catch(function( err ) {
+  lib.utils.fail( err );
+});
