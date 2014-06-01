@@ -29,7 +29,7 @@
     "bluebird": "~1.2.4",
     "charm": "^0.2.0",
     "cli-color": "~0.3.2",
-    "commander": "~2.1.0",
+    "commander": "~2.2.0",
     "debug": "^0.8.1",
     "deptree": "~0.1.0",
     "event-stream": "~3.1.0",
