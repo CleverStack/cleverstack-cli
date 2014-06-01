@@ -1,6 +1,6 @@
 {
   "name": "cleverstack-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command line interface for CleverTech's CleverStack",
   "main": "./index.js",
   "scripts": {
@@ -25,30 +25,29 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "async": "~0.2.9",
-    "bluebird": "~1.0.2",
+    "async": "~0.9.0",
+    "bluebird": "~1.2.4",
     "charm": "^0.2.0",
-    "cli-color": "~0.2.3",
-    "commander": "~2.1.0",
+    "cli-color": "~0.3.2",
+    "commander": "~2.2.0",
     "debug": "^0.8.1",
     "deptree": "~0.1.0",
     "event-stream": "~3.1.0",
-    "findit": "~1.1.0",
+    "findit": "~1.2.0",
     "follow-redirects": "0.0.3",
     "lodash": "~2.4.1",
-    "mkdirp": "~0.3.5",
+    "mkdirp": "~0.5.0",
     "ncp": "~0.5.0",
     "node-status": "~0.1.3",
     "rimraf": "~2.2.5",
-    "rmdir-recursive": "0.0.0",
-    "semver": "~2.2.1",
-    "shelljs": "^0.2.6",
+    "semver": "~2.3.0",
+    "shelljs": "^0.3.0",
     "t-case": "~0.1.0",
     "tab": "~0.1.0",
     "tar": "~0.1.19"
   },
   "devDependencies": {
-    "mocha": "~1.17.0",
+    "mocha": "~1.20.0",
     "chai": "~1.9.0"
   }
 }
