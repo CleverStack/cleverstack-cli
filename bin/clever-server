@@ -5,6 +5,7 @@ var path    = require( 'path' )
   , program = GLOBAL.program = require( 'commander' )
   , fs      = require( 'fs' )
   , os      = require( 'os' )
+  , isWin   = /^win32/.test( os.platform() )
   , spawn   = require( 'child_process' ).spawn;
 
 /**  Define CLI Usage
@@ -95,5 +96,5 @@ folders.forEach( function ( folder, i )  {
     env.NODE_PATH = process.env.NODE_PATH ? process.env.NODE_PATH + ( os.platform( ) === "win32" ? ';' : ':' ) + _path_ : _path_;
   }
 
-  procs[i] = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } );
-} );
+  procs[i] = spawn( !isWin ? 'grunt' : 'grunt.cmd', args, { cwd: folder.path, env: env, stdio: 'inherit' } );
+});

@@ -1,7 +1,16 @@
 {
   "name": "cleverstack-cli",
-  "version": "0.1.1",
-  "description": "Command line interface for CleverTech's CleverStack",
+  "version": "0.1.2",
+  "author": {
+    "name": "CleverStack",
+    "email": "admin@cleverstack.io",
+    "web": "http://cleverstack.io"
+  },
+  "collaborators": [
+    "Daniel Durante <daniel.durante@clevertech.biz>",
+    "Richard Gustin <richard.gustin86@gmail.com>"
+  ],
+  "description": "Command line interface for CleverStack",
   "main": "./index.js",
   "scripts": {
     "test": "make tests"
@@ -13,7 +22,6 @@
   "keywords": [
     "framework"
   ],
-  "author": "",
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/clevertech/cleverstack/issues"

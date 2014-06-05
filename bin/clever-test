@@ -5,6 +5,7 @@ var path      = require( 'path' )
   , program   = GLOBAL.program = require( 'commander' )
   , fs        = require( 'fs' )
   , os        = require( 'os' )
+  , isWin     = /^win32/.test( os.platform() )
   , spawn     = require( 'child_process' ).spawn
   , async     = require( 'async' )
   , folders   = [ ]
@@ -69,7 +70,7 @@ function start( reporter ) {
         env.NODE_PATH = paths.join( os.platform( ) === "win32" ? ';' : ':' );
       }
 
-      var proc  = spawn( 'grunt', args, { cwd: folder.path, env: env, stdio: 'inherit' } )
+      var proc  = spawn( !isWin ? 'grunt' : 'grunt.cmd', args, { cwd: folder.path, env: env, stdio: 'inherit' } )
         , error = '';
 
       proc.on( 'error', function ( err ) {
