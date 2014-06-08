@@ -79,9 +79,9 @@ async.waterfall(
     },
 
     function each( projects, finalCallback ) {
-      async.each(
+      async.eachSeries(
         projects,
-        function setupSeed( seed, callback ) {
+        function setupSeed( seed, cb ) {
           var _path = seed.moduleDir;
 
           async.waterfall(
@@ -214,7 +214,7 @@ async.waterfall(
               }
 
             ],
-            finalCallback
+            cb
           );
         },
         finalCallback
