@@ -16,8 +16,7 @@ describe( 'New (backend seed)', function ( ) {
 
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'config', 'default.json' ) ) ).to.be.true;
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'controllers', 'TestingNewController.js' ) ) ).to.be.true;
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'models', 'odm', 'TestingNewModel.js' ) ) ).to.be.true;
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'models', 'orm', 'TestingNewModel.js' ) ) ).to.be.true;
+      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'models', 'TestingNewModel.js' ) ) ).to.be.true;
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'schema', 'seedData.json' ) ) ).to.be.true;
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'services', 'TestingNewService.js' ) ) ).to.be.true;
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tasks', 'TestingNewTask.js' ) ) ).to.be.true;
@@ -26,21 +25,16 @@ describe( 'New (backend seed)', function ( ) {
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tests', 'unit', 'TestingNewTest.js' ) ) ).to.be.true;
 
       var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'controllers', 'TestingNewController.js' ) );
-      expect( controller ).to.match( /module\.exports = function\( TestingNewService \) \{/ );
+      expect( controller ).to.match( /module\.exports = function\( Controller, TestingNewService \) \{/ );
       expect( controller ).to.match( /service: TestingNewService/ );
-      expect( controller ).to.match( /message: "Hello from customAction inside TestingNewController"/ );
 
-      var odmModel = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'models', 'odm', 'TestingNewModel.js' ) );
-      expect( odmModel ).to.match( /return mongoose\.model\('TestingNew', ModelSchema\);/ );
-
-      var ormModel = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'models', 'orm', 'TestingNewModel.js' ) );
-      expect( ormModel ).to.match( /return sequelize.define\("TestingNew", \{/ );
+      var model = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'models', 'TestingNewModel.js' ) );
+      expect( model ).to.match( /return Model\.extend\( "TestingNew",/ );
 
       var service = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'services', 'TestingNewService.js' ) );
-      expect( service ).to.match( /TestingNewService = BaseService.extend\(\{/ );
-      expect( service ).to.match( /TestingNewService\.instance = new TestingNewService\( sequelize \);/ );
-      expect( service ).to.match( /TestingNewService\.Model = ORMTestingNewModel;/ );
-      expect( service ).to.match( /return TestingNewService\.instance;/ );
+      expect( service ).to.match( /module\.exports = function\( Service, TestingNewModel \) \{/ );
+      expect( service ).to.match( /return Service\.extend\(\{/ );
+      expect( service ).to.match( /model\: TestingNewModel/ );
 
       var task = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tasks', 'TestingNewTask.js' ) );
       expect( task ).to.match( /var TestingNewTask = module\.exports = Class\.extend\(/ );
@@ -52,13 +46,10 @@ describe( 'New (backend seed)', function ( ) {
       expect( testInt ).to.match( /describe \( 'GET \/testing_new\/:id', function \(\) \{/ );
       expect( testInt ).to.match( /describe \( 'PUT \/testing_new\/:id', function \(\) \{/ );
       expect( testInt ).to.match( /describe \( 'DELETE \/testing_new\/:id', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'GET \/testing_new\/custom', function \(\) \{/ );
-      expect( testInt ).to.match( /message: 'Hello from customAction inside TestingNewController'/ );
 
       var testUnit = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tests', 'unit', 'TestingNewTest.js' ) );
       expect( testUnit ).to.match( /describe \( 'controllers\.TestingNewController', function \(\) \{/ );
       expect( testUnit ).to.match( /testEnv \( function \( TestingNewController, TestingNewService \) \{/ );
-      expect( testUnit ).to.match( /message: 'Hello from customAction inside TestingNewController'/ );
 
       done( err );
     } );
