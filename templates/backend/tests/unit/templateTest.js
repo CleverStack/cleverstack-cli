@@ -98,17 +98,4 @@ describe ( 'controllers.{{Template}}Controller', function () {
             ctrl.deleteAction();
         } );
     } );
-
-    describe ( '.customAction()', function () {
-        it ( 'should call .send() with valid arguments', function ( done ) {
-            ctrl.send = function ( data ) {
-                expect( data ).to.eql ( {
-                    message: 'Hello from customAction inside {{Template}}Controller'
-                } );
-
-                done ();
-            };
-            ctrl.customAction();
-        } );
-    } );
 });

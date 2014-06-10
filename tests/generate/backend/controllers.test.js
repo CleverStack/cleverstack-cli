@@ -27,9 +27,8 @@ describe( 'Generate backend seed (controllers)', function ( ) {
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'controllers', 'Testing2Controller.js' ) ) ).to.be.true;
 
       var controller = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'controllers', 'Testing2Controller.js' ) );
-      expect( controller ).to.match( /module\.exports = function\( Testing2Service \) \{/ );
+      expect( controller ).to.match( /module\.exports = function\( Controller, Testing2Service \) \{/ );
       expect( controller ).to.match( /service: Testing2Service/ );
-      expect( controller ).to.match( /message: "Hello from customAction inside Testing2Controller"/ );
 
       done( err );
     } );

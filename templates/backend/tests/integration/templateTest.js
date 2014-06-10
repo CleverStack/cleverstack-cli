@@ -84,20 +84,4 @@ describe ( '/{{_template_}}', function () {
                 } );
         } );
     } );
-
-    describe ( 'GET /{{_template_}}/custom', function () {
-        it ( 'should return valid status', function ( done ) {
-            request ( app )
-                .get ( '/{{_template_}}/custom' )
-                .expect ( 'Content-Type', /json/ )
-                .expect ( 200 )
-                .end ( function ( err, res ) {
-                    if ( err ) return done ( err );
-                    expect ( res.body ).to.eql ( {
-                        message: 'Hello from customAction inside {{Template}}Controller'
-                    } );
-                    done ();
-                } );
-        } );
-    } );
 });
