@@ -34,13 +34,10 @@ describe( 'Generate backend seed (tests)', function ( ) {
       expect( testInt ).to.match( /describe \( 'GET \/testing2\/:id', function \(\) \{/ );
       expect( testInt ).to.match( /describe \( 'PUT \/testing2\/:id', function \(\) \{/ );
       expect( testInt ).to.match( /describe \( 'DELETE \/testing2\/:id', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'GET \/testing2\/custom', function \(\) \{/ );
-      expect( testInt ).to.match( /message: 'Hello from customAction inside Testing2Controller'/ );
 
       var testUnit = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'tests', 'unit', 'Testing2Test.js' ) );
       expect( testUnit ).to.match( /describe \( 'controllers\.Testing2Controller', function \(\) \{/ );
       expect( testUnit ).to.match( /testEnv \( function \( Testing2Controller, Testing2Service \) \{/ );
-      expect( testUnit ).to.match( /message: 'Hello from customAction inside Testing2Controller'/ );
 
       done( err );
     } );

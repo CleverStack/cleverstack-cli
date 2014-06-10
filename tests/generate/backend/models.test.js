@@ -27,7 +27,7 @@ describe( 'Generate backend seed (models)', function ( ) {
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'Testing2Model.js' ) ) ).to.be.true;
 
       var model = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'Testing2Model.js' ) );
-      expect( model ).to.match( /return Model\.extend\( 'Testing2', \{/ );
+      expect( model ).to.match( /return Model\.extend\( "Testing2",/ );
 
       done( err );
     } );

@@ -27,10 +27,9 @@ describe( 'Generate backend seed (services)', function ( ) {
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'services', 'Testing2Service.js' ) ) ).to.be.true;
 
       var service = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'services', 'Testing2Service.js' ) );
-      expect( service ).to.match( /Testing2Service = BaseService.extend\(\{/ );
-      expect( service ).to.match( /Testing2Service\.instance = new Testing2Service\( sequelize \);/ );
-      expect( service ).to.match( /Testing2Service\.Model = ORMTesting2Model;/ );
-      expect( service ).to.match( /return Testing2Service\.instance;/ );
+      expect( service ).to.match( /module\.exports = function\( Service, Testing2Model \) \{/ );
+      expect( service ).to.match( /return Service\.extend\(\{/ );
+      expect( service ).to.match( /model\: Testing2Model/ );
 
       done( err );
     } );
