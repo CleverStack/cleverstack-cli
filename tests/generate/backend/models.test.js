@@ -24,14 +24,10 @@ describe( 'Generate backend seed (models)', function ( ) {
       expect( stdout ).to.not.match( /already exists within/ );
 
       expect( fs.readdirSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2') ).length ).to.equal( 1 );
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'odm', 'Testing2Model.js' ) ) ).to.be.true;
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'odm', 'Testing2Model.js' ) ) ).to.be.true;
+      var model = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'Testing2Model.js' ) );
 
-      var odmModel = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'odm', 'Testing2Model.js' ) );
-      expect( odmModel ).to.match( /return mongoose\.model\('Testing2', ModelSchema\);/ );
-
-      var ormModel = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'models', 'orm', 'Testing2Model.js' ) );
-      expect( ormModel ).to.match( /return sequelize.define\("Testing2", \{/ );
+      expect( fs.existsSync( model ).to.be.true;
+      expect( model ).to.match( /return Model\.extend\('Testing2',/ );
 
       done( err );
     } );
