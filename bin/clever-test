@@ -65,7 +65,7 @@ function start( reporter ) {
 
       if (fs.existsSync( path.resolve( path.join( folder.path, 'modules' ) ) )) {
         var paths = process.env.NODE_PATH ? [process.env.NODE_PATH] : [];
-        paths.push( path.resolve( path.join( folder.path, 'test', 'unit' ) ) + path.sep );
+        paths.push( path.resolve( path.join( folder.path, 'tests', 'unit' ) ) + path.sep );
         paths.push( path.resolve( path.join( folder.path, 'lib' ) ) + path.sep );
         paths.push( path.resolve( path.join( folder.path, 'modules' ) ) + path.sep );
         env.NODE_PATH = paths.join( os.platform( ) === "win32" ? ';' : ':' );
