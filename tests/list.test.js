@@ -13,7 +13,7 @@ describe( 'List', function( ) {
       expect( stderr ).to.equal( '' );
       expect( stdout ).to.match( /clever-auth/ );
       expect( stdout ).to.match( /git:\/\/github.com\/CleverStack\/clever-auth.git/ );
-      expect( stdout ).to.match( /Clevertech Authentication Module/ );
+      expect( stdout ).to.match( /CleverStack Authentication Module/ );
 
       expect( stdout ).to.match( /clever-datatables/ );
       expect( stdout ).to.match( /git:\/\/github.com\/CleverStack\/clever-datatables.git/ );

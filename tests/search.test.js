@@ -19,7 +19,7 @@ describe( 'Search', function( ) {
 
       expect( stdout ).to.match( /clever\-orm/ );
       expect( stdout ).to.match( /https:\/\/github.com\/CleverStack\/clever\-orm.git/ );
-      expect( stdout ).to.match( /Clevertech ORM \(SQL\) Module for CleverStack/ );
+      expect( stdout ).to.match( /CleverStack ORM \(SQL\) Module for CleverStack/ );
 
       done( err );
     } );
@@ -55,7 +55,7 @@ describe( 'Search', function( ) {
 
       expect( stdout ).to.match( /clever\-orm/ );
       expect( stdout ).to.match( /https:\/\/github.com\/CleverStack\/clever\-orm.git/ );
-      expect( stdout ).to.match( /Clevertech ORM \(SQL\) Module for CleverStack/ );
+      expect( stdout ).to.match( /CleverStack ORM \(SQL\) Module for CleverStack/ );
 
       done( err );
     } );
