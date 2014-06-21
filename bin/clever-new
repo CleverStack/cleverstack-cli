@@ -12,6 +12,7 @@ var path      = require( 'path' )
 program.version( lib.pkg.version );
 program
   .usage( '[options] <name>' )
+  .option( '-v, --verbose', 'verbose output useful for debugging' )
   .option( '--no-service', 'Disables generating a service.' )
   .option( '--no-controller', 'Disables generating a controller.' )
   .option( '--no-model', 'Disables generating a model.' )
@@ -36,43 +37,54 @@ if ( program.rawArgs.length < 3 ) {
 
 /**  Start generating
 ================================*/
-var filterOut = [ ]
+var filterOut = []
   , filters   = [ 'service', 'controller', 'model', 'task', 'test', 'script', 'view' ]
   , args      = program.rawArgs.splice( 2 );
 
-filters.forEach( function ( filter ) {
-  if (program[ filter ] === false) {
+filters.forEach( function( filter ) {
+  if ( program[ filter ] === false ) {
     filterOut.push( filter );
   }
-} );
+});
 
-if (filterOut.length === filters.length) {
-  program.help( );
+if ( filterOut.length === filters.length ) {
+  program.help();
 }
 
-lib.util.locations.get( ).then( function ( projects ) {
-  var folders = []
-    , name    = args[ 0 ];
+lib.util
+  .locations
+  .get()
+  .then( function( projects ) {
+    var folders = []
+      , name    = args[ 0 ];
 
-  projects.forEach( function ( project ) {
-    var folder = paths.getModulePath( project, name );
+    projects.forEach( function( project ) {
+      var folder = paths.getModulePath( project, name );
 
-    if (fs.existsSync( folder )) {
-      lib.utils.fail( 'Module already exists within ' + folder );
-    }
+      if ( fs.existsSync( folder ) ) {
+        lib.utils.fail( 'Module already exists within ' + folder );
+      }
 
-    folders.push( folder );
-  } );
+      if ( program.verbose ) {
+        lib.utils.info( 'Module path is ' + folder );
+      }
+      
+      folders.push( folder );
+    });
 
-  lib.utils.info( 'Setting up new module... ' );
+    lib.utils.info( 'Setting up new module... ' );
 
-  scaffold( projects, name, filterOut, function ( ) {
-    folders.forEach( function ( folder ) {
-      lib.utils.success( 'Module has been created successfully within ' + folder );
-    } );
+    scaffold(
+      projects,
+      name,
+      filterOut,
+      function() {
+        folders.forEach( function( folder ) {
+          lib.utils.success( 'Module has been created successfully within ' + folder );
+        });
 
-    process.exit( 0 );
-  } );
-} )
-.error( lib.utils.error );
-
+        process.exit( 0 );
+      }
+    );
+  })
+  .error( lib.utils.error );

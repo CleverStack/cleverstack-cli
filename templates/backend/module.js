@@ -1,8 +1,5 @@
-var ModuleClass = require( 'classes' ).ModuleClass
-  , Module;
+var Module = require( 'classes' ).Module;
 
-Module = ModuleClass.extend({
+module.exports = Module.extend({
 
 });
-
-module.exports = new Module( '{{template-name}}', injector );
