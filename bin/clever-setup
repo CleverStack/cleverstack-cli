@@ -95,12 +95,9 @@ async.waterfall(
                 }
                 lib.utils.running( '  Installing NPM modules for ' + seed.name + '...' );
 
-                var proc = exec( 'npm install', { cwd: _path }, function( err, stderr ) {
+                var proc = exec( 'npm install', { cwd: _path }, function( err ) {
                   lib.utils.progress( 1 );
-
-                  ( !!err || stderr.trim() !== '' )
-                    ? callback( err || stderr.trim() )
-                    : callback( null );
+                  callback( err );
                 });
 
                 // Pipe the output of exec if verbose has been specified
