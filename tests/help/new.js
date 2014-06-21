@@ -3,6 +3,7 @@ exports.tap = [
   '',
   '  Options:',
   '',
+  '    -v, --verbose    verbose output useful for debugging',
   '    -h, --help       output usage information',
   '    -V, --version    output the version number',
   '    --no-service     Disables generating a service.',
