@@ -8,7 +8,7 @@ Contributing to a project is not only adding slabs of code, fixing bugs, or crea
 
 > I just wanted to thank you for not only looking into contributing towards CleverStack, but for even taking your time to considering it. I'm personally always available to lend out a hand, and I hope you never feel as if you can't reach out to me. I always look forward to discussing ideas, solving problems, and colloborating with others.
 
-> - Daniel Durante
+> - Daniel Durante & Richard Gustin
 
 ## Submitting bug reports, issues, or enhancement requests.
 
@@ -17,8 +17,7 @@ There are currently a few resources available to reach out to us:
 1. [GitHub Issues](https://github.com/CleverStack/cleverstack-cli/issues)
 2. [Stack Overflow](http://stackoverflow.com/questions/tagged/cleverstack)
 3. [Google Groups/Mailing list](https://groups.google.com/forum/#!forum/cleverstack)
-4. [IRC](http://webchat.freenode.net/?randomnick=1&channels=%23cleverstack&uio=d4)
-5. [CleverTech's Contact Form](http://www.clevertech.biz/contact.html)
+4. [HipChat](http://www.hipchat.com/gwM43u4Mw)
 
 ## Submitting Pull Requests
 

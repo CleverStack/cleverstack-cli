@@ -166,10 +166,7 @@ Generate will create a template of a specific component (controller, services, m
 
 ```
 ./models
-├── odm
-│   └── MyNewModelModel.js
-└── orm
-    └── MyNewModelModel.js
+└── MyNewModelModel.js
 
 2 directories, 2 files
 ```
@@ -206,10 +203,7 @@ Scaffolding is similar to generate except it'll generate every component's templ
 ├── controllers
 │   └── MyNewModuleController.js
 ├── models
-│   ├── odm
-│   │   └── MyNewModuleModel.js
-│   └── orm
-│       └── MyNewModuleModel.js
+│   └── MyNewModuleModel.js
 ├── schema
 │   └── seedData.json
 ├── services
@@ -248,10 +242,7 @@ The ```new``` command is similar to ```scaffold``` except it'll create the modul
 ├── controllers
 │   └── MyNewModuleController.js
 ├── models
-│   ├── odm
-│   │   └── MyNewModuleModel.js
-│   └── orm
-│       └── MyNewModuleModel.js
+│   └── MyNewModuleModel.js
 ├── schema
 │   └── seedData.json
 ├── services
@@ -335,16 +326,24 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Commands:
 
-    service <name>         Generates a service as <name> within $PWD/services
-    services <names>       Generates services specified with <name ...> within $PWD/services
-    controller <name>      Generates a controller as <name> within $PWD/controllers
-    controllers <names>    Generates controllers specified with <name ...> within $PWD/controllers
-    model <name>           Generates a model as <name> within $PWD/models
-    models <names>         Generates models specified with <name ...> within $PWD/models
-    task <name>            Generates a task as <name> within $PWD/tasks
-    tasks <names>          Generates tasks specified with <name ...> within $PWD/tasks
-    test [options] <name>  Generates a test t as <name> within $PWD/tests
-    tests [options] <names> Generates test specified with <name ...> within $PWD/tests
+    service <name>         Generates a service as <name> within /Users/jenniferhartwig/services
+    services <names>       Generates services specified with <name ...> within /Users/jenniferhartwig/services
+    controller <name>      Generates a controller as <name> within /Users/jenniferhartwig/controllers
+    controllers <names>    Generates controllers specified with <name ...> within /Users/jenniferhartwig/controllers
+    model <name>           Generates a model as <name> within /Users/jenniferhartwig/models
+    models <names>         Generates models specified with <name ...> within /Users/jenniferhartwig/models
+    task <name>            Generates a task as <name> within /Users/jenniferhartwig/tasks
+    tasks <names>          Generates tasks specified with <name ...> within /Users/jenniferhartwig/tasks
+    view <name>            Generates a view as <name> within /Users/jenniferhartwig/views
+    views <names>          Generates views specified with <name ...> within /Users/jenniferhartwig/views
+    factory <name>         Generates a factory as <name> within /Users/jenniferhartwig/factories
+    factories <names>      Generates factories specified with <name ...> within /Users/jenniferhartwig/factories
+    service <name>         Generates a service as <name> within /Users/jenniferhartwig/services
+    services <names>       Generates services specified with <name ...> within /Users/jenniferhartwig/services
+    directive <name>       Generates a directive as <name> within /Users/jenniferhartwig/directives
+    directives <names>     Generates directives specified with <name ...> within /Users/jenniferhartwig/directives
+    test [options] <name>  Generates a test t as <name> within /Users/jenniferhartwig/tests
+    tests [options] <names> Generates test specified with <name ...> within /Users/jenniferhartwig/tests
 
   Options:
 
@@ -368,22 +367,29 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Commands:
 
-    <project>               Creates a project named <project>
+    <project>              creates a new project named <project>
 
   Options:
 
-    -h, --help         output usage information
-    --skip-protractor  Skips installing protractor
-    -V, --version      output the version number
+    -h, --help             output usage information
+    -f, --force            delete existing projects in your current directory /Users/jenniferhartwig
+    -v, --verbose          verbose output useful for debugging
+    -A, --allow-root       allow root for bower
+    -S, --skip-protractor  skips installing protractor (Frontend only)
+    -V, --version          output the version number
 
   Examples:
-    clever init my-project
-    clever init project-frontend frontend
-    clever init my-project-everything backend frontend
 
-  Installing specific versions:
-    clever init my-project backend@<version>
-    clever init my-project frontend@<version>
+    clever init my-project                      install the backend and frontend
+    clever init my-project clever-auth          with the clever-auth module
+    clever init my-project backend frontend     verbose way of running "clever init my-project"
+    clever init my-project frontend             only install the frontend
+    clever init my-project backend clever-auth  install the clever-auth module after installing the backend and frontend seeds
+
+    Installing specific versions:
+
+      clever init my-project backend@<version>
+      clever init my-project clever-auth@<version>
 ```
 
 ### list
@@ -522,9 +528,11 @@ cleverstack::local> .quit
 
   Options:
 
-    -h, --help         output usage information
-    --skip-protractor  Skips installing protractor
-    -V, --version      output the version number
+    -h, --help             output usage information
+    -A, --allow-root       allow root for bower
+    -S, --skip-protractor  skips installing protractor (Frontend only)
+    -v, --verbose          verbose output useful for debugging
+    -V, --version          output the version number
 
   Description:
 
@@ -605,7 +613,7 @@ cleverstack::local> .quit
 
 ### CleverStack Website
 
-[http://cleverstack.io](http://cleverstack.io)
+[http://cleverstack.io](http://cleverstack.io/developer)
 
 ### CleverStack Wiki
 
@@ -623,7 +631,7 @@ https://github.com/CleverStack/cleverstack-cli/wiki
 
 ### Communication
 
-* IRC: `#cleverstack` on `irc.freenode.net`
+* HipChat: [http://www.hipchat.com/gwM43u4Mw](http://www.hipchat.com/gwM43u4Mw)
 * Stackoverflow: [http://stackoverflow.com/questions/tagged/cleverstack](http://stackoverflow.com/questions/tagged/cleverstack)
 * Google Groups/Mailing list: [https://groups.google.com/forum/#!forum/cleverstack](https://groups.google.com/forum/#!forum/cleverstack)
 
@@ -643,25 +651,4 @@ Then run the tests:
 
 ## License
 
-(The MIT License)
-
-Copyright (c) 2014 CleverTech http://www.clevertech.biz/contact-form/
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+See our [LICENSE](https://github.com/CleverStack/cleverstack-cli/blob/master/LICENSE)
