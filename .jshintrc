@@ -17,7 +17,7 @@
     "camelcase": false,
     "curly": true,
     "forin": true,
-    "indent": 2,
+    "indent": 4,
     "unused": true,
     "asi": true,
     "evil": false,
