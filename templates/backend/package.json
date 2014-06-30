@@ -1,21 +1,23 @@
 {
-  "name": "{{template_name}}",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-  },
-  "author": {
-    "name": "",
-    "email": "",
-    "web": ""
-  },
-  "collaborators": [
-  ],
-  "description": "",
-  "keywords": [
-    ""
-  ],
-  "main": "module.js",
-  "devDependencies": {
-  }
+    "name": "{{template_name}}",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+
+    },
+    "author": {
+        "name": "",
+        "email": "",
+        "web": ""
+    },
+    "collaborators": [
+    ],
+    "description": "",
+    "keywords": [
+        ""
+    ],
+    "main": "module.js",
+    "devDependencies": {
+        
+    }
 }
