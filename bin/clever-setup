@@ -3,9 +3,7 @@
 var path      = require( 'path' )
   , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
   , program   = GLOBAL.program = require( 'commander' )
-  , Promise   = require( 'bluebird' )
   , async     = require( 'async' )
-  , spawn     = require( 'child_process' ).spawn
   , exec      = require( 'child_process' ).exec
   , fs        = require( 'fs' )
   , _         = require( 'lodash' );
@@ -13,23 +11,23 @@ var path      = require( 'path' )
 /**  Define CLI Usage
 ================================*/
 program
-  .option( '-A, --allow-root', 'allow root for bower' )
-  .option( '-S, --skip-protractor', 'skips installing protractor (Frontend only)' )
-  .option( '-v, --verbose', 'verbose output useful for debugging' )
-  .version( lib.pkg.version );
+    .option( '-A, --allow-root', 'allow root for bower' )
+    .option( '-S, --skip-protractor', 'skips installing protractor (Frontend only)' )
+    .option( '-v, --verbose', 'verbose output useful for debugging' )
+    .version( lib.pkg.version );
 
 /**  Define CLI Help
 ================================*/
 program.on( '--help', function() {
-  console.log( '  Description:' );
-  console.log( '' );
-  console.log( '    Installs all NPM and Bower components for each module as well as building bundleDependencies.');
-  console.log( '    This command will also install Protractor unless explicitly skipping.' );
-  console.log( '' );
-  console.log( '  Examples:' );
-  console.log( '' );
-  console.log( '    clever setup' );
-  console.log( '' );
+    console.log( '  Description:' );
+    console.log( '' );
+    console.log( '    Installs all NPM and Bower components for each module as well as building bundleDependencies.');
+    console.log( '    This command will also install Protractor unless explicitly skipping.' );
+    console.log( '' );
+    console.log( '  Examples:' );
+    console.log( '' );
+    console.log( '    clever setup' );
+    console.log( '' );
 });
 
 /**  Parse CLI Arguments
@@ -39,192 +37,185 @@ program.parse( process.argv );
 /**  Start Setup
 ================================*/
 async.waterfall(
-  [
-    function startBar( callback ) {
-      lib.utils.initBar();
-      lib.utils.installing( 'Modules' );
-      lib.utils.startBar( callback );
-    },
-
-    function findSeedsToTarget( callback ) {
-      lib.util.locations
-        .get()
-        .then(function( projects ) {
-          
-          lib.utils.expandProgress( projects.length * 2 );
-
-          var backend = _.find( projects, function( p ) {
-            return p.name === "backend";
-          });
-
-          var frontend = _.find( projects, function( p ) {
-            return p.name === "frontend";
-          });
-
-          if ( frontend ) {
-            lib.utils.expandProgress( 2 );
-
-            if ( !program.skipProtractor ) {
-              lib.utils.expandProgress( 2 );
-            }
-          }
-
-          if ( typeof backend === "undefined" && typeof frontend === "undefined" ) {
-            callback( 'Couldn\'t find a backend or frontend seed for CleverStack within', process.cwd() );
-          } else {
-            callback( null, projects );
-          }
-        })
-        .catch( callback );
-    },
-
-    function each( projects, finalCallback ) {
-      async.eachSeries(
-        projects,
-        function setupSeed( seed, cb ) {
-          var _path = seed.moduleDir;
-
-          async.waterfall(
-            [
-
-              function npmInstallProject( callback ) {
-                if ( program.verbose ) {
-                  lib.utils.info( '  Installing NPM modules for ' + _path + '...' );
-                } else {
-                  lib.utils.info( '  Installing NPM modules for ' + seed.name + '...' );
-                }
-                lib.utils.running( '  Installing NPM modules for ' + seed.name + '...' );
-
-                var proc = exec( 'npm install', { cwd: _path }, function( err ) {
-                  lib.utils.progress( 1 );
-                  callback( err );
-                });
-
-                // Pipe the output of exec if verbose has been specified
-                if ( program.verbose ) {
-                  proc.stdout.pipe( process.stdout );
-                  proc.stderr.pipe( process.stdout );
-                }
-              },
-
-              function modulesNpmInstall( callback ) {
-                var modulesFolder = path.join( seed.moduleDir, seed.modulePath )
-                  , modules = [];
-
-                if (fs.existsSync( modulesFolder )) {
-                  modules = fs.readdirSync( modulesFolder );
-
-                  var keep = modules.indexOf( '.gitkeep' );
-                  if (keep > -1) {
-                    modules.splice( keep, 1 );
-                  }
-
-                  lib.utils.warn( '  Installing ' + seed.name + ' modules...' );
-                  lib.utils.running( '  Installing ' + seed.name + ' modules...' );
-                }
-                
-                async.each( 
-                  modules, 
-                  function ( m, next ) {
-                    lib.project
-                      .installModule(
-                        {
-                          moduleDir: modulesFolder,
-                          modulePath: ''
-                        },
-                        path.resolve( path.join( seed.moduleDir, seed.modulePath, m ) )
-                      )
-                      .then( next )
-                      .catch( next );
-                  },
-                  callback
-                );
-              },
-
-              function bowerInstall( callback ) {
-                var bowerPath = path.join( seed.moduleDir, 'bower.json' );
-
-                lib.utils.progress( 1 );
-
-                if ( seed.name === 'backend' || !fs.existsSync( bowerPath ) ) {
-                  return callback( null );
-                }
-
-                lib.utils.info( '  Installing ' + seed.name + ' bower components...' );
-                lib.utils.running( '  Installing ' + seed.name + ' bower components...' );
-                lib.project
-                  .installBowerComponents( seed )
-                  .then( callback )
-                  .catch( callback );
-              },
-
-              function bootstrapFrontend( callback ) {
-                if ( seed.name === 'frontend' ) {
-                  lib.utils.progress( 1 );
-                  lib.utils.info( '  Building frontend...' );
-                  lib.utils.running( '  Building frontend...' );
-
-                  var proc = exec( 'grunt bootstrap build', { cwd: _path }, function( err, stdout, stderr ) {
-                    lib.utils.progress( 1 );
-
-                    ( !!err || stderr.trim() !== '' )
-                      ? callback( err || stderr.trim() )
-                      : callback( null );
-                  });
-
-                  // Pipe the output of exec if verbose has been specified
-                  if ( program.verbose ) {
-                    proc.stdout.pipe( process.stdout );
-                    proc.stderr.pipe( process.stdout );
-                  }
-                } else {
-                  callback( null );
-                }
-              },
-
-              function setupProtractor( callback ) {
-                if ( seed.name === 'frontend') {
-                  if ( program.skipProtractor ) {
-                    lib.utils.warn( '  Skipping installation of protractor...' );
-                    return callback( null );
-                  }
-                  lib.utils.warn( '  Installing protractor...' );
-                  lib.utils.running( '  Installing protractor components...' );
-
-                  var proc = exec( 'npm run-script setup-protractor', { cwd: _path }, function( err, stdout, stderr ) {
-                    console.dir( arguments );
-                    lib.utils.progress( 2 );
-
-                    ( !!err || stderr.trim() !== '' )
-                      ? callback( err || stderr.trim() )
-                      : callback( null );
-                  });
-
-                  // Pipe the output of exec if verbose has been specified
-                  if ( program.verbose ) {
-                    proc.stdout.pipe( process.stdout );
-                    proc.stderr.pipe( process.stdout );
-                  }
-                } else {
-                  callback( null );
-                }
-              }
-
-            ],
-            cb
-          );
+    [
+        function startBar( callback ) {
+            lib.utils.initBar();
+            lib.utils.installing( 'Modules' );
+            lib.utils.startBar( callback );
         },
-        finalCallback
-      );
-    }
-  ],
-  function( err ) {
-    if ( !!err ) {
-      lib.utils.fail( err );
-      process.exit( 1 );
-    }
 
-    lib.utils.success( 'Successfully setup all projects modules and components.' );
-    process.exit( 0 );
-  }
+        function findSeedsToTarget( callback ) {
+            lib.util.locations
+                .get()
+                .then(function( projects ) {
+                    
+                    lib.utils.expandProgress( projects.length * 2 );
+
+                    var backend = _.find( projects, function( p ) {
+                        return p.name === "backend";
+                    });
+
+                    var frontend = _.find( projects, function( p ) {
+                        return p.name === "frontend";
+                    });
+
+                    if ( frontend ) {
+                        lib.utils.expandProgress( 2 );
+
+                        if ( !program.skipProtractor ) {
+                            lib.utils.expandProgress( 2 );
+                        }
+                    }
+
+                    if ( typeof backend === "undefined" && typeof frontend === "undefined" ) {
+                        callback( 'Couldn\'t find a backend or frontend seed for CleverStack within', process.cwd() );
+                    } else {
+                        callback( null, projects );
+                    }
+                })
+                .catch( callback );
+        },
+
+        function each( projects, finalCallback ) {
+            async.eachSeries(
+                projects,
+                function setupSeed( seed, cb ) {
+                    var _path = seed.moduleDir;
+
+                    async.waterfall(
+                        [
+
+                            function npmInstallProject( callback ) {
+                                if ( program.verbose ) {
+                                    lib.utils.info( '  Installing NPM modules for ' + _path + '...' );
+                                } else {
+                                    lib.utils.info( '  Installing NPM modules for ' + seed.name + '...' );
+                                }
+                                lib.utils.running( '  Installing NPM modules for ' + seed.name + '...' );
+
+                                var proc = exec( 'npm install', { cwd: _path }, function( err ) {
+                                    lib.utils.progress( 1 );
+                                    callback( err );
+                                });
+
+                                // Pipe the output of exec if verbose has been specified
+                                if ( program.verbose ) {
+                                    proc.stdout.pipe( process.stdout );
+                                    proc.stderr.pipe( process.stdout );
+                                }
+                            },
+
+                            function modulesNpmInstall( callback ) {
+                                var modulesFolder = path.join( seed.moduleDir, seed.modulePath )
+                                  , modules = [];
+
+                                if (fs.existsSync( modulesFolder )) {
+                                    modules = fs.readdirSync( modulesFolder );
+
+                                    var keep = modules.indexOf( '.gitkeep' );
+                                    if (keep > -1) {
+                                        modules.splice( keep, 1 );
+                                    }
+
+                                    lib.utils.warn( '  Installing ' + seed.name + ' modules...' );
+                                    lib.utils.running( '  Installing ' + seed.name + ' modules...' );
+                                }
+                                
+                                async.each( 
+                                    modules, 
+                                    function ( m, next ) {
+                                        lib.project
+                                            .installModule({
+                                                moduleDir: modulesFolder,
+                                                modulePath: ''
+                                            }, path.resolve( path.join( seed.moduleDir, seed.modulePath, m ) ))
+                                            .then( next )
+                                            .catch( next );
+                                    },
+                                    callback
+                                );
+                            },
+
+                            function bowerInstall( callback ) {
+                                var bowerPath = path.join( seed.moduleDir, 'bower.json' );
+
+                                lib.utils.progress( 1 );
+
+                                if ( seed.name === 'backend' || !fs.existsSync( bowerPath ) ) {
+                                    return callback( null );
+                                }
+
+                                lib.utils.info( '  Installing ' + seed.name + ' bower components...' );
+                                lib.utils.running( '  Installing ' + seed.name + ' bower components...' );
+                                lib.project
+                                    .installBowerComponents( seed )
+                                    .then( callback )
+                                    .catch( callback );
+                            },
+
+                            function bootstrapFrontend( callback ) {
+                                if ( seed.name === 'frontend' ) {
+                                    lib.utils.progress( 1 );
+                                    lib.utils.info( '  Building frontend...' );
+                                    lib.utils.running( '  Building frontend...' );
+
+                                    var proc = exec( 'grunt bootstrap build', { cwd: _path }, function( err, stdout, stderr ) {
+                                        lib.utils.progress( 1 );
+
+                                        ( !!err || stderr.trim() !== '' ) ? callback( err || stderr.trim() ) : callback( null );
+                                    });
+
+                                    // Pipe the output of exec if verbose has been specified
+                                    if ( program.verbose ) {
+                                        proc.stdout.pipe( process.stdout );
+                                        proc.stderr.pipe( process.stdout );
+                                    }
+                                } else {
+                                    callback( null );
+                                }
+                            },
+
+                            function setupProtractor( callback ) {
+                                if ( seed.name === 'frontend') {
+                                    if ( program.skipProtractor ) {
+                                        lib.utils.warn( '  Skipping installation of protractor...' );
+                                        return callback( null );
+                                    }
+                                    lib.utils.warn( '  Installing protractor...' );
+                                    lib.utils.running( '  Installing protractor components...' );
+
+                                    var proc = exec( 'npm run-script setup-protractor', { cwd: _path }, function( err, stdout, stderr ) {
+                                        console.dir( arguments );
+                                        lib.utils.progress( 2 );
+
+                                        ( !!err || stderr.trim() !== '' ) ? callback( err || stderr.trim() ) : callback( null );
+                                    });
+
+                                    // Pipe the output of exec if verbose has been specified
+                                    if ( program.verbose ) {
+                                        proc.stdout.pipe( process.stdout );
+                                        proc.stderr.pipe( process.stdout );
+                                    }
+                                } else {
+                                    callback( null );
+                                }
+                            }
+
+                        ],
+                        cb
+                    );
+                },
+                finalCallback
+            );
+        }
+    ],
+    function( err ) {
+        if ( !!err ) {
+            lib.utils.fail( err );
+            process.exit( 1 );
+        }
+
+        lib.utils.success( 'Successfully setup all projects modules and components.' );
+        process.exit( 0 );
+    }
 );

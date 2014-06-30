@@ -13,19 +13,19 @@ var path    = require( 'path' )
  */
 
 function checkCmd ( cmd ) {
-  return shell.which( cmd );
+    return shell.which( cmd );
 }
 
 var checks = [
-  { cmd: 'npm', name: 'NPM', install: '. Please install Node.JS before proceeding.' },
-  { cmd: 'bower', name: 'Bower', install: ' please type: npm install -g bower' },
-  { cmd: 'grunt', name: 'Grunt-CLI', install: ' please type: npm install -g grunt-cli' }
+    { cmd: 'npm', name: 'NPM', install: '. Please install Node.JS before proceeding.' },
+    { cmd: 'bower', name: 'Bower', install: ' please type: npm install -g bower' },
+    { cmd: 'grunt', name: 'Grunt-CLI', install: ' please type: npm install -g grunt-cli' }
 ];
 
 checks.forEach( function ( check ) {
-  if (!checkCmd( check.cmd )) {
-    lib.utils.error( check.name + ' is required before using CleverStack-CLI' + check.install );
-  }
+    if ( !checkCmd( check.cmd ) ) {
+        lib.utils.error( check.name + ' is required before using CleverStack-CLI' + check.install );
+    }
 });
 
 // avoid the command within process.argv

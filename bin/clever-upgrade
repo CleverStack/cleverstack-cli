@@ -3,9 +3,9 @@
 var path      = require( 'path' )
   , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
   , program   = GLOBAL.program = require( 'commander' )
-  , Promise = require( 'bluebird' )
-  , async   = require( 'async' )
-  , _       = require( 'lodash' );
+  , Promise   = require( 'bluebird' )
+  , async     = require( 'async' )
+  , _         = require( 'lodash' );
 
 /**  Define CLI Usage
 ================================*/
@@ -14,13 +14,13 @@ program.version( lib.pkg.version );
 /**  Define CLI Help
 ================================*/
 program.on( '--help', function() {
-  console.log( '  Examples:' );
-  console.log( '' );
-  console.log( '    clever upgrade clever-orm' );
-  console.log( '    clever upgrade clever-orm@0.0.3 clever-datatables@0.0.2' );
-  console.log( '    clever upgrade backend' );
-  console.log( '    clever upgrade frontend' );
-  console.log( '' );
+    console.log( '  Examples:' );
+    console.log( '' );
+    console.log( '    clever upgrade clever-orm' );
+    console.log( '    clever upgrade clever-orm@0.0.3 clever-datatables@0.0.2' );
+    console.log( '    clever upgrade backend' );
+    console.log( '    clever upgrade frontend' );
+    console.log( '' );
 });
 
 /**  Parse CLI Arguments
@@ -32,92 +32,98 @@ var args = process.argv.slice( 2 );
 ================================*/
 // We don't need version numbers when we're checking for backend or frontend...
 var _args = args.map( function ( a ) {
-  return a.split( '@' )[ 0 ];
-} );
+    return a.split( '@' )[ 0 ];
+});
 
 // Figure out what we're trying to upgrade...
 var findBackend = _args.indexOf( 'backend' );
-if (findBackend > -1) {
-  var backendVersion = args[ findBackend ].split( '@' )[ 1 ];
-  args[ findBackend ] = 'node-seed' + ( typeof backendVersion !== "undefined" ? '@' + backendVersion : '' );
+if ( findBackend > -1 ) {
+    var backendVersion = args[ findBackend ].split( '@' )[ 1 ];
+    args[ findBackend ] = 'node-seed' + ( typeof backendVersion !== "undefined" ? '@' + backendVersion : '' );
 }
 
 var findFrontend = _args.indexOf( 'frontend' );
-if (findFrontend > -1) {
-  var frontendVersion = args[ findFrontend ].split( '@' )[ 1 ];
-  args[ findFrontend ] = 'node-seed' + ( typeof frontendVersion !== "undefined" ? '@' + frontendVersion : '' );
+if ( findFrontend > -1 ) {
+    var frontendVersion = args[ findFrontend ].split( '@' )[ 1 ];
+    args[ findFrontend ] = 'node-seed' + ( typeof frontendVersion !== "undefined" ? '@' + frontendVersion : '' );
 }
 
-var modules = [ ];
-if (args.length < 1) {
-  modules.push( 'node-seed' );
-  modules.push( 'angular-seed' );
+var modules = [];
+if ( args.length < 1 ) {
+    modules.push( 'node-seed' );
+    modules.push( 'angular-seed' );
 } else {
-  modules = args;
+    modules = args;
 }
 
-lib.util.locations.get( )
-.then ( function ( locations ) {
-  // Filter for module's existence
-  async.map( modules, function ( module, filter ) {
-    var moduleSplit   = module.split( '@' )
-      , moduleName    = moduleSplit[ 0 ]
-      , moduleVersion = '*';
+lib .util
+    .locations
+    .get()
+    .then( function( locations ) {
+        // Filter for module's existence
+        async.map(
+            modules,
+            function( module, filter ) {
+                var moduleSplit   = module.split( '@' )
+                  , moduleName    = moduleSplit[ 0 ]
+                  , moduleVersion = '*';
 
-    if (typeof moduleSplit[ 1 ] !== "undefined") {
-      moduleVersion = moduleSplit[ 1 ];
-    }
+                if ( typeof moduleSplit[ 1 ] !== "undefined" ) {
+                    moduleVersion = moduleSplit[ 1 ];
+                }
 
-    lib.util.module.findConfigAndVersionForModule( locations, moduleName, moduleVersion )
-    .then( function ( m ) {
-      filter( null, m );
-    }, filter );
-  },
-  function ( err, modulesToInstall ) {
-    var modulesInstall = modulesToInstall.filter( function ( m ) {
-      return typeof m === "object" && m !== null;
-    } );
+                lib .util
+                    .module
+                    .findConfigAndVersionForModule( locations, moduleName, moduleVersion )
+                    .then( function( m ) {
+                        filter( null, m );
+                    }, filter );
+            },
+            function ( err, modulesToInstall ) {
+                var modulesInstall = modulesToInstall.filter( function ( m ) {
+                    return typeof m === "object" && m !== null;
+                } );
 
-    if (!modulesInstall.length) {
-      return lib.utils.fail( 'There are no modules to upgrade.' );
-    }
+                if (!modulesInstall.length) {
+                    return lib.utils.fail( 'There are no modules to upgrade.' );
+                }
 
-    var backendModules = modulesInstall.filter( function ( m ) {
-      return m.type === "backend";
-    } )
-    .map( function ( m ) {
-      return m.name;
-    } );
+                var backendModules = modulesInstall.filter( function ( m ) {
+                    return m.type === "backend";
+                } )
+                .map( function ( m ) {
+                    return m.name;
+                } );
 
-    var frontendModules = modulesInstall.filter( function ( m ) {
-      return m.type === "frontend";
-    } )
-    .map( function ( m ) {
-      return m.name;
-    } );
+                var frontendModules = modulesInstall.filter( function ( m ) {
+                    return m.type === "frontend";
+                } )
+                .map( function ( m ) {
+                    return m.name;
+                } );
 
-    var actions     = [ ]
-      , backendLoc  = _.find( locations, function ( loc ) { return loc.name === "backend"; } )
-      , frontendLoc = _.find( locations, function ( loc ) { return loc.name === "frontend"; } );
+                var actions     = [ ]
+                    , backendLoc  = _.find( locations, function ( loc ) { return loc.name === "backend"; } )
+                    , frontendLoc = _.find( locations, function ( loc ) { return loc.name === "frontend"; } );
 
-    if (backendModules.length && !!backendLoc) {
-      actions.push( lib.project.setupModules( backendLoc, backendModules ) );
-    }
+                if (backendModules.length && !!backendLoc) {
+                    actions.push( lib.project.setupModules( backendLoc, backendModules ) );
+                }
 
-    if (frontendModules.length && !!frontendLoc) {
-      actions.push( lib.project.setupModules( frontendLoc, frontendModules ) );
-    }
+                if (frontendModules.length && !!frontendLoc) {
+                    actions.push( lib.project.setupModules( frontendLoc, frontendModules ) );
+                }
 
-    Promise.all( actions )
-    .then( function ( ) {
-      lib.utils.success( 'Upgrade process has been completed.' );
-      process.exit( 0 );
-    } )
+                Promise.all( actions )
+                .then( function ( ) {
+                    lib.utils.success( 'Upgrade process has been completed.' );
+                    process.exit( 0 );
+                } )
+                .catch( function ( err ) {
+                    lib.utils.fail( err );
+                } );
+            });
+    })
     .catch( function ( err ) {
-      lib.utils.fail( err );
-    } );
-  } );
-} )
-.catch( function ( err ) {
-  lib.utils.fail( err );
-} );
+        lib.utils.fail( err );
+    });

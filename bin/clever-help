@@ -3,4 +3,4 @@
 var path    = require( 'path' )
   , program = require( path.join( __dirname, '..', 'lib', 'program' ) );
 
-program.help( );
+program.help();

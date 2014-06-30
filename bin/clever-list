@@ -7,9 +7,9 @@ var path    = require( 'path' )
 program.version( lib.pkg.version );
 
 program.on( '--help', function() {
-  console.log( '  Example:' );
-  console.log( '    clever list' );
-  console.log( '' );
+    console.log( '  Example:' );
+    console.log( '    clever list' );
+    console.log( '' );
 });
 
 program.parse( process.argv );

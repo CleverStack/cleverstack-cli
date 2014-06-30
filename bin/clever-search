@@ -7,35 +7,37 @@ var program = require( 'commander' )
 
 program.version( lib.pkg.version );
 
-program.on( '--help', function ( ) {
-  console.log( '  Examples:' );
-  console.log( '    clever search users' );
-  console.log( '    clever search users auth email' );
-  console.log( '' );
-} );
+program.on( '--help', function() {
+    console.log( '  Examples:' );
+    console.log( '    clever search users' );
+    console.log( '    clever search users auth email' );
+    console.log( '' );
+});
 
 program.parse( process.argv );
 
 // args void of initial commands
 var args = process.argv.slice( 2 );
 
-if (!args) {
-  program.help();
+if ( !args ) {
+    program.help();
 }
 
-lib.search.aggregate( args ).spread( function ( npm, bower ) {
-  var repos = npm.concat( bower );
+lib .search
+    .aggregate( args )
+    .spread( function( npm, bower ) {
+        var repos = npm.concat( bower );
 
-  if (repos.length < 1) {
-    lib.utils.fail( 'Couldn\'t find any modules that were compatible with CleverStack.' );
-  }
+        if ( repos.length < 1 ) {
+            lib.utils.fail( 'Couldn\'t find any modules that were compatible with CleverStack.' );
+        }
 
-  lib.utils.success( 'Found ' + repos.length + ' module' + ( repos.length !== 1 ? 's' : '' ) );
-  console.log( '' );
+        lib.utils.success( 'Found ' + repos.length + ' module' + ( repos.length !== 1 ? 's' : '' ) );
+        console.log( '' );
 
-  repos.forEach( lib.repos.display );
-  process.exit( 0 );
-} )
-.catch( function ( err ) {
-  lib.utils.fail( err );
-} );
+        repos.forEach( lib.repos.display );
+        process.exit( 0 );
+    })
+    .catch( function( err ) {
+        lib.utils.fail( err );
+    });

@@ -8,71 +8,71 @@ var lib     = GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'li
   , async   = require( 'async' );
 
 program
-  .version( lib.pkg.version )
+    .version( lib.pkg.version )
 
 program.on( '--help', function( ) {
-  console.log( '  Example:' );
-  console.log( '    clever build' );
-  console.log( '' );
+    console.log( '  Example:' );
+    console.log( '    clever build' );
+    console.log( '' );
 });
 
 program.parse( process.argv );
 
 // get a list of directories within $CWD (or package.json if we're inside the directory...)
-var currentDir  = path.resolve( process.cwd( ) )
+var currentDir  = path.resolve( process.cwd() )
   , dir         = fs.readdirSync( currentDir )
   , isInProject = false
   , folders     = [];
 
-dir.filter( function ( d ) {
-  var stats = fs.statSync( path.resolve( path.join( currentDir, d ) ) );
-  return d === "package.json" || stats.isDirectory( );
-} )
+dir.filter( function( d ) {
+    var stats = fs.statSync( path.resolve( path.join( currentDir, d ) ) );
+    return d === "package.json" || stats.isDirectory( );
+})
 // now let's try to find package information within those directories
 // basically we're trying to figure out if it's the frontend directory...
-.forEach( function ( d ) {
-  isInProject = ['package.json'].indexOf( d ) === -1;
+.forEach( function( d ) {
+    isInProject = ['package.json'].indexOf( d ) === -1;
 
-  var pkg = isInProject ? path.resolve( path.join( currentDir, d, 'package.json' ) ) : path.resolve( path.join( currentDir, d ) );
-  if (fs.existsSync( pkg ) ) {
-    var readPkg     = require( pkg )
-      , hasPkgName  = readPkg.hasOwnProperty( 'name' );
+    var pkg = isInProject ? path.resolve( path.join( currentDir, d, 'package.json' ) ) : path.resolve( path.join( currentDir, d ) );
+    if ( fs.existsSync( pkg ) ) {
+        var readPkg     = require( pkg )
+          , hasPkgName  = readPkg.hasOwnProperty( 'name' );
 
-    // we only need to know if it's an official cleverstack repo or not...
-    // since the grunt server option is the same, we just literally need to
-    // use indexOf
-    if (hasPkgName && ['angular-seed'].indexOf( readPkg.name ) > -1) {
-      folders.push( {
-        path: path.resolve( path.join( pkg, '..' ) )
-      } );
+        // we only need to know if it's an official cleverstack repo or not...
+        // since the grunt server option is the same, we just literally need to
+        // use indexOf
+        if (hasPkgName && ['angular-seed'].indexOf( readPkg.name ) > -1) {
+            folders.push( {
+                path: path.resolve( path.join( pkg, '..' ) )
+            });
+        }
     }
-  }
-} );
+});
 
-if (folders.length < 1) {
-  lib.utils.fail( 'CleverStack couldn\'t find the frontend seed directory within ' + process.cwd( ) );
+if ( folders.length < 1 ) {
+    lib.utils.fail( 'CleverStack couldn\'t find the frontend seed directory within ' + process.cwd() );
 }
 
 async.each(
-  folders,
-  function run( folder, next ) {
-    var proc = exec( [ 'grunt', '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ), 'build' ].join( ' ' ), function( err ) {
-      if ( err ) {
-        next( err );
-      } else {
-        lib.utils.success( 'Build for ' + folder.path + ' was successful' );
-        next();
-      }
-    });
-    
-    proc.stdout.pipe( process.stdout );
-    proc.stderr.pipe( process.stderr );
-  },
-  function handleErr( err ) {
-    if (!!err) {
-      lib.utils.fail( err );
-    }
+    folders,
+    function run( folder, next ) {
+        var proc = exec( [ 'grunt', '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, 'Gruntfile.js' ) ), 'build' ].join( ' ' ), function( err ) {
+            if ( err ) {
+                next( err );
+            } else {
+                lib.utils.success( 'Build for ' + folder.path + ' was successful' );
+                next();
+            }
+        });
+        
+        proc.stdout.pipe( process.stdout );
+        proc.stderr.pipe( process.stderr );
+    },
+    function handleErr( err ) {
+        if (!!err) {
+            lib.utils.fail( err );
+        }
 
-    process.exit( 0 );
-  }
+        process.exit( 0 );
+    }
 );
