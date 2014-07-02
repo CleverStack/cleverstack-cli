@@ -107,29 +107,57 @@ async.waterfall(
 
                             function modulesNpmInstall( callback ) {
                                 var modulesFolder = path.join( seed.moduleDir, seed.modulePath )
-                                  , modules = [];
+                                  , modules = []
+                                  , folders = [];
 
                                 if (fs.existsSync( modulesFolder )) {
-                                    modules = fs.readdirSync( modulesFolder );
+                                    folders = fs.readdirSync( modulesFolder );
 
-                                    var keep = modules.indexOf( '.gitkeep' );
-                                    if (keep > -1) {
-                                        modules.splice( keep, 1 );
-                                    }
+                                    folders.forEach( function( folder ) {
+                                        if ( !/^\./ig.test( folder ) ) {
+                                            var modulesPackageJson = path.join( seed.moduleDir, seed.modulePath, folder )
+                                              , stats = fs.statSync( modulesPackageJson );
+
+                                            if ( stats.isDirectory() && fs.existsSync( modulesPackageJson ) ) {
+                                                modulesPackageJson = require( path.join( modulesPackageJson, 'package.json' ) );
+                                            }
+
+                                            modules.push({
+                                                name: folder,
+                                                version: modulesPackageJson.version,
+                                                dependencies: _.merge({}, modulesPackageJson.dependencies, modulesPackageJson.devDependencies )
+                                            });
+                                        }
+                                    });
 
                                     lib.utils.warn( '  Installing ' + seed.name + ' modules...' );
                                     lib.utils.running( '  Installing ' + seed.name + ' modules...' );
                                 }
+
+                                // Expand the progress bar for each module we need to install
+                                lib.utils.expandProgress( modules.length );
                                 
-                                async.each( 
+                                async.eachSeries( 
                                     modules, 
                                     function ( m, next ) {
+                                        lib.utils.warn( '  Installing ' + m.name + '@' + m.version + ' module...' );
+                                        lib.utils.running( '  Installing ' + m.name + '@' + m.version + ' module for ' + seed.name + '...' );
+
+                                        if ( program.verbose ) {
+                                            Object.keys( m.dependencies ).forEach( function( depName ) {
+                                                lib.utils.info( '    Installing ' + depName + '@' + m.dependencies[ depName ] + '...' );
+                                            });
+                                        }
+
                                         lib.project
                                             .installModule({
                                                 moduleDir: modulesFolder,
                                                 modulePath: ''
-                                            }, path.resolve( path.join( seed.moduleDir, seed.modulePath, m ) ))
-                                            .then( next )
+                                            }, path.resolve( path.join( seed.moduleDir, seed.modulePath, m.name ) ))
+                                            .then( function() {
+                                                lib.utils.progress( 1 );
+                                                next();
+                                            })
                                             .catch( next );
                                     },
                                     callback
