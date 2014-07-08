@@ -1,7 +1,7 @@
 {
     "name": "cleverstack-cli",
     "description": "Command line interface for CleverStack",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "main": "./index.js",
     "author": {
         "name": "CleverStack",

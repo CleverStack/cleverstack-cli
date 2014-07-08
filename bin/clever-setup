@@ -115,11 +115,17 @@ async.waterfall(
 
                                     folders.forEach( function( folder ) {
                                         if ( !/^\./ig.test( folder ) ) {
-                                            var modulesPackageJson = path.join( seed.moduleDir, seed.modulePath, folder )
-                                              , stats = fs.statSync( modulesPackageJson );
+                                            var modulesPackageJsonPath = path.join( seed.moduleDir, seed.modulePath, folder )
+                                              , stats = fs.statSync( modulesPackageJsonPath )
+                                              , modulesPackageJson = path.join( modulesPackageJsonPath, 'package.json' );
 
-                                            if ( stats.isDirectory() && fs.existsSync( modulesPackageJson ) ) {
-                                                modulesPackageJson = require( path.join( modulesPackageJson, 'package.json' ) );
+                                            if ( stats.isDirectory() && fs.existsSync( modulesPackageJsonPath ) && fs.existsSync( modulesPackageJson ) ) {
+                                                modulesPackageJson = require( modulesPackageJson );
+                                            } else {
+                                                modulesPackageJson = {
+                                                    version: 'default',
+                                                    dependencies: {}
+                                                }
                                             }
 
                                             modules.push({
