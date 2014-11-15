@@ -304,7 +304,7 @@ function installNPMPackages( projectDir ) {
     utils.info( [ '  Installing NPM modules...' ].join( '' ) );
     utils.running( 'Installing NPM modules...' );
     var proc = exec( 'npm install --silent', { cwd: projectDir }, function( err ) {
-        if ( !!err ) {
+        if ( !!err && err.message !== 'Command failed: ' ) {
             utils.fail( err );
         } else {
             deferred.resolve();
