@@ -27,6 +27,7 @@ program
     .option( '-v, --verbose', 'verbose output useful for debugging' )
     .option( '-A, --allow-root', 'allow root for bower' )
     .option( '-S, --skip-protractor', 'skips installing protractor (Frontend only)' )
+    .option( '-B, --bootstrap', 'will run `grunt bootstrap build` as part of the setup' )
     .version( lib.pkg.version );
 
 /**  Define CLI Command
@@ -302,7 +303,7 @@ function installNPMPackages( projectDir ) {
     
     utils.info( [ '  Installing NPM modules...' ].join( '' ) );
     utils.running( 'Installing NPM modules...' );
-    var proc = exec( 'npm install', { cwd: projectDir }, function( err, stdout, stderr ) {
+    var proc = exec( 'npm install --silent', { cwd: projectDir }, function( err ) {
         if ( !!err ) {
             utils.fail( err );
         } else {
@@ -327,9 +328,7 @@ function installNPMPackages( projectDir ) {
  */
 function setupBackend() {
     var deferred   = Promise.defer()
-        , projectDir = ( singleSeed === true )
-                ? projectFolder
-                : path.join( projectFolder, 'backend' );
+      , projectDir = ( singleSeed === true ) ? projectFolder : path.join( projectFolder, 'backend' );
 
     utils.info( [ 'Installing Backend', ( backendVersion ? '@' + backendVersion : '' ),'...' ].join( '' ) );
     utils.running( 'Installing...' );
@@ -386,9 +385,7 @@ function setupBackend() {
  */
 function setupFrontend( ) {
     var deferred   = Promise.defer()
-        , projectDir = ( singleSeed === true )
-                ? projectFolder
-                : path.join( projectFolder, 'frontend' );
+      , projectDir = ( singleSeed === true ) ? projectFolder : path.join( projectFolder, 'frontend' );
 
     utils.info( [ 'Installing Frontend', ( frontendVersion ? '@' + frontendVersion : '' ),'...' ].join( '' ) );
     utils.running( 'Installing...' );
@@ -422,12 +419,12 @@ function setupFrontend( ) {
 
                 return new Promise(function( resolve, reject ) {
                     var modulesFolder = path.resolve( path.join( projectDir, 'app', 'modules' ) )
-                        , modules = [];
+                      , modules = [];
 
-                    if (fs.existsSync( modulesFolder )) {
+                    if ( fs.existsSync( modulesFolder ) ) {
                         modules = fs.readdirSync( modulesFolder );
                         var keep = modules.indexOf( '.gitkeep' );
-                        if (keep > -1) {
+                        if ( keep > -1 ) {
                             modules.splice( keep, 1 );
                         }
                     }
@@ -435,8 +432,8 @@ function setupFrontend( ) {
                     async.each(
                         modules,
                         function( m, callback ) {
-                            var installOptions = { moduleDir: modulesFolder, modulePath: '' }
-                                , module = path.resolve( path.join( modulesFolder, m ) );
+                            var installOptions = { moduleDir: projectDir, modulePath: path.join( 'modules', m ) }
+                              , module = path.resolve( path.join( modulesFolder, m ) );
 
                             lib.project
                                 .installModule( installOptions, module )
@@ -467,19 +464,23 @@ function setupFrontend( ) {
                 utils.running( 'Building...' );
 
                 return new Promise(function( resolve, reject ) {
-                    var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function ( err ) {
-                        if ( !err ) {
-                            utils.success( [ '  Frontend installation has completed successfully.' ].join( '' ) );
-                            resolve();
-                        } else {
-                            reject( err );
-                        }
-                    });
+                    if ( !!program.bootstrap ) {
+                        var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function ( err ) {
+                            if ( !err ) {
+                                utils.success( [ '  Frontend installation has completed successfully.' ].join( '' ) );
+                                resolve();
+                            } else {
+                                reject( err );
+                            }
+                        });
 
-                    // Pipe the output of exec if verbose has been specified
-                    if ( program.verbose ) {
-                        proc.stdout.pipe( process.stdout );
-                        proc.stderr.pipe( process.stdout );
+                        // Pipe the output of exec if verbose has been specified
+                        if ( program.verbose ) {
+                            proc.stdout.pipe( process.stdout );
+                            proc.stderr.pipe( process.stdout );
+                        }
+                    } else {
+                        resolve();
                     }
                 });
             })
