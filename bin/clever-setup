@@ -161,8 +161,8 @@ async.waterfall(
 
                                         lib.project
                                             .installModule({
-                                                moduleDir: modulesFolder,
-                                                modulePath: ''
+                                                moduleDir: seed.moduleDir,
+                                                modulePath: path.join( 'modules', m.name )
                                             }, path.resolve( path.join( seed.moduleDir, seed.modulePath, m.name ) ))
                                             .then( function() {
                                                 lib.utils.progress( 1 );

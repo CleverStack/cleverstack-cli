@@ -6,6 +6,7 @@ exports.tap = [
   '    -h, --help             output usage information',
   '    -A, --allow-root       allow root for bower',
   '    -S, --skip-protractor  skips installing protractor \\(Frontend only\\)',
+  '    -B, --bootstrap        will run `grunt bootstrap build` as part of the setup',
   '    -v, --verbose          verbose output useful for debugging',
   '    -V, --version          output the version number',
   '',
