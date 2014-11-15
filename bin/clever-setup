@@ -13,6 +13,7 @@ var path      = require( 'path' )
 program
     .option( '-A, --allow-root', 'allow root for bower' )
     .option( '-S, --skip-protractor', 'skips installing protractor (Frontend only)' )
+    .option( '-B, --bootstrap', 'will run `grunt bootstrap build` as part of the setup' )
     .option( '-v, --verbose', 'verbose output useful for debugging' )
     .version( lib.pkg.version );
 
@@ -60,7 +61,10 @@ async.waterfall(
                     });
 
                     if ( frontend ) {
-                        lib.utils.expandProgress( 2 );
+                        lib.utils.expandProgress( 1 );
+                        if ( !!program.bootstrap ) {
+                            lib.utils.expandProgress( 1 );
+                        }
 
                         if ( !program.skipProtractor ) {
                             lib.utils.expandProgress( 2 );
@@ -93,7 +97,7 @@ async.waterfall(
                                 }
                                 lib.utils.running( '  Installing NPM modules for ' + seed.name + '...' );
 
-                                var proc = exec( 'npm install', { cwd: _path }, function( err ) {
+                                var proc = exec( 'npm install' + ( !program.verbose ? ' --silent' : '' ), { cwd: _path }, function( err ) {
                                     lib.utils.progress( 1 );
                                     callback( err );
                                 });
@@ -188,7 +192,7 @@ async.waterfall(
                             },
 
                             function bootstrapFrontend( callback ) {
-                                if ( seed.name === 'frontend' ) {
+                                if ( seed.name === 'frontend' && program.bootstrap ) {
                                     lib.utils.progress( 1 );
                                     lib.utils.info( '  Building frontend...' );
                                     lib.utils.running( '  Building frontend...' );
@@ -219,7 +223,6 @@ async.waterfall(
                                     lib.utils.running( '  Installing protractor components...' );
 
                                     var proc = exec( 'npm run-script setup-protractor', { cwd: _path }, function( err, stdout, stderr ) {
-                                        console.dir( arguments );
                                         lib.utils.progress( 2 );
 
                                         ( !!err || stderr.trim() !== '' ) ? callback( err || stderr.trim() ) : callback( null );
@@ -249,6 +252,9 @@ async.waterfall(
             process.exit( 1 );
         }
 
+        lib.utils.installing( 'CleverStack' )
+        lib.utils.running( 'Setup has completed.' );
+        lib.utils.finishProgress();
         lib.utils.success( 'Successfully setup all projects modules and components.' );
         process.exit( 0 );
     }
