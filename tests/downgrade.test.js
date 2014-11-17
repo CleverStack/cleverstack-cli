@@ -12,9 +12,9 @@ chai.Assertion.includeStack = true;
 describe( 'Downgrade', function ( ) {
   describe( 'backend', function ( ) {
     before( function ( done ) {
-      console.log( 'Installing clever-background-tasks for tests...' );
-      exec( path.join( binPath, 'clever-install' ) + ' clever-background-tasks', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err ) {
-        console.log( 'Done with installing clever-background-tasks' );
+      console.log( 'Installing backend-example-module for tests...' );
+      exec( path.join( binPath, 'clever-install' ) + ' backend-example-module', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err ) {
+        console.log( 'Done with installing backend-example-module' );
         done( err );
       } );
     } );
@@ -36,18 +36,18 @@ describe( 'Downgrade', function ( ) {
     } );
 
     it( 'should be able to downgrade', function ( done ) {
-      exec( path.join( binPath, 'clever-downgrade' ) + ' clever-background-tasks@0.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-downgrade' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'memcached' ) ) ).to.be.true;
 
-        if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ]) {
-          delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ) ];
+        if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ]) {
+          delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ];
         }
 
-        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) );
-        expect( pkg.name ).to.equal( 'clever-background-tasks' );
+        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) );
+        expect( pkg.name ).to.equal( 'backend-example-module' );
         expect( semver.eq( pkg.version, '0.0.1' ) ).to.true;
 
         done( err );
@@ -55,9 +55,9 @@ describe( 'Downgrade', function ( ) {
     } );
 
     it( 'should give us an error if we\'re trying to downgrade to a version that we already have', function ( done ) {
-      exec( path.join( binPath, 'clever-downgrade' ) + ' clever-background-tasks@0.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-downgrade' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-        expect( stdout ).to.match( /clever-background-tasks is already at version0.0.1/ );
+        expect( stdout ).to.match( /backend-example-module is already at version0.0.1/ );
         done( err );
       } );
     } );

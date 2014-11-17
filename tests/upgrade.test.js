@@ -28,7 +28,7 @@ describe( 'Upgrade', function ( ) {
     } );
 
     it( 'should be able to upgrade', function ( done ) {
-      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-background-tasks@0.0.2', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ) ).to.be.true;
@@ -47,7 +47,7 @@ describe( 'Upgrade', function ( ) {
     } );
 
     it( 'should give us an error if we\'re trying to upgrade to a version that we already have', function ( done ) {
-      exec( path.join( binPath, 'clever-upgrade' ) + ' clever-background-tasks@0.0.2', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
         expect( stdout ).to.match( /clever-background-tasks is already at version0.0.2/ );
         done( err );
