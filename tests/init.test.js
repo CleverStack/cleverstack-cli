@@ -81,10 +81,10 @@ describe( 'Init (these tests will take a long time)', function ( ) {
         name: 'my-new-project2',
         backend: true,
         frontend: true,
-        backendModules: [ 'clever-background-tasks' ],
+        backendModules: [ 'backend-example-module' ],
         frontendModules: [ 'clever-datatables' ]
       }, function ( err ) {
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend', 'modules', 'clever-background-tasks' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'backend', 'modules', 'backend-example-module' ) ) ).to.be.true;
         expect( fs.existsSync( path.join( assetPath, 'my-new-project2', 'frontend', 'app', 'modules', 'cs_datatables' ) ) ).to.be.true;
 
         var csData = path.join( assetPath, 'my-new-project2', 'frontend', 'app', 'modules', 'cs_datatables', 'bower.json' );
