@@ -63,8 +63,8 @@ describe( 'Install with a backend module', function ( ) {
             done( err );
         } );
 
-        proc.stdout.pipe( process.stdout );
-        proc.stderr.pipe( process.stdout );
+        // proc.stdout.pipe( process.stdout );
+        // proc.stderr.pipe( process.stdout );
     } );
 
     it( 'within the backend directory', function( done ) {
@@ -84,19 +84,19 @@ describe( 'Install with a backend module', function ( ) {
             done( err );
         });
 
-        proc.stdout.pipe( process.stdout );
-        proc.stderr.pipe( process.stdout );
+        // proc.stdout.pipe( process.stdout );
+        // proc.stderr.pipe( process.stdout );
     });
 
     it( 'with a specific version', function( done ) {
-        var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
+        var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module@1.0.5', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
             expect( stderr ).to.equal( '' );
 
             expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ).to.be.true;
 
             var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) );
             expect( pkg.name ).to.equal( 'backend-example-module' );
-            expect( pkg.version ).to.equal( '1.0.1' );
+            expect( pkg.version ).to.equal( '1.0.5' );
 
             var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
             expect( projPkg ).to.have.property( 'bundledDependencies' );
@@ -105,7 +105,7 @@ describe( 'Install with a backend module', function ( ) {
             done( err );
         });
 
-        proc.stdout.pipe( process.stdout );
-        proc.stderr.pipe( process.stdout );
+        // proc.stdout.pipe( process.stdout );
+        // proc.stderr.pipe( process.stdout );
     });
 } );

@@ -27,7 +27,7 @@ describe( 'Generate backend seed (tasks)', function ( ) {
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'tasks', 'Testing2Task.js' ) ) ).to.be.true;
 
       var service = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'tasks', 'Testing2Task.js' ) );
-      expect( service ).to.match( /var Testing2Task = module\.exports = Class\.extend\(/ );
+      expect( service ).to.match( /module\.exports =.*classe?s?.*\.extend\(/ );
 
       done( err );
     } );

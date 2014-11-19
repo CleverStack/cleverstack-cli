@@ -3,10 +3,10 @@ var path      = require( 'path' )
 
 exports.tap = function ( done ) {
   done( null, {
-    file: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'services', 'testing2_service.js' ),
+    file: path.join( assetPath, 'my-new-project', 'frontend', 'app', 'modules', 'Testing2', 'services', 'Testing2Service.js' ),
     matches: [
-      /ng\.module\('testing2.services'\)/,
-      /\.service\('Testing2Service', \[/
+      /\.module\(\ 'Testing2.services'\ \)/,
+      /\.service\(\ 'Testing2Service',\ function\(\ \Testing2Model\ \)\ {/
     ]
   } );
 }

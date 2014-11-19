@@ -28,28 +28,27 @@ describe( 'Upgrade', function ( ) {
     } );
 
     it( 'should be able to upgrade', function ( done ) {
-      exec( path.join( binPath, 'clever-upgrade' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' backend-example-module@1.0.5', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
 
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ) ).to.be.true;
-        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'node_modules', 'memcached' ) ) ).to.be.true;
+        expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ).to.be.true;
 
-        if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ]) {
-          delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) ) ];
+        if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ]) {
+          delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ];
         }
 
-        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'clever-background-tasks', 'package.json' ) );
-        expect( pkg.name ).to.equal( 'clever-background-tasks' );
-        expect( semver.eq( pkg.version, '0.0.2' ) ).to.true;
+        var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) );
+        expect( pkg.name ).to.equal( 'backend-example-module' );
+        expect( semver.eq( pkg.version, '1.0.5' ) ).to.true;
 
         done( err );
       } );
     } );
 
     it( 'should give us an error if we\'re trying to upgrade to a version that we already have', function ( done ) {
-      exec( path.join( binPath, 'clever-upgrade' ) + ' backend-example-module@1.0.1', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
+      exec( path.join( binPath, 'clever-upgrade' ) + ' backend-example-module@1.0.5', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
         expect( stderr ).to.equal( '' );
-        expect( stdout ).to.match( /clever-background-tasks is already at version0.0.2/ );
+        expect( stdout ).to.match( /backend-example-module is already at version1.0.5/ );
         done( err );
       } );
     } );

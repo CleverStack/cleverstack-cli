@@ -28,12 +28,12 @@ describe( 'Generate backend seed (tests)', function ( ) {
       expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'tests', 'unit', 'Testing2Test.js' ) ) ).to.be.true;
 
       var testInt = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'tests', 'integration', 'Testing2Test.js' ) );
-      expect( testInt ).to.match( /describe \( '\/testing2', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'POST \/testing2', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'GET \/testing2', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'GET \/testing2\/:id', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'PUT \/testing2\/:id', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'DELETE \/testing2\/:id', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( '\/Testing2', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'POST \/Testing2', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'GET \/Testing2', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'GET \/Testing2\/:id', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'PUT \/Testing2\/:id', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'DELETE \/Testing2\/:id', function \(\) \{/ );
 
       var testUnit = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'Testing2', 'tests', 'unit', 'Testing2Test.js' ) );
       expect( testUnit ).to.match( /describe \( 'controllers\.Testing2Controller', function \(\) \{/ );

@@ -37,15 +37,15 @@ describe( 'New (backend seed)', function ( ) {
       expect( service ).to.match( /model\: TestingNewModel/ );
 
       var task = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tasks', 'TestingNewTask.js' ) );
-      expect( task ).to.match( /var TestingNewTask = module\.exports = Class\.extend\(/ );
+      expect( task ).to.match( /module\.exports =.*classe?s?.*\.extend\(/ );
 
       var testInt = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tests', 'integration', 'TestingNewTest.js' ) );
-      expect( testInt ).to.match( /describe \( '\/testing_new', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'POST \/testing_new', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'GET \/testing_new', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'GET \/testing_new\/:id', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'PUT \/testing_new\/:id', function \(\) \{/ );
-      expect( testInt ).to.match( /describe \( 'DELETE \/testing_new\/:id', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( '\/TestingNew', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'POST \/TestingNew', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'GET \/TestingNew', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'GET \/TestingNew\/:id', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'PUT \/TestingNew\/:id', function \(\) \{/ );
+      expect( testInt ).to.match( /describe \( 'DELETE \/TestingNew\/:id', function \(\) \{/ );
 
       var testUnit = fs.readFileSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'TestingNew', 'tests', 'unit', 'TestingNewTest.js' ) );
       expect( testUnit ).to.match( /describe \( 'controllers\.TestingNewController', function \(\) \{/ );
