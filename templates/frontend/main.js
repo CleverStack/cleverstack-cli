@@ -3,9 +3,10 @@
  */
 define([
 
-  './services/{{template_name}}_service',
-  './directives/{{template_name}}_directive',
-  './factories/{{template_name}}_factory',
-  './controllers/{{template_name}}_controller'
+  './services/{{template_name}}Service',
+  './directives/{{template_name}}Directive',
+  './factories/{{template_name}}Factory',
+  './controllers/{{template_name}}Controller',
+  './models/{{template_name}}Model'
 
 ], function() {});
