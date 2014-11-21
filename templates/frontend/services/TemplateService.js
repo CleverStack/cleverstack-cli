@@ -12,8 +12,8 @@ define( ['angular', '../module' ], function( ng ) {
       data    : null,
 
       list    : function( findOptions ) {
-        return this.model.list( findOptions ).$promise.then( function( charms ) {
-          {{Template}}Service.data = charms;
+        return this.model.list( findOptions ).$promise.then( function( data ) {
+          {{Template}}Service.data = data;
           return {{Template}}Service.data;
         });
       },
