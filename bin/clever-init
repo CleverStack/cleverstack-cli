@@ -136,6 +136,8 @@ async.waterfall(
         },
 
         function findTargets( callback ) {
+            var progress = 0;
+
             utils.info( [ '  Finding seeds to target for installation...' ].join( ' ' ) );
             utils.running( 'Finding seeds to target for installation...' );
 
@@ -146,7 +148,7 @@ async.waterfall(
                     args.splice( args.indexOf( 'backend' ), 1 );
                 }
 
-                utils.expandProgress( 6 );
+                progress = 6;
                 seedsToInstall.push( { name: 'Backend', install: setupBackend }  );
             }
 
@@ -158,9 +160,9 @@ async.waterfall(
                 }
 
                 if ( !program.skipProtractor ) {
-                    utils.expandProgress( 8 );
+                    progress = 8;
                 } else {
-                    utils.expandProgress( 6 );
+                    progress = 6;
                 }
 
                 seedsToInstall.push( { name: 'Frontend', install: setupFrontend }  );
@@ -172,7 +174,10 @@ async.waterfall(
                 callback( null );
             } else {
                 utils.initBar();
-                utils.startBar( callback );
+                utils.startBar( function() {
+                    utils.expandProgress( 6 );
+                    callback( null );
+                });
             }
         },
 
