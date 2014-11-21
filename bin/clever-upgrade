@@ -9,7 +9,9 @@ var path      = require( 'path' )
 
 /**  Define CLI Usage
 ================================*/
-program.version( lib.pkg.version );
+program
+    .option( '-v, --verbose', 'verbose output useful for debugging' )
+    .version( lib.pkg.version );
 
 /**  Define CLI Help
 ================================*/
@@ -26,7 +28,12 @@ program.on( '--help', function() {
 /**  Parse CLI Arguments
 ================================*/
 program.parse( process.argv );
-var args = process.argv.slice( 2 );
+var args = [];
+process.argv.slice( 2 ).forEach( function( arg ) {
+    if ( arg !== '-v' && arg !== '--verbose' ) {
+        args.push( arg );
+    }
+});
 
 /**  Start Upgrading
 ================================*/

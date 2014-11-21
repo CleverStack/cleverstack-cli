@@ -11,9 +11,9 @@ chai.Assertion.includeStack = true;
 
 describe( 'Remove', function ( ) {
   before( function ( done ) {
-    console.log( 'Installing backend-example-module and clever-datatables for tests...' );
+    // console.log( 'Installing backend-example-module and clever-datatables for tests...' );
     exec( path.join( binPath, 'clever-install' ) + ' backend-example-module', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err ) {
-      console.log( '... done' );
+      // console.log( '... done' );
       done( err );
     } );
   } );
