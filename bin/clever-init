@@ -65,17 +65,10 @@ if ( !program.args[ 0 ] || program.args[ 0 ].toString().trim() === "" ) {
 ================================*/
 async.waterfall(
     [
-
-        function startBar( callback ) {
-            utils.initBar();
-            utils.startBar( callback );
-        },
-
         function start( callback ) {
-            utils.info( 'Preparing...' );
-            utils.installing( 'Preparing...' );
-            utils.running( 'Preparing...' );
-
+            // Tell promise we want long stack traces for easier debugging
+            Promise.longStackTraces();
+            
             // Assign required variables
             project             = program.args[ 0 ];
             args                = program.args.slice( 1 );
@@ -84,8 +77,11 @@ async.waterfall(
             projectFolder       = path.join( process.cwd(), project );
             projectFolderExists = fs.existsSync( projectFolder );
 
-            // Tell promise we want long stack traces for easier debugging
-            Promise.longStackTraces();
+            if ( args.length < 1 || ( !installFrontend && !installBackend ) || ( installFrontend && installBackend ) ) {
+                singleSeed = false;
+                installFrontend = true;
+                installBackend = true;
+            }
 
             // Output debugging information if verbose mode is enabled
             if ( program.verbose ) {
@@ -143,12 +139,6 @@ async.waterfall(
             utils.info( [ '  Finding seeds to target for installation...' ].join( ' ' ) );
             utils.running( 'Finding seeds to target for installation...' );
 
-            if ( args.length < 1 || ( !installFrontend && !installBackend ) || ( installFrontend && installBackend ) ) {
-                singleSeed = false;
-                installFrontend = true;
-                installBackend = true;
-            }
-
             if ( installBackend ) {
 
                 if ( args.indexOf( 'backend' ) !== -1 ) {
@@ -179,9 +169,11 @@ async.waterfall(
             // Make progress longer based on how many modules we have to install
             if ( args.length ) {
                 utils.expandProgress( args.length + 1 );
+                callback( null );
+            } else {
+                utils.initBar();
+                utils.startBar( callback );
             }
-
-            callback( null );
         },
 
         function runActions( callback ) {
@@ -259,36 +251,20 @@ async.waterfall(
  * @api private
  */
 function writeLocalJSON( projectDir ) {
-    var deferred = Promise.defer()
-        , localJSONFile = require( path.join( projectDir, 'config', 'local.example.json' ) );
+    return new Promise( function( resolve, reject ) {
+        var localJSONFile = require( path.join( projectDir, 'config', 'local.example.json' ) );
 
-    utils.info( [ '  Creating local configuration file config/local.json', '...' ].join( '' ) );
-    utils.running( 'Creating configs...' );
+        utils.info( [ '  Creating local configuration file config/local.json', '...' ].join( '' ) );
+        utils.running( 'Creating config/local.json...' );
 
-    if (localJSONFile !== null) {
-        localJSONFile['clever-orm'] = localJSONFile['clever-orm'] || {};
-        localJSONFile['clever-orm'].db = localJSONFile['clever-orm'].db || {};
+        fs.writeFile( path.join( projectDir, 'config', 'local.json' ), JSON.stringify( localJSONFile, null, 2 ), function ( err ) {
+            if (!!err) {
+                return reject( err );
+            }
 
-        [ 'username', 'password', 'database' ].forEach( function ( key ) {
-            localJSONFile['clever-orm'].db[key] = localJSONFile['clever-orm'].db[key] || '';
-        } );
-
-        localJSONFile['clever-orm'].db.options = localJSONFile['clever-orm'].db.options || {};
-
-        [ 'dialect', 'host', 'port' ].forEach( function ( key ) {
-            localJSONFile['clever-orm'].db.options[key] = localJSONFile['clever-orm'].db.options[key] || '';
-        } );
-    }
-
-    fs.writeFile( path.join( projectDir, 'config', 'local.json' ), JSON.stringify( localJSONFile, null, 2 ), function ( err ) {
-        if (!!err) {
-            return deferred.reject( err );
-        }
-
-        deferred.resolve();
+            resolve();
+        });
     });
-
-    return deferred.promise;
 }
 
 /**
@@ -299,25 +275,24 @@ function writeLocalJSON( projectDir ) {
  * @api private
  */
 function installNPMPackages( projectDir ) {
-    var deferred = Promise.defer();
-    
-    utils.info( [ '  Installing NPM modules...' ].join( '' ) );
-    utils.running( 'Installing NPM modules...' );
-    var proc = exec( 'npm install --silent', { cwd: projectDir }, function( err ) {
-        if ( !!err && err.message !== 'Command failed: ' ) {
-            utils.fail( err );
-        } else {
-            deferred.resolve();
+    return new Promise( function( resolve, reject ) {
+        utils.info( [ '  Installing NPM modules...' ].join( '' ) );
+        utils.running( 'Installing NPM modules...' );
+        var proc = exec( 'npm install --silent', { cwd: projectDir }, function( err ) {
+            if ( !!err && err.message !== 'Command failed: ' ) {
+                utils.fail( err );
+                reject( err );
+            } else {
+                resolve();
+            }
+        });
+
+        // Pipe the output of exec if verbose has been specified
+        if ( program.verbose ) {
+            proc.stdout.pipe( process.stdout );
+            proc.stderr.pipe( process.stdout );
         }
     });
-
-    // Pipe the output of exec if verbose has been specified
-    if ( program.verbose ) {
-        proc.stdout.pipe( process.stdout );
-        proc.stderr.pipe( process.stdout );
-    }
-
-    return deferred.promise;
 }
 
 /**
@@ -327,54 +302,53 @@ function installNPMPackages( projectDir ) {
  * @api private
  */
 function setupBackend() {
-    var deferred   = Promise.defer()
-      , projectDir = ( singleSeed === true ) ? projectFolder : path.join( projectFolder, 'backend' );
+    return new Promise( function( resolve, reject ) {
+        var projectDir = ( singleSeed === true ) ? projectFolder : path.join( projectFolder, 'backend' );
 
-    utils.info( [ 'Installing Backend', ( backendVersion ? '@' + backendVersion : '' ),'...' ].join( '' ) );
-    utils.running( 'Installing...' );
+        utils.info( [ 'Installing Backend', ( backendVersion ? '@' + backendVersion : '' ),'...' ].join( '' ) );
+        utils.running( 'Installing...' );
 
-    if ( projectDir !== projectFolder ) {
-        utils.info( [ '  Installation path is ', projectDir, '...' ].join( '' ) );
-    }
-
-    mkdirp( projectDir, function backendProjectDirReady( err ) {
-        var csPackage = {
-            owner: 'CleverStack',
-            name: 'node-seed' + ( backendVersion ? '@' + backendVersion : '' )
-        };
-     
-        if ( !!err ) {
-            return deferred.reject( err );
+        if ( projectDir !== projectFolder ) {
+            utils.info( [ '  Installation path is ', projectDir, '...' ].join( '' ) );
         }
 
-        utils.info( [ '  Downloading and extracting ', csPackage.name, '...' ].join( '' ) );
-        utils.running( 'Downloading and extracting...' );
-        lib.packages
-            .get( csPackage, projectDir )
-            .then(function() {
-                utils.progress();
-                return writeLocalJSON( projectDir );
-            })
-            .then(function() {
-                utils.progress();
-                return installNPMPackages( projectDir );
-            })
-            .then(function() {
-                utils.progress();
-                utils.info( [ '  Installing bundledDependencies...' ].join( '' ) );
-                utils.running( 'Installing bundledDependencies...' );
-                return lib.util.dependencies.installBundleDeps( projectDir );
-            })
-            .then(function() {
-                utils.progress();
+        mkdirp( projectDir, function backendProjectDirReady( err ) {
+            var csPackage = {
+                owner: 'CleverStack',
+                name: 'node-seed' + ( backendVersion ? '@' + backendVersion : '' )
+            };
+         
+            if ( !!err ) {
+                return reject( err );
+            }
 
-                utils.success( '  Backend installation has completed successfully!\n' );
-                deferred.resolve();
-            })
-            .catch( deferred.reject );
+            utils.info( [ '  Downloading and extracting ', csPackage.name, '...' ].join( '' ) );
+            utils.running( 'Downloading and extracting...' );
+            lib.packages
+                .get( csPackage, projectDir )
+                .then(function() {
+                    utils.progress();
+                    return writeLocalJSON( projectDir );
+                })
+                .then(function() {
+                    utils.progress();
+                    return installNPMPackages( projectDir );
+                })
+                .then(function() {
+                    utils.progress();
+                    utils.info( [ '  Installing bundledDependencies...' ].join( '' ) );
+                    utils.running( 'Installing bundledDependencies...' );
+                    return lib.util.dependencies.installBundleDeps( projectDir );
+                })
+                .then(function() {
+                    utils.progress();
+
+                    utils.success( '  Backend installation has completed successfully!\n' );
+                    resolve();
+                })
+                .catch( reject );
+        });
     });
-
-    return deferred.promise;
 }
 
 /**
@@ -383,91 +357,124 @@ function setupBackend() {
  * @return {Promise}
  * @api private
  */
-function setupFrontend( ) {
-    var deferred   = Promise.defer()
-      , projectDir = ( singleSeed === true ) ? projectFolder : path.join( projectFolder, 'frontend' );
+function setupFrontend() {
+    return new Promise( function( finalResolve, finalReject ) {
 
-    utils.info( [ 'Installing Frontend', ( frontendVersion ? '@' + frontendVersion : '' ),'...' ].join( '' ) );
-    utils.running( 'Installing...' );
+        var projectDir = ( singleSeed === true ) ? projectFolder : path.join( projectFolder, 'frontend' );
 
-    if ( projectDir !== projectFolder ) {
-        utils.info( [ '  Installation path is ', projectDir, '...' ].join( '' ) );
-    }
+        utils.info( [ 'Installing Frontend', ( frontendVersion ? '@' + frontendVersion : '' ),'...' ].join( '' ) );
+        utils.running( 'Installing...' );
 
-    mkdirp( path.resolve( projectDir ), function( err ) {
-        var csPackage = {
-            owner: 'CleverStack',
-            name: 'angular-seed' + ( frontendVersion ? '@' + frontendVersion : '' )
-        };
-
-        if ( !!err ) {
-            return deferred.reject( err );
+        if ( projectDir !== projectFolder ) {
+            utils.info( [ '  Installation path is ', projectDir, '...' ].join( '' ) );
         }
 
-        utils.info( [ '  Downloading and extracting ', csPackage.name, '...' ].join( '' ) );
-        utils.running( 'Downloading and extracting...' );
-        lib.packages
-            .get( csPackage, projectDir )
-            .then(function() {
-                utils.progress();
-                return installNPMPackages( projectDir );
-            })
-            .then(function() {
-                utils.progress();
-                utils.info( [ '  Installing bundled modules...' ].join( '' ) );
-                utils.running( 'Installing bundled modules...' );
+        mkdirp( path.resolve( projectDir ), function( err ) {
+            var csPackage = {
+                owner: 'CleverStack',
+                name: 'angular-seed' + ( frontendVersion ? '@' + frontendVersion : '' )
+            };
 
-                return new Promise(function( resolve, reject ) {
-                    var modulesFolder = path.resolve( path.join( projectDir, 'app', 'modules' ) )
-                      , modules = [];
+            if ( !!err ) {
+                return finalReject( err );
+            }
 
-                    if ( fs.existsSync( modulesFolder ) ) {
-                        modules = fs.readdirSync( modulesFolder );
-                        var keep = modules.indexOf( '.gitkeep' );
-                        if ( keep > -1 ) {
-                            modules.splice( keep, 1 );
-                        }
-                    }
+            utils.info( [ '  Downloading and extracting ', csPackage.name, '...' ].join( '' ) );
+            utils.running( 'Downloading and extracting...' );
+            lib.packages
+                .get( csPackage, projectDir )
+                .then(function() {
+                    utils.progress();
+                    return installNPMPackages( projectDir );
+                })
+                .then(function() {
+                    utils.progress();
+                    utils.info( [ '  Installing bundled modules...' ].join( '' ) );
+                    utils.running( 'Installing bundled modules...' );
 
-                    async.each(
-                        modules,
-                        function( m, callback ) {
-                            var installOptions = { moduleDir: projectDir, modulePath: path.join( 'modules', m ) }
-                              , module = path.resolve( path.join( modulesFolder, m ) );
+                    return new Promise(function( resolve, reject ) {
+                        var modulesFolder = path.resolve( path.join( projectDir, 'app', 'modules' ) )
+                          , modules = [];
 
-                            lib.project
-                                .installModule( installOptions, module )
-                                .then(function() {
-                                    callback();
-                                })
-                                .catch(function( err ) {
-                                    callback( err );
-                                });
-                        },
-                        function( err ) {
-                            if ( !err ) {
-                                resolve();
-                            } else {
-                                reject( err );
+                        if ( fs.existsSync( modulesFolder ) ) {
+                            modules = fs.readdirSync( modulesFolder );
+                            var keep = modules.indexOf( '.gitkeep' );
+                            if ( keep > -1 ) {
+                                modules.splice( keep, 1 );
                             }
                         }
-                    );
-                });
-            })
-            .then(function() {
-                utils.progress();
-                return installBowerComponents( projectDir );
-            })
-            .then(function() {
-                utils.progress();
-                utils.info( [ '  Building frontend...' ].join( '' ) );
-                utils.running( 'Building...' );
 
-                return new Promise(function( resolve, reject ) {
-                    if ( !!program.bootstrap ) {
-                        var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function ( err ) {
+                        async.each(
+                            modules,
+                            function( m, callback ) {
+                                var installOptions = { moduleDir: projectDir, modulePath: path.join( 'modules', m ) }
+                                  , module = path.resolve( path.join( modulesFolder, m ) );
+
+                                lib.project
+                                    .installModule( installOptions, module )
+                                    .then(function() {
+                                        callback();
+                                    })
+                                    .catch(function( err ) {
+                                        callback( err );
+                                    });
+                            },
+                            function( err ) {
+                                if ( !err ) {
+                                    resolve();
+                                } else {
+                                    reject( err );
+                                }
+                            }
+                        );
+                    });
+                })
+                .then(function() {
+                    utils.progress();
+                    return installBowerComponents( projectDir );
+                })
+                .then(function() {
+                    utils.progress();
+                    utils.info( [ '  Building frontend...' ].join( '' ) );
+                    utils.running( 'Building...' );
+
+                    return new Promise(function( resolve, reject ) {
+                        if ( !!program.bootstrap ) {
+                            var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function ( err ) {
+                                if ( !err ) {
+                                    utils.success( [ '  Frontend installation has completed successfully.' ].join( '' ) );
+                                    resolve();
+                                } else {
+                                    reject( err );
+                                }
+                            });
+
+                            // Pipe the output of exec if verbose has been specified
+                            if ( program.verbose ) {
+                                proc.stdout.pipe( process.stdout );
+                                proc.stderr.pipe( process.stdout );
+                            }
+                        } else {
+                            resolve();
+                        }
+                    });
+                })
+                .then(function() {
+                    utils.progress();
+
+                    return new Promise( function( resolve, reject ) {
+                        if ( program.skipProtractor === true ) {
+                            utils.warn( '  Skipping installation of protractor!\n' );
+                            return resolve();
+                        } else {
+                            utils.warn( [ '  Installing protractor...' ].join( '' ) );
+                            utils.running( 'Installing protractor (this might take awhile)...' );
+                        }
+
+                        var proc = exec( 'npm run-script setup-protractor', { cwd: projectDir }, function( err ) {
                             if ( !err ) {
-                                utils.success( [ '  Frontend installation has completed successfully.' ].join( '' ) );
+                                utils.success( [ '  Protractor successfully installed...\n' ].join( '' ) );
+                                utils.progress(2);
                                 resolve();
                             } else {
                                 reject( err );
@@ -479,75 +486,41 @@ function setupFrontend( ) {
                             proc.stdout.pipe( process.stdout );
                             proc.stderr.pipe( process.stdout );
                         }
-                    } else {
-                        resolve();
-                    }
-                });
-            })
-            .then(function() {
-                utils.progress();
-
-                return new Promise( function( resolve, reject ) {
-                    if ( program.skipProtractor === true ) {
-                        utils.warn( '  Skipping installation of protractor!\n' );
-                        return resolve();
-                    } else {
-                        utils.warn( [ '  Installing protractor...' ].join( '' ) );
-                        utils.running( 'Installing protractor (this might take awhile)...' );
-                    }
-
-                    var proc = exec( 'npm run-script setup-protractor', { cwd: projectDir }, function( err ) {
-                        if ( !err ) {
-                            utils.success( [ '  Protractor successfully installed...\n' ].join( '' ) );
-                            utils.progress(2);
-                            resolve();
-                        } else {
-                            reject( err );
-                        }
                     });
-
-                    // Pipe the output of exec if verbose has been specified
-                    if ( program.verbose ) {
-                        proc.stdout.pipe( process.stdout );
-                        proc.stderr.pipe( process.stdout );
-                    }
+                })
+                .then(function() {
+                    finalResolve();
+                })
+                .catch(function( err ) {
+                    finalReject( err );
                 });
-            })
-            .then(function() {
-                deferred.resolve();
-            })
-            .catch(function( err ) {
-                deferred.reject( err );
-            });
+        });
     });
-
-    return deferred.promise;
 }
 
 function installBowerComponents( projectDir ) {
-    var deferred = Promise.defer()
-        , bowerPath = path.resolve( path.join( projectDir, 'bower.json' ) );
+    return new Promise( function( resolve, reject ) {
+        var bowerPath = path.resolve( path.join( projectDir, 'bower.json' ) );
 
-    utils.running( 'Installing bower components...' );
-    utils.info( [ '  Installing bower components...' ].join( '' ) );
+        utils.running( 'Installing bower components...' );
+        utils.info( [ '  Installing bower components...' ].join( '' ) );
 
-    fs.exists( bowerPath, function( exists ) {
-        if ( !exists ) {
-            return deferred.reject( 'Bower not found' );
-        }
+        fs.exists( bowerPath, function( exists ) {
+            if ( !exists ) {
+                return reject( 'Bower not found' );
+            }
 
-        lib.project
-            .installBowerComponents({
-                moduleDir: projectDir,
-                modulePath: 'app/modules' // todo: Call locations( ) after population
-            })
-            .then(function() {
-                deferred.resolve();
-            })
-            .catch(function( err ) {
-                deferred.reject( err );
-            });
+            lib.project
+                .installBowerComponents({
+                    moduleDir: projectDir,
+                    modulePath: 'app/modules' // todo: Call locations( ) after population
+                })
+                .then(function() {
+                    resolve();
+                })
+                .catch(function( err ) {
+                    reject( err );
+                });
+        });
     });
-
-    return deferred.promise;
 }

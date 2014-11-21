@@ -43,26 +43,25 @@ Promise.longStackTraces();
  */
 
 function removeFromBundledDependencies( backendPath, modules ) {
-    var def     = Promise.defer()
-      , pkgPath = path.join( backendPath.moduleDir, 'package.json' )
-      , pkg     = require( pkgPath );
+    return new Promise( function( resolve, reject ) {
+        var pkgPath = path.join( backendPath.moduleDir, 'package.json' )
+          , pkg     = require( pkgPath );
 
-    pkg.bundledDependencies = pkg.bundledDependencies || [ ];
-    modules.forEach( function( module ) {
-        if (pkg.bundledDependencies.indexOf( module ) > -1) {
-            pkg.bundledDependencies.splice( pkg.bundledDependencies.indexOf( module ), 1 );
-        }
+        pkg.bundledDependencies = pkg.bundledDependencies || [ ];
+        modules.forEach( function( module ) {
+            if (pkg.bundledDependencies.indexOf( module ) > -1) {
+                pkg.bundledDependencies.splice( pkg.bundledDependencies.indexOf( module ), 1 );
+            }
+        });
+
+        fs.writeFile( pkgPath, JSON.stringify( pkg, null, '  ' ), function( err ) {
+            if (!!err) {
+                return reject( err );
+            }
+
+            resolve();
+        });
     });
-
-    fs.writeFile( pkgPath, JSON.stringify( pkg, null, '  ' ), function( err ) {
-        if (!!err) {
-            return def.reject( err );
-        }
-
-        def.resolve();
-    });
-
-    return def.promise;
 }
 
 /**
@@ -74,77 +73,75 @@ function removeFromBundledDependencies( backendPath, modules ) {
  */
 
 function findModules( modules ) {
-    var def = Promise.defer();
+    return new Promise( function( resolve, reject ) {
+        lib .util
+            .locations.get()
+            .then( function( locations ) {
+                var _modules = [];
 
-    lib .util
-        .locations.get()
-        .then( function( locations ) {
-            var _modules = [];
+                async.each(
+                    modules,
+                    function( module, next ) {
+                        async.each(
+                            locations,
+                            function( location, fn ) {
+                                var walk = require( 'findit' )( path.join( location.moduleDir, location.modulePath ) )
+                                  , pkg;
 
-            async.each(
-                modules,
-                function( module, next ) {
-                    async.each(
-                        locations,
-                        function( location, fn ) {
-                            var walk = require( 'findit' )( path.join( location.moduleDir, location.modulePath ) )
-                              , pkg;
-
-                            walk.on( 'file', function( file ) {
-                                if ( path.basename( file ) === "bower.json" ) {
-                                    pkg = require( file );
-                                } else if ( path.basename( file ) === "package.json" && !fs.existsSync( file.replace( 'package.json', 'bower.json' ) ) ) {
-                                    pkg = require( file );
-                                }
-
-                                if ( typeof pkg !== "undefined" && pkg.name === module ) {
-                                    var name = path.join( location.moduleDir, location.modulePath, pkg.rename || pkg.name );
-                                    if ( _modules.indexOf( name ) === -1 ) {
-                                        _modules.push( name );
+                                walk.on( 'file', function( file ) {
+                                    if ( path.basename( file ) === "bower.json" ) {
+                                        pkg = require( file );
+                                    } else if ( path.basename( file ) === "package.json" && !fs.existsSync( file.replace( 'package.json', 'bower.json' ) ) ) {
+                                        pkg = require( file );
                                     }
-                                }
-                            });
 
-                            walk.on( 'end', function() {
-                                fn();
-                            });
-                        },
-                        next
-                    );
-                },
-                function( err ) {
-                    if ( !!err || _modules.length < 1 ) {
-                        return def.reject( 'There are no modules to remove.' );
-                    }
-
-                    async.each(
-                        _modules,
-                        rimraf,
-                        function( err ) {
-                            if ( !!err ) {
-                                return def.reject( err );
-                            }
-
-                            var backend = _.find( locations, function( location ) {
-                                return location.name === "backend";
-                            });
-
-                            if ( typeof backend === "undefined" ) {
-                                return def.resolve();
-                            }
-
-                            removeFromBundledDependencies( backend, modules )
-                                .then( function() {
-                                    def.resolve();
-                                }, function( err ) {
-                                    def.reject( err );
+                                    if ( typeof pkg !== "undefined" && pkg.name === module ) {
+                                        var name = path.join( location.moduleDir, location.modulePath, pkg.rename || pkg.name );
+                                        if ( _modules.indexOf( name ) === -1 ) {
+                                            _modules.push( name );
+                                        }
+                                    }
                                 });
-                        }
-                    );
-                });
-        });
 
-    return def.promise;
+                                walk.on( 'end', function() {
+                                    fn();
+                                });
+                            },
+                            next
+                        );
+                    },
+                    function( err ) {
+                        if ( !!err || _modules.length < 1 ) {
+                            return reject( 'There are no modules to remove.' );
+                        }
+
+                        async.each(
+                            _modules,
+                            rimraf,
+                            function( err ) {
+                                if ( !!err ) {
+                                    return reject( err );
+                                }
+
+                                var backend = _.find( locations, function( location ) {
+                                    return location.name === "backend";
+                                });
+
+                                if ( typeof backend === "undefined" ) {
+                                    return resolve();
+                                }
+
+                                removeFromBundledDependencies( backend, modules )
+                                    .then( function() {
+                                        resolve();
+                                    }, function( err ) {
+                                        reject( err );
+                                    });
+                            }
+                        );
+                    });
+            });
+    });
 }
 
 /**  Start Removing
