@@ -148,7 +148,7 @@ async.waterfall(
                     args.splice( args.indexOf( 'backend' ), 1 );
                 }
 
-                progress = 6;
+                progress += 6;
                 seedsToInstall.push( { name: 'Backend', install: setupBackend }  );
             }
 
@@ -160,9 +160,9 @@ async.waterfall(
                 }
 
                 if ( !program.skipProtractor ) {
-                    progress = 8;
+                    progress += 7;
                 } else {
-                    progress = 6;
+                    progress += 6;
                 }
 
                 seedsToInstall.push( { name: 'Frontend', install: setupFrontend }  );
@@ -170,12 +170,12 @@ async.waterfall(
 
             // Make progress longer based on how many modules we have to install
             if ( args.length ) {
-                utils.expandProgress( args.length + 1 );
+                utils.expandProgress( args.length + progress );
                 callback( null );
             } else {
                 utils.initBar();
                 utils.startBar( function() {
-                    utils.expandProgress( 6 );
+                    utils.expandProgress( progress );
                     callback( null );
                 });
             }
@@ -239,6 +239,7 @@ async.waterfall(
             utils.running( 'Installation completed' );
             utils.installing( 'Done' );
             utils.success( '\nProject ' + project + ' has been created in ' + projectFolder + '\n' );
+            lib.utils.finishProgress();
             process.exit( 0 );
         } else {
             utils.fail( err )
