@@ -33,6 +33,7 @@ describe( 'REPL', function ( ) {
       expect( stdout ).to.match( /\u001b\[38;5;172m\.h\u001b\[39m          \u001b\[38;5;8mAlias for .commands/ );
       expect( stdout ).to.match( /\u001b\[38;5;172m\.modules\u001b\[39m    \u001b\[38;5;8mList all of the modules within this project/ );
       expect( stdout ).to.match( /\u001b\[38;5;172m\.models\u001b\[39m     \u001b\[38;5;8mLists all models/ );
+      expect( stdout ).to.match( /\u001b\[38;5;172m\.services\u001b\[39m   \u001b\[38;5;8mLists all services/ );
       expect( stdout ).to.match( /\u001b\[38;5;172m\.exit\u001b\[39m       \u001b\[38;5;8mExits the CleverStack REPL/ );
       expect( stdout ).to.match( /\u001b\[38;5;172m\.quit\u001b\[39m       \u001b\[38;5;8mAlias for .exit/ );
       expect( stdout ).to.match( /\u001b\[38;5;172m\.q\u001b\[39m          \u001b\[38;5;8mAlias for .exit/ );
