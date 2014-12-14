@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var lib     = GLOBAL.lib = require( (require('path')).join( __dirname, '..', 'lib' ) )
+var lib     = GLOBAL.lib = require( ( require( 'path' ) ).join( __dirname, '..', 'lib' ) )
   , program = GLOBAL.program = require( 'commander' )
   , path    = require( 'path' )
   , fs      = require( 'fs' )
