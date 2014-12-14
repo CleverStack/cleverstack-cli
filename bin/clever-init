@@ -125,12 +125,12 @@ async.waterfall(
         },
 
         function createProjectFolder( callback ) {
-            utils.info( '  Creating project installation path...', '└── ' )
+            utils.info( '  Creating project installation path...', !program.verbose ? '└── ' : '├── ' )
             utils.running( 'Creating project installation path...' );
 
             if ( !projectFolderExists ) {
                 if ( program.verbose ) {
-                    utils.info( [ '  Creating installation path', projectFolder + '...' ].join( ' ' ) );
+                    utils.info( [ '  Creating installation path', projectFolder + '...' ].join( ' ' ), '├── ' );
                 }
                 utils.running( [ '  Creating installation path', projectFolder + '...' ].join( ' ' ) );
 
@@ -146,7 +146,7 @@ async.waterfall(
             var progress = 0;
 
             if ( program.verbose ) {
-                utils.info( [ '  Preparing seed installation list...' ].join( ' ' ) );
+                utils.info( [ '  Preparing seed installation list...' ].join( ' ' ), '└── ' );
             }
             utils.running( 'Preparing seed installation list...' );
 
