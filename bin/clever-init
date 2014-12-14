@@ -66,6 +66,9 @@ if ( !program.args[ 0 ] || program.args[ 0 ].toString().trim() === "" ) {
 async.waterfall(
     [
         function start( callback ) {
+            utils.info( [ 'Preparing for installation...' ].join( ' ' ) );
+            utils.running( 'Preparing for installation...' );
+
             // Tell promise we want long stack traces for easier debugging
             Promise.longStackTraces();
             
@@ -122,6 +125,7 @@ async.waterfall(
         },
 
         function createProjectFolder( callback ) {
+            utils.info( '  Creating project installation path...', '└── ' )
             utils.running( 'Creating project installation path...' );
 
             if ( !projectFolderExists ) {
@@ -167,7 +171,6 @@ async.waterfall(
                 progress += 8;
 
                 if ( !!program.skipProtractor ) {
-                    utils.warn( '  Skipping installation of protractor' );
                     progress -= 2;
                 } 
 
@@ -194,9 +197,6 @@ async.waterfall(
         function runActions( callback ) {
             utils.progress();
 
-            utils.info( [ 'Starting installation...\n' ].join( ' ' ) );
-            utils.running( 'Starting installation...' );
-
             async.forEachSeries(
                 seedsToInstall,
                 function runAction( seed, cb ) {
@@ -222,7 +222,6 @@ async.waterfall(
             if ( args.length < 1 ) {
 
                 if ( program.verbose ) {
-                    utils.running( 'No modules need to be installed, skipping...' );
                     utils.running( 'No modules need to be installed, skipping...' );
                 }
 
@@ -352,7 +351,7 @@ function setupBackend() {
                 })
                 .then(function() {
                     utils.progress();
-                    utils.info( [ '  Installing bundledDependencies...' ].join( '' ) );
+                    utils.info( [ '  Installing bundledDependencies...' ].join( '' ), '└── ' );
                     utils.running( 'Installing bundledDependencies...' );
                     return lib.util.dependencies.installBundleDeps( projectDir );
                 })
@@ -380,6 +379,10 @@ function setupFrontend() {
 
         utils.info( [ 'Installing Frontend', ( frontendVersion ? '@' + frontendVersion : '' ),'...' ].join( '' ) );
         utils.running( 'Installing...' );
+
+        if ( !!program.skipProtractor ) {
+            utils.warn( '  Skipping installation of protractor' );
+        }
 
         if ( projectDir !== projectFolder ) {
             utils.info( [ '  Installation path is ', projectDir, '...' ].join( '' ) );
@@ -452,15 +455,14 @@ function setupFrontend() {
                 .then(function() {
                     utils.progress();
                     
-
                     return new Promise(function( resolve, reject ) {
                         if ( !!program.bootstrap ) {
                             if ( program.verbose ) {
-                                utils.info( [ '  Building bootstrap for frontend...' ].join( '' ) );
+                                utils.info( [ '  Building bootstrap for frontend...' ].join( '' ), !!program.skipProtractor ? '└── ' : '├── ' );
                             }
                             utils.running( 'Building bootstrap for frontend...' );
 
-                            var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function ( err ) {
+                            var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function( err ) {
                                 if ( !err ) {
                                     utils.success( [ 'Frontend installation has completed successfully.' ].join( '' ) );
                                     resolve();
@@ -486,7 +488,7 @@ function setupFrontend() {
                         if ( !!program.skipProtractor ) {
                             return resolve();
                         } else {
-                            utils.warn( [ '  Installing protractor...' ].join( '' ) );
+                            utils.info( [ '  Installing protractor...' ].join( '' ) , '└──' );
                             utils.running( 'Installing protractor (this might take awhile)...' );
                         }
 
