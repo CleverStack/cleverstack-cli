@@ -125,7 +125,10 @@ async.waterfall(
             utils.running( 'Creating project installation path...' );
 
             if ( !projectFolderExists ) {
-                utils.info( [ '  Creating installation path', projectFolder + '...' ].join( ' ' ) );
+                if ( program.verbose ) {
+                    utils.info( [ '  Creating installation path', projectFolder + '...' ].join( ' ' ) );
+                }
+                utils.running( [ '  Creating installation path', projectFolder + '...' ].join( ' ' ) );
 
                 mkdirp( projectFolder, function( err ) {
                     callback( !err ? null : [ 'Cannot create', project, 'folder in', process.cwd(), 'because of', err ].join( ' ' ) );
@@ -138,8 +141,10 @@ async.waterfall(
         function findTargets( callback ) {
             var progress = 0;
 
-            utils.info( [ '  Finding seeds to target for installation...' ].join( ' ' ) );
-            utils.running( 'Finding seeds to target for installation...' );
+            if ( program.verbose ) {
+                utils.info( [ '  Preparing seed installation list...' ].join( ' ' ) );
+            }
+            utils.running( 'Preparing seed installation list...' );
 
             if ( installBackend ) {
 
@@ -159,10 +164,15 @@ async.waterfall(
                     args.splice( args.indexOf( 'frontend' ), 1 );
                 }
 
-                if ( !program.skipProtractor ) {
-                    progress += 7;
-                } else {
-                    progress += 6;
+                progress += 8;
+
+                if ( !!program.skipProtractor ) {
+                    utils.warn( '  Skipping installation of protractor' );
+                    progress -= 2;
+                } 
+
+                if ( !!program.bootstrap ) {
+                    progress += 1;
                 }
 
                 seedsToInstall.push( { name: 'Frontend', install: setupFrontend }  );
@@ -184,7 +194,7 @@ async.waterfall(
         function runActions( callback ) {
             utils.progress();
 
-            utils.success( [ '  Starting installation...\n' ].join( ' ' ) );
+            utils.info( [ 'Starting installation...\n' ].join( ' ' ) );
             utils.running( 'Starting installation...' );
 
             async.forEachSeries(
@@ -238,7 +248,7 @@ async.waterfall(
         if ( !err ) {
             utils.running( 'Installation completed' );
             utils.installing( 'Done' );
-            utils.success( '\nProject ' + project + ' has been created in ' + projectFolder + '\n' );
+            utils.success( 'Project ' + project + ' has been created in ' + projectFolder + '\n' );
             lib.utils.finishProgress();
             process.exit( 0 );
         } else {
@@ -349,7 +359,7 @@ function setupBackend() {
                 .then(function() {
                     utils.progress();
 
-                    utils.success( '  Backend installation has completed successfully!\n' );
+                    utils.success( 'Backend installation has completed successfully!\n' );
                     resolve();
                 })
                 .catch( reject );
@@ -441,14 +451,18 @@ function setupFrontend() {
                 })
                 .then(function() {
                     utils.progress();
-                    utils.info( [ '  Building frontend...' ].join( '' ) );
-                    utils.running( 'Building...' );
+                    
 
                     return new Promise(function( resolve, reject ) {
                         if ( !!program.bootstrap ) {
+                            if ( program.verbose ) {
+                                utils.info( [ '  Building bootstrap for frontend...' ].join( '' ) );
+                            }
+                            utils.running( 'Building bootstrap for frontend...' );
+
                             var proc = exec( 'grunt bootstrap build', { cwd: projectDir }, function ( err ) {
                                 if ( !err ) {
-                                    utils.success( [ '  Frontend installation has completed successfully.' ].join( '' ) );
+                                    utils.success( [ 'Frontend installation has completed successfully.' ].join( '' ) );
                                     resolve();
                                 } else {
                                     reject( err );
@@ -469,8 +483,7 @@ function setupFrontend() {
                     utils.progress();
 
                     return new Promise( function( resolve, reject ) {
-                        if ( program.skipProtractor === true ) {
-                            utils.warn( '  Skipping installation of protractor!\n' );
+                        if ( !!program.skipProtractor ) {
                             return resolve();
                         } else {
                             utils.warn( [ '  Installing protractor...' ].join( '' ) );
@@ -479,8 +492,8 @@ function setupFrontend() {
 
                         var proc = exec( 'npm run-script setup-protractor', { cwd: projectDir }, function( err ) {
                             if ( !err ) {
-                                utils.success( [ '  Protractor successfully installed...\n' ].join( '' ) );
-                                utils.progress(2);
+                                utils.success( [ '  Protractor successfully installed...' ].join( '' ) );
+                                utils.progress( 2 );
                                 resolve();
                             } else {
                                 reject( err );
@@ -495,6 +508,7 @@ function setupFrontend() {
                     });
                 })
                 .then(function() {
+                    utils.success( 'Frontend installation has completed successfully!\n' );
                     finalResolve();
                 })
                 .catch(function( err ) {
