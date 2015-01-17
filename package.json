@@ -14,10 +14,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/clevertech/cleverstack.git"
+        "url": "git://github.com/cleverstack/cleverstack-cli.git"
     },
     "bugs": {
-        "url": "https://github.com/clevertech/cleverstack/issues"
+        "url": "https://github.com/cleverstack/cleverstack-cli/issues"
     },
     "keywords": [
         "framework",
