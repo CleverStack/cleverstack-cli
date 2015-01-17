@@ -25,6 +25,8 @@ TESTS = ./tests/help/index.test.js \
         ./tests/setup.test.js
 
 tests:
+	@bower cache clean
+	@npm cache clean
 	@./node_modules/mocha/bin/mocha --no-timeouts --globals setImmediate,clearImmediate --check-leaks --colors -t 0 -b --reporter ${REPORTER} ${TESTS}
 
 test: tests
