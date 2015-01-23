@@ -2,8 +2,6 @@
 
 var path            = require( 'path' )
   , shell           = require( 'shelljs' )
-  , updateNotifier  = require( 'update-notifier' )
-  , packageJson     = require( path.resolve( path.join( __dirname, '..', 'package.json' ) ) )
   , lib             = require( path.join( __dirname, '..', 'index' ) );
 
 /**
@@ -19,9 +17,9 @@ function checkCmd ( cmd ) {
 }
 
 var checks = [
-    { cmd: 'npm', name: 'NPM', install: '. Please install Node.JS before proceeding.' },
-    { cmd: 'bower', name: 'Bower', install: ' please type: npm install -g bower' },
-    { cmd: 'grunt', name: 'Grunt-CLI', install: ' please type: npm install -g grunt-cli' }
+    { cmd: 'npm',   name: 'NPM',        install: '.Please install Node.JS before proceeding.' },
+    { cmd: 'bower', name: 'Bower',      install: ' please type: npm install -g bower' },
+    { cmd: 'grunt', name: 'Grunt-CLI',  install: ' please type: npm install -g grunt-cli' }
 ];
 
 checks.forEach( function ( check ) {
@@ -30,8 +28,12 @@ checks.forEach( function ( check ) {
     }
 });
 
-// Run the update notifier
-updateNotifier( { pkg: packageJson } ).notify( { defer: true } );
+var updateNotifier = require( path.resolve( path.join( __dirname, '..', 'lib', 'updateNotifier' ) ) )( function( err, update ) {
+    if ( update && update.type !== 'latest' ) {
+        updateNotifier.update = update;
+        updateNotifier.notify( { defer: true } );
+    }
 
-// avoid the command within process.argv
-lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );
+    // avoid the command within process.argv
+    lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );
+});

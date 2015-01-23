@@ -25,8 +25,10 @@ TESTS = ./tests/help/index.test.js \
         ./tests/setup.test.js
 
 tests:
+	@export NO_UPDATE_NOTIFIER=true
 	@bower cache clean
 	@npm cache clean
+	@rm -rf ~/.config/configstore/update-notifier-cleverstack-cli.yml
 	@./node_modules/mocha/bin/mocha --no-timeouts --globals setImmediate,clearImmediate --check-leaks --colors -t 0 -b --reporter ${REPORTER} ${TESTS}
 
 test: tests
