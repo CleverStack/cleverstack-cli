@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
-var path    = require( 'path' )
-  , shell   = require( 'shelljs' )
-  , lib     = require( path.join( __dirname, '..', 'index' ) );
+var path            = require( 'path' )
+  , shell           = require( 'shelljs' )
+  , updateNotifier  = require( 'update-notifier' )
+  , packageJson     = require( path.resolve( path.join( __dirname, '..', 'package.json' ) ) )
+  , lib             = require( path.join( __dirname, '..', 'index' ) );
 
 /**
  * Check for bower, grunt and npm within $PATH
@@ -27,6 +29,9 @@ checks.forEach( function ( check ) {
         lib.utils.error( check.name + ' is required before using CleverStack-CLI' + check.install );
     }
 });
+
+// Run the update notifier
+updateNotifier( { pkg: packageJson } ).notify( { defer: true } );
 
 // avoid the command within process.argv
 lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );

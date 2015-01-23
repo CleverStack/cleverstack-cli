@@ -76,7 +76,10 @@
         "frontend",
         "service",
         "controller",
-        "grunt"
+        "grunt",
+        "mvc",
+        "model",
+        "view"
     ],
     "license": "BSD-2-Clause",
     "dependencies": {
@@ -99,7 +102,8 @@
         "shelljs": "^0.3.0",
         "t-case": "~0.1.0",
         "tab": "~0.1.0",
-        "tar": "~1.0.2"
+        "tar": "~1.0.2",
+        "update-notifier": "^0.3.0"
     },
     "devDependencies": {
         "mocha": "~2.0.1",
@@ -112,6 +116,7 @@
         "clever": "./bin/clever"
     },
     "engines": {
-        "node": "~0.10.0"
+        "node": "~0.10.0",
+        "npm": "~1.4.14"
     }
 }
