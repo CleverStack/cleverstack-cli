@@ -103,7 +103,8 @@
         "t-case": "~0.1.0",
         "tab": "~0.1.0",
         "tar": "~1.0.2",
-        "update-notifier": "^0.3.0"
+        "update-notifier": "^0.3.0",
+        "configstore": "^0.3.1"
     },
     "devDependencies": {
         "mocha": "~2.0.1",

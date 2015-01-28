@@ -1,39 +1,61 @@
 #!/usr/bin/env node
 
-var path            = require( 'path' )
-  , shell           = require( 'shelljs' )
-  , lib             = require( path.join( __dirname, '..', 'index' ) );
+var path                = require( 'path' )
+  , shell               = require( 'shelljs' )
+  , async               = require( 'async' )
+  , configStore         = require( 'configstore' )
+  , updateNotifier      = require( 'update-notifier' )
+  , rootDir             = path.resolve( path.join( __dirname, '..' ) )
+  , libDir              = path.join( rootDir, 'lib' )
+  , lib                 = require( path.join( libDir, 'index' ) )
+  , updateNotifier      = require( 'update-notifier' )
+  , checkUpdatesEvery   = 1000 * 60 * 60 * 24 // once every day
+  , packageJson         = require( path.join( rootDir, 'package.json' ) )
+  , notification;
 
-/**
- * Check for bower, grunt and npm within $PATH
- *
- * @param  {String}   cmd Which command to look up
- * @return {Boolean}      Returns whether or not the command was found
- * @private
- */
+async.waterfall(
+    [
+        function checkDependencies( checksDone ) {
+            async.each(
+                [
+                    { cmd: 'npm',   name: 'NPM',        install: '.Please install Node.JS before proceeding.' },
+                    { cmd: 'bower', name: 'Bower',      install: ' please type: npm install -g bower' },
+                    { cmd: 'grunt', name: 'Grunt-CLI',  install: ' please type: npm install -g grunt-cli' }
+                ],
+                function checkDependencies( check, checkDone ) {
+                    checkDone( !!shell.which( check.cmd ) ? null : check.name + ' is required before using CleverStack-CLI' + check.install );
+                },
+                checksDone
+            );
+        },
 
-function checkCmd ( cmd ) {
-    return shell.which( cmd );
-}
+        function checkForUpdates( checkDone ) {
+            var updateConfig = new configStore( 'update-notifier-cleverstack-cli', {
+                optOut          : false,
+                lastUpdateCheck : Date.now()
+            });
 
-var checks = [
-    { cmd: 'npm',   name: 'NPM',        install: '.Please install Node.JS before proceeding.' },
-    { cmd: 'bower', name: 'Bower',      install: ' please type: npm install -g bower' },
-    { cmd: 'grunt', name: 'Grunt-CLI',  install: ' please type: npm install -g grunt-cli' }
-];
+            // Only check for updates on a set interval
+            if ( Date.now() - updateConfig.get( 'lastUpdateCheck' ) > checkUpdatesEvery ) {
+                notification = updateNotifier( { pkg: packageJson, callback: checkDone } )
+            } else {
+                checkDone( null );
+            }
+        }
+    ],
+    function runCommand( err, update ) {
+        var hasErrored = err !== undefined && err !== null;
 
-checks.forEach( function ( check ) {
-    if ( !checkCmd( check.cmd ) ) {
-        lib.utils.error( check.name + ' is required before using CleverStack-CLI' + check.install );
+        if ( !!hasErrored && !update ) {
+            lib.utils.error( err );
+        } else {
+            if ( !!hasErrored && !!update && update.type !== 'latest' ) {
+                notifier.update = update;
+                notifier.notify( { defer: true } );
+            }
+
+            // avoid the command within process.argv
+            lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );
+        }
     }
-});
-
-var updateNotifier = require( path.resolve( path.join( __dirname, '..', 'lib', 'updateNotifier' ) ) )( function( err, update ) {
-    if ( update && update.type !== 'latest' ) {
-        updateNotifier.update = update;
-        updateNotifier.notify( { defer: true } );
-    }
-
-    // avoid the command within process.argv
-    lib.command( __dirname, process.argv[ 2 ], process.argv.slice( 3 ) );
-});
+);
