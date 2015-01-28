@@ -278,13 +278,19 @@ In order to interact with your environment's models directly, simply type in:
     -h, --help     output usage information
     -V, --version  output the version number
 
- Commands:
+  Commands:
 
+    build - Builds production-ready code for the frontend seed
     downgrade - Downgrades a CleverStack implementation
     help - Displays this help message
     init <project> [backend|frontend] - Initialized a new project
+    install <modules> - Installs a module within CleverStack
     generate <option> <name> - Generates a controller, service, model, etc. individually
+    list - Lists all of the available CleverStack modules
+    new <name> - Scaffolds into a specific directory called <name>
+    remove <modules> - Removes a module within CleverStack
     repl - Starts the CleverStack REPL
+    routes - Displays your project's routes
     scaffold <name> - Generates a controller, service, model, etc.
     search [query] - Searches for a cleverstack module
     setup - Installs NPM & Bower packages for each module and adds modules to bundleDependencies
@@ -326,24 +332,24 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Commands:
 
-    service <name>         Generates a service as <name> within /Users/jenniferhartwig/services
-    services <names>       Generates services specified with <name ...> within /Users/jenniferhartwig/services
-    controller <name>      Generates a controller as <name> within /Users/jenniferhartwig/controllers
-    controllers <names>    Generates controllers specified with <name ...> within /Users/jenniferhartwig/controllers
-    model <name>           Generates a model as <name> within /Users/jenniferhartwig/models
-    models <names>         Generates models specified with <name ...> within /Users/jenniferhartwig/models
-    task <name>            Generates a task as <name> within /Users/jenniferhartwig/tasks
-    tasks <names>          Generates tasks specified with <name ...> within /Users/jenniferhartwig/tasks
-    view <name>            Generates a view as <name> within /Users/jenniferhartwig/views
-    views <names>          Generates views specified with <name ...> within /Users/jenniferhartwig/views
-    factory <name>         Generates a factory as <name> within /Users/jenniferhartwig/factories
-    factories <names>      Generates factories specified with <name ...> within /Users/jenniferhartwig/factories
-    service <name>         Generates a service as <name> within /Users/jenniferhartwig/services
-    services <names>       Generates services specified with <name ...> within /Users/jenniferhartwig/services
-    directive <name>       Generates a directive as <name> within /Users/jenniferhartwig/directives
-    directives <names>     Generates directives specified with <name ...> within /Users/jenniferhartwig/directives
-    test [options] <name>  Generates a test t as <name> within /Users/jenniferhartwig/tests
-    tests [options] <names> Generates test specified with <name ...> within /Users/jenniferhartwig/tests
+    service <name>           Generates a service as <name> within /Users/richardgustin/Documents/Projects/CleverStack/services
+    services <names>         Generates services specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/services
+    controller <name>        Generates a controller as <name> within /Users/richardgustin/Documents/Projects/CleverStack/controllers
+    controllers <names>      Generates controllers specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/controllers
+    model <name>             Generates a model as <name> within /Users/richardgustin/Documents/Projects/CleverStack/models
+    models <names>           Generates models specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/models
+    task <name>              Generates a task as <name> within /Users/richardgustin/Documents/Projects/CleverStack/tasks
+    tasks <names>            Generates tasks specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/tasks
+    view <name>              Generates a view as <name> within /Users/richardgustin/Documents/Projects/CleverStack/views
+    views <names>            Generates views specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/views
+    factory <name>           Generates a factory as <name> within /Users/richardgustin/Documents/Projects/CleverStack/factories
+    factories <names>        Generates factories specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/factories
+    service <name>           Generates a service as <name> within /Users/richardgustin/Documents/Projects/CleverStack/services
+    services <names>         Generates services specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/services
+    directive <name>         Generates a directive as <name> within /Users/richardgustin/Documents/Projects/CleverStack/directives
+    directives <names>       Generates directives specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/directives
+    test [options] <name>    Generates a test t as <name> within /Users/richardgustin/Documents/Projects/CleverStack/tests
+    tests [options] <names>  Generates test specified with <name ...> within /Users/richardgustin/Documents/Projects/CleverStack/tests
 
   Options:
 
@@ -367,15 +373,16 @@ Downgrades to the next version (or specified version) of the seed/module (depend
 
   Commands:
 
-    <project>              creates a new project named <project>
+    <project>   creates a new project named <project>
 
   Options:
 
     -h, --help             output usage information
-    -f, --force            delete existing projects in your current directory /Users/jenniferhartwig
+    -f, --force            delete existing projects in your current directory /Users/richardgustin/Documents/Projects/CleverStack
     -v, --verbose          verbose output useful for debugging
     -A, --allow-root       allow root for bower
     -S, --skip-protractor  skips installing protractor (Frontend only)
+    -B, --bootstrap        will run `grunt bootstrap build` as part of the setup
     -V, --version          output the version number
 
   Examples:
@@ -460,19 +467,23 @@ Creates a REPL instance within your project's environment. Useful for executing 
 `$: NODE_ENV=local clever repl`
 
 ```
-Scanning for seed locations...
-Welcome to CleverStack version 0.0.2
-Type .commands or .help for a list of commands
+richards-mbp:test-jan-2015 richardgustin$ clever repl
+✔  Welcome to CleverStack  using seed version 1.2.0-rc-2
+✔  Type .commands or .help for a list of commands
+
 cleverstack::local> .commands
+
 .commands   Lists all of the REPL commands
 .help       Alias for .commands
 .h          Alias for .commands
 .modules    List all of the modules within this project
 .models     Lists all models
+.services   Lists all services
 .exit       Exits the CleverStack REPL
 .quit       Alias for .exit
 .q          Alias for .exit
 .history    Show command history
+
 cleverstack::local> .quit
 ```
 
@@ -531,6 +542,7 @@ cleverstack::local> .quit
     -h, --help             output usage information
     -A, --allow-root       allow root for bower
     -S, --skip-protractor  skips installing protractor (Frontend only)
+    -B, --bootstrap        will run `grunt bootstrap build` as part of the setup
     -v, --verbose          verbose output useful for debugging
     -V, --version          output the version number
 
