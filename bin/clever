@@ -45,8 +45,7 @@ async.waterfall(
     ],
     function runCommand( err, update ) {
         var hasErrored = err !== undefined && err !== null;
-
-        if ( !!hasErrored && !update ) {
+        if ( !!hasErrored && !update && err.code !== 'ENOTFOUND' ) {
             lib.utils.error( err );
         } else {
             if ( !!hasErrored && !!update && update.type !== 'latest' ) {
