@@ -9,7 +9,7 @@ var path    = require( 'path' )
 ================================*/
 program.version( lib.pkg.version )
     .usage( '[options] [modules ...]' )
-    .option( '-v, --versions [versions]', 'Install a specific package version.' )
+    .option( '-v, --verbose', 'verbose output useful for debugging' )
 
 /**  Define CLI Help
 ================================*/
