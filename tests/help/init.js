@@ -1,6 +1,7 @@
 exports.tap = [
   '  Usage: clever-init \\[options\\] \\[command\\]',
   '',
+  '',
   '  Commands:',
   '',
   '    <project>   creates a new project named <project>',

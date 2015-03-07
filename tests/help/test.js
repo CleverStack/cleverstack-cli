@@ -1,6 +1,7 @@
 exports.tap = [
   '  Usage: clever-test \\[options\\] \\[command\\]',
   '',
+  '',
   '  Commands:',
   '',
   '    e2e        Runs e2e tests',

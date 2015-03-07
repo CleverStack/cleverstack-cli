@@ -1,6 +1,7 @@
 exports.tap = [
   '  Usage: clever-generate \\[options\\] \\[command\\]',
   '',
+  '',
   '  Commands:',
   '',
   '    service <name>           Generates a service as <name> within .*services',
