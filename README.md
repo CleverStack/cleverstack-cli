@@ -51,7 +51,7 @@ cleverstack-cli depends on [NPM](http://npmjs.org/), [GruntJS](http://gruntjs.co
 
 [Help & Resources](https://github.com/CleverStack/cleverstack-cli#help--resources)
   1. [CleverStack Website](https://github.com/CleverStack/cleverstack-cli#cleverstack-website)
-  2. [CleverStack Wiki](https://github.com/CleverStack/cleverstack-cli#cleverstack-wiki)
+  2. [CleverStack Documentation](https://github.com/CleverStack/cleverstack-cli#cleverstack-documentation)
   3. [Official CleverStack Backend Seed](https://github.com/CleverStack/cleverstack-cli#official-cleverstack-backend-seed)
   4. [Official CleverStack Frontend Seed](https://github.com/CleverStack/cleverstack-cli#official-cleverstack-frontend-seed)
 [Running Tests](https://github.com/CleverStack/cleverstack-cli#running-tests-1)
@@ -627,9 +627,9 @@ cleverstack::local> .quit
 
 [http://cleverstack.io](http://cleverstack.io/developer)
 
-### CleverStack Wiki
+### CleverStack Documentation
 
-An online Wiki which can provide support for install, configurations and troubleshooting.
+Online Documentation which can provide support for install, configurations and troubleshooting.
 
 https://github.com/CleverStack/cleverstack-cli/wiki
 
@@ -643,9 +643,10 @@ https://github.com/CleverStack/cleverstack-cli/wiki
 
 ### Communication
 
-* HipChat: [http://www.hipchat.com/gwM43u4Mw](http://www.hipchat.com/gwM43u4Mw)
-* Stackoverflow: [http://stackoverflow.com/questions/tagged/cleverstack](http://stackoverflow.com/questions/tagged/cleverstack)
-* Google Groups/Mailing list: [https://groups.google.com/forum/#!forum/cleverstack](https://groups.google.com/forum/#!forum/cleverstack)
+* [GitHub Issues](https://github.com/CleverStack/cleverstack-cli/issues)
+* [Stack Overflow](http://stackoverflow.com/questions/tagged/cleverstack)
+* [Google Groups/Mailing list](https://groups.google.com/forum/#!forum/clever-stack)
+* [Gitter](https://gitter.im/CleverStack/cleverstack-cli)
 
 ## Running Tests
 

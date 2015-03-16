@@ -17,7 +17,7 @@ There are currently a few resources available to reach out to us:
 1. [GitHub Issues](https://github.com/CleverStack/cleverstack-cli/issues)
 2. [Stack Overflow](http://stackoverflow.com/questions/tagged/cleverstack)
 3. [Google Groups/Mailing list](https://groups.google.com/forum/#!forum/clever-stack)
-4. [IRC](http://webchat.freenode.net/?randomnick=1&channels=%23cleverstack&uio=d4)
+4. [Gitter](https://gitter.im/CleverStack/cleverstack-cli)
 
 ## Submitting Pull Requests
 
