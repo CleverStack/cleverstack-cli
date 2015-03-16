@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var path    = require( 'path' )
-  , program = require( path.join( __dirname, '..', 'lib', 'program' ) );
+var path    = require('path')
+  , program = require(path.join(__dirname, '..', 'lib', 'program'));
 
 program.help();

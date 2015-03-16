@@ -1,133 +1,133 @@
 #!/usr/bin/env node
 
-var path      = require( 'path' )
-  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
-  , program   = GLOBAL.program = require( 'commander' )
-  , fs        = require( 'fs' )
-  , os        = require( 'os' )
-  , isWin     = /^win32/.test( os.platform() )
-  , spawn     = require( 'child_process' ).spawn
-  , async     = require( 'async' )
+var path      = require('path')
+  , lib       = GLOBAL.lib = require(path.join(__dirname, '..', 'lib'))
+  , program   = GLOBAL.program = require('commander')
+  , fs        = require('fs')
+  , os        = require('os')
+  , isWin     = /^win32/.test(os.platform())
+  , spawn     = require('child_process').spawn
+  , async     = require('async')
   , folders   = [];
 
 /**
  * Looks for a Gruntfile within seeds folder for grunt test
  *
  * @param  {String} reporter What type of reporter do you want to display (Mocha reporters)
- * @return {Undefined}       process.exit( 0 )
+ * @return {Undefined}       process.exit(0)
  */
 
-function start( reporter ) {
-    lib.utils.info( 'Scanning folders for Gruntfiles...' );
+function start(reporter) {
+  lib.utils.info('Scanning folders for Gruntfiles...');
 
-    var walker = require( 'findit' )( process.cwd() );
+  var walker = require('findit')(process.cwd());
 
-    walker.on( 'directory', function( dir, stat, stop ) {
-        var base = path.basename( dir );
-        if ( [ '.git', 'node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules' ].indexOf( base ) > -1 ) {
-            stop();
-        }
+  walker.on('directory', function(dir, stat, stop) {
+    var base = path.basename(dir);
+    if ([ '.git', 'node_modules', 'lib', 'tests', 'spec', 'config', 'app', 'scripts', 'test', 'modules' ].indexOf(base) > -1) {
+      stop();
+    }
+  });
+
+  walker.on('file', function(root) {
+    if ([ 'gruntfile.js', 'grunt.js' ].indexOf(path.basename(root).toLowerCase()) > -1) {
+      folders.push({
+        path: path.dirname(root),
+        name: path.basename(root)
+      });
+    }
+  });
+
+  walker.on('end', function() {
+    if (folders.length < 1) {
+      lib.utils.fail('CleverStack couldn\'t find a seed directory with a Gruntfile within ' + process.cwd());
+    }
+
+    // find the shortest path (should be either the $PWD or one directory deep)
+    var shortestPath = folders.reduce(function(p, c) {
+      return p.path.split(path.sep).length > c.path.split(path.sep).length ? c : p;
     });
 
-    walker.on( 'file', function( root ) {
-        if ( [ 'gruntfile.js', 'grunt.js' ].indexOf( path.basename( root ).toLowerCase( ) ) > -1 ) {
-            folders.push({
-                path: path.dirname( root ),
-                name: path.basename( root )
-            });
-        }
+    folders = folders.filter(function(f) {
+      return f.path.split(path.sep).length === shortestPath.path.split(path.sep).length;
     });
 
-    walker.on( 'end', function() {
-        if ( folders.length < 1 ) {
-            lib.utils.fail( 'CleverStack couldn\'t find a seed directory with a Gruntfile within ' + process.cwd() );
+    async.eachSeries(
+      folders,
+      function(folder, next) {
+        var args = [ '--base', folder.path, '--gruntfile', path.resolve(path.join(folder.path, folder.name)) ]
+          , env  = process.env;
+
+        args.push(('test' + (typeof reporter._name !== 'string' ? '' : ':' + reporter._name)));
+
+        if (!process.env.NODE_ENV) {
+          env.NODE_ENV = 'local';
         }
 
-        // find the shortest path (should be either the $PWD or one directory deep)
-        var shortestPath = folders.reduce( function( p, c ) {
-            return p.path.split( path.sep ).length > c.path.split( path.sep ).length ? c : p;
+        if (fs.existsSync(path.resolve(path.join(folder.path, 'modules')))) {
+          // @TODO implement node_path helper
+          var paths = process.env.NODE_PATH ? [process.env.NODE_PATH] : [];
+          paths.push(path.resolve(path.join(folder.path, 'lib')) + path.sep);
+          paths.push(path.resolve(path.join(folder.path, 'modules')) + path.sep);
+          env.NODE_PATH = paths.join(os.platform() === 'win32' ? ';' : ':');
+        }
+
+        var proc  = spawn(!isWin ? 'grunt' : 'grunt.cmd', args, { cwd: folder.path, env: env, stdio: 'inherit' })
+          , error = '';
+
+        proc.on('error', function(err) {
+          error += err;
         });
 
-        folders = folders.filter( function( f ) {
-            return f.path.split( path.sep ).length === shortestPath.path.split( path.sep ).length;
+        proc.on('close', function(code) {
+          if (code !== 0) {
+            return lib.utils.fail(error);
+          }
+
+          next();
         });
-
-        async.eachSeries(
-            folders,
-            function( folder, next ) {
-                var args = [ '--base', folder.path, '--gruntfile', path.resolve( path.join( folder.path, folder.name ) ) ]
-                  , env  = process.env;
-
-                args.push( ( 'test' + ( typeof reporter._name !== "string" ? '' : ':' + reporter._name ) ) );
-
-                if ( !process.env.NODE_ENV ) {
-                    env.NODE_ENV = 'local';
-                }
-
-                if ( fs.existsSync( path.resolve( path.join( folder.path, 'modules' ) ) ) ) {
-                    // @TODO implement node_path helper
-                    var paths = process.env.NODE_PATH ? [process.env.NODE_PATH] : [];
-                    paths.push( path.resolve( path.join( folder.path, 'lib' ) ) + path.sep );
-                    paths.push( path.resolve( path.join( folder.path, 'modules' ) ) + path.sep );
-                    env.NODE_PATH = paths.join( os.platform( ) === "win32" ? ';' : ':' );
-                }
-
-                var proc  = spawn( !isWin ? 'grunt' : 'grunt.cmd', args, { cwd: folder.path, env: env, stdio: 'inherit' } )
-                  , error = '';
-
-                proc.on( 'error', function( err ) {
-                    error += err;
-                });
-
-                proc.on( 'close', function( code ) {
-                    if ( code !== 0 ) {
-                        return lib.utils.fail( error );
-                    }
-
-                    next();
-                });
-            },
-            function() {
-                // grunt doesn't pass an error to us...
-                // grunt will quit before we get to here...
-                lib.utils.success( 'Tests ran successfully.' );
-                process.exit( 0 );
-            }
-        );
-    });
+      },
+      function() {
+        // grunt doesn't pass an error to us...
+        // grunt will quit before we get to here...
+        lib.utils.success('Tests ran successfully.');
+        process.exit(0);
+      }
+     );
+  });
 }
 
 /**  Define CLI Usage
 ================================*/
-program.version( lib.pkg.version );
+program.version(lib.pkg.version);
 
 var reporters = [ 'e2e', 'unit', 'coverage' ];
 
-reporters.forEach( function( reporter ) {
-    program
-        .command( reporter )
-        .description( (reporter === "coverage" ? 'Generates unit test coverage reports.' : 'Runs ' + reporter + ' tests' ) )
-        .action( start );
-} );
+reporters.forEach(function(reporter) {
+  program
+    .command(reporter)
+    .description((reporter === 'coverage' ? 'Generates unit test coverage reports.' : 'Runs ' + reporter + ' tests'))
+    .action(start);
+});
 
 /**  Define CLI Help
 ================================*/
-program.on( '--help', function() {
-    console.log( '  Examples:' );
-    console.log( '' );
-    console.log( '    clever test coverage' );
-    console.log( '    clever test e2e' );
-    console.log( '    clever test unit' );
-    console.log( '' );
+program.on('--help', function() {
+  console.log('  Examples:');
+  console.log('');
+  console.log('    clever test coverage');
+  console.log('    clever test e2e');
+  console.log('    clever test unit');
+  console.log('');
 });
 
 /**  Parse CLI Arguments
 ================================*/
-program.parse( process.argv );
+program.parse(process.argv);
 
 
 /**  Start tests
 ================================*/
-if ( !program.args.length ) {
-    start( 'unit' );
+if (!program.args.length) {
+  start('unit');
 }

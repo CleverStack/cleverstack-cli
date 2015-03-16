@@ -1,30 +1,30 @@
 #!/usr/bin/env node
 
-var path    = require( 'path' )
-  , lib     = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
-  , program = GLOBAL.program = require( 'commander' )
-  , Promise = require( 'bluebird' );
+var path    = require('path')
+  , lib     = GLOBAL.lib = require(path.join(__dirname, '..', 'lib'))
+  , program = GLOBAL.program = require('commander')
+  , Promise = require('bluebird');
 
 /**  Define CLI Usage
 ================================*/
-program.version( lib.pkg.version )
-    .usage( '[options] [modules ...]' )
-    .option( '-v, --verbose', 'verbose output useful for debugging' )
+program.version(lib.pkg.version)
+  .usage('[options] [modules ...]')
+  .option('-v, --verbose', 'verbose output useful for debugging');
 
 /**  Define CLI Help
 ================================*/
-program.on( '--help', function ( ) {
-    console.log( '  Examples:' );
-    console.log( '    clever install clever-background-tasks' );
-    console.log( '    clever install clever-background-tasks@0.0.1' );
-    console.log( '' );
+program.on('--help', function () {
+  console.log('  Examples:');
+  console.log('    clever install clever-background-tasks');
+  console.log('    clever install clever-background-tasks@0.0.1');
+  console.log('');
 });
 
 /**  Parse CLI Arguments
 ================================*/
-program.parse( process.argv );
-if ( program.args.length < 1 ) {
-    program.help();
+program.parse(process.argv);
+if (program.args.length < 1) {
+  program.help();
 }
 
 // Tell promise we want long stack traces for easier debugging
@@ -32,21 +32,15 @@ Promise.longStackTraces();
 
 /**  Start Installation
 ================================*/
-
-// Disabling progress bar until we find a way to resume stdin for user input!
-// lib.utils.initBar();
-// lib.utils.installing( 'Modules' );
-// lib.utils.expandProgress( program.args.length );
-// lib.utils.startBar(function() {
-lib.utils.info( 'Attempting to install ' + program.args + '...' );
-lib.install
-    .run( program.args )
-    .then(function() {
-        lib.utils.success( 'Successfully installed.' );
-        process.exit( 0 );
-    })
-    .catch(function( err ) {
-        lib.utils.fail( err );
-        process.exit( 1 );
-    })
-// });
+lib.utils.info('Attempting to install ' + program.args + '...');
+lib
+  .install
+  .run(program.args)
+  .then(function() {
+    lib.utils.success('Successfully installed.');
+    process.exit(0);
+  })
+  .catch(function(err) {
+    lib.utils.fail(err);
+    process.exit(1);
+  });

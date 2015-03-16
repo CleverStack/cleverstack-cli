@@ -1,37 +1,37 @@
 #!/usr/bin/env node
 
-var path        = require( 'path' )
-  , lib         = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
-  , fs          = require( 'fs' )
+var path        = require('path')
+  , lib         = GLOBAL.lib = require(path.join(__dirname, '..', 'lib'))
+  , fs          = require('fs')
   , program     = GLOBAL.program = {}
-  , os          = require( 'os' )
-  , _           = require( 'lodash' )
-  , routesFile  = path.join( __dirname, '..', 'lib', 'routes.js' );
+  , os          = require('os')
+  , _           = require('lodash')
+  , routesFile  = path.join(__dirname, '..', 'lib', 'routes.js');
 
 lib
-    .util
-    .locations
-    .get()
-    .then( function( projects ) {
-        var project = _.find( projects, function( p ) {
-            return p.name === "backend";
-        });
-
-        if ( typeof project === "undefined" ) {
-            lib.utils.fail( 'Couldn\'t find the backend CleverStack directory! Possible reasons could include:\n* Not running the REPL command within the root folder of the project\n* Not setting the correct NODE_PATH environment variable' );
-        }
-
-        if ( !process.env.NODE_ENV || !fs.existsSync( path.join( project.moduleDir, 'config', process.env.NODE_ENV + 'js' ) ) ) {
-            process.env.NODE_ENV = 'local';
-        }
-
-        var processEnv = process.env;
-        processEnv.NODE_PATH  = path.resolve( path.join( project.moduleDir, 'lib' ) ) + path.sep + ( os.platform( ) === "win32" ? ';' : ':' ) + path.resolve( path.join( project.moduleDir, 'modules' ) ) + path.sep;
-        processEnv.projectDir = project.moduleDir;
-        processEnv.libDir     = path.resolve( path.join( __dirname, '..', 'index' ) );
-
-        require( 'child_process' ).exec( 'node ' + routesFile, { cwd: process.cwd(), env: processEnv }, function ( err, stdout ) {
-            console.log( stdout );
-            process.exit( 0 );
-        });
+  .util
+  .locations
+  .get()
+  .then(function(projects) {
+    var project = _.find(projects, function(p) {
+      return p.name === 'backend';
     });
+
+    if (typeof project === 'undefined') {
+      lib.utils.fail('Couldn\'t find the backend CleverStack directory! Possible reasons could include:\n* Not running the REPL command within the root folder of the project\n* Not setting the correct NODE_PATH environment variable');
+    }
+
+    if (!process.env.NODE_ENV || !fs.existsSync(path.join(project.moduleDir, 'config', process.env.NODE_ENV + 'js'))) {
+      process.env.NODE_ENV = 'local';
+    }
+
+    var processEnv = process.env;
+    processEnv.NODE_PATH  = path.resolve(path.join(project.moduleDir, 'lib')) + path.sep + (os.platform() === 'win32' ? ';' : ':') + path.resolve(path.join(project.moduleDir, 'modules')) + path.sep;
+    processEnv.projectDir = project.moduleDir;
+    processEnv.libDir     = path.resolve(path.join(__dirname, '..', 'index'));
+
+    require('child_process').exec('node ' + routesFile, { cwd: process.cwd(), env: processEnv }, function (err, stdout) {
+      console.log(stdout);
+      process.exit(0);
+    });
+  });

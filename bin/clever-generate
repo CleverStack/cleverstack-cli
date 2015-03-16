@@ -1,78 +1,97 @@
 #!/usr/bin/env node
 
-var path      = require( 'path' )
-  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
-  , program   = GLOBAL.program = require( 'commander' )
-  , generate  = lib.generator.generate;
+var path     = require('path')
+  , lib      = GLOBAL.lib     = require(path.join(__dirname, '..', 'lib'))
+  , program  = GLOBAL.program = require('commander')
+  , generate = lib.generator.generate;
 
-program.version( lib.pkg.version );
-
-// Generate our commands with singular and plural lingo
-[ 'service', 'controller', 'model', 'task', 'view', 'factory', 'service', 'directive' ].forEach( function( tmpl ) {
-    var tmpl2 = (tmpl === "factory" ? 'factories' : tmpl + 's' );
-
-    program
-        .command( tmpl + ' <name>' )
-        .usage( tmpl + ' <name>' )
-        .description( 'Generates a ' + tmpl + ' as <name> within ' + path.join( process.cwd(), tmpl2 ) )
-        .action( function( name ) {
-            generate( tmpl2, name, function() {
-                lib.utils.success( tmpl + ' generated within ' + path.join( process.cwd(), tmpl ) );
-            });
-        });
-
-    program
-        .command( tmpl2 + ' <names>' )
-        .usage( tmpl2 + ' <names>' )
-        .description( 'Generates ' + tmpl2 + ' specified with <name ...> within ' + path.join( process.cwd( ), tmpl2 ) )
-        .action( function( name, prog ) {
-            generate( tmpl2, prog.parent.rawArgs.splice( 3 ), function() {
-                lib.utils.success( tmpl + ' generated within ' + path.join( process.cwd(), tmpl ) );
-            });
-        });
-});
-
-// Tests are a bit unique as well..
+/**  Define CLI Options
+================================*/
 program
-    .command( 'test <name>' )
-    .usage( 'test [options] <name>')
-    .option( '-i, --integration', 'Generate integration tests', true )
-    .option( '-u --unit', 'Generate unit tests.', true )
-    // .option( '-e, --e2e', 'Generate e2e tests.', true )
-    // .option( '-m, --mocks', 'Generate mock tests.', true )
-    .description( 'Generates a test t as <name> within ' + process.cwd( ) + path.sep + 'tests' )
-    .action( function ( name ) {
-        generate( 'tests', name, function ( ) {
-            lib.utils.success( 'test generated within ' + path.join( process.cwd( ), 'tests' ) );
-        });
+  .option('-v, --verbose', 'verbose output useful for debugging')
+  .version(lib.pkg.version);
+
+/**  Main Generators
+================================*/
+['service', 'controller', 'model', 'task', 'view', 'factory', 'service', 'directive'].forEach(function(tmpl) {
+  var tmpl2 = (tmpl === 'factory' ? 'factories' : tmpl + 's');
+
+  /**  Singular
+  ================================*/
+  program
+    .command(tmpl + ' <name>')
+    .usage(tmpl + ' <name>')
+    .option('-v, --verbose', 'verbose output useful for debugging')
+    .description('Generates a ' + tmpl + ' as <name> within ' + path.sep + tmpl2)
+    .action(function(name) {
+      generate(tmpl2, name, function() {
+        lib.utils.success(tmpl + ' generated within ' + path.sep + tmpl);
+      });
     });
 
-program
-    .command( 'tests <names>' )
-    .usage( 'tests [options] <names>')
-    .option( '-i, --integration', 'Generate integration tests', true )
-    .option( '-u --unit', 'Generate unit tests.', true )
-    // .option( '-e, --e2e', 'Generate e2e tests.', true )
-    // .option( '-m, --mocks', 'Generate mock tests.', true )
-    .description( 'Generates test specified with <name ...> within ' + process.cwd( ) + path.sep + 'tests' )
-    .action( function() {
-        generate( 'tests',  prog.parent.rawArgs.splice( 3 ), function ( ) {
-            lib.utils.success( 'tests generated within ' + path.join( process.cwd( ), 'tests' ) );
-        });
+  /**  Plural
+  ================================*/
+  program
+    .command(tmpl2 + ' <names>')
+    .usage(tmpl2 + ' <names>')
+    .option('-v, --verbose', 'verbose output useful for debugging')
+    .description('Generates ' + tmpl2 + ' specified with <name ...> within ' + path.sep + tmpl2)
+    .action(function(name, program) {
+      generate(tmpl2, program.parent.rawArgs.splice(3), function() {
+        lib.utils.success(tmpl + ' generated within ' + path.sep + tmpl);
+      });
     });
-
-program.on( '--help', function() {
-    console.log( '  Example:' );
-    console.log( '' );
-    console.log( '    clever generate model users' );
-    console.log( '    clever generate controller users' );
-    console.log( '    clever g controller users' );
-    console.log( '    clever g controllers users auth email' );
-    console.log( '' );
 });
 
-program.parse( process.argv );
+/**  Singular Tests Generator
+================================*/
+program
+  .command('test <name>')
+  .usage('test [options] <name>')
+  .option('-i, --integration', 'Generate integration tests', true)
+  .option('-u, --unit', 'Generate unit tests.', true)
+  // .option('-e, --e2e', 'Generate e2e tests.', true)
+  // .option('-m, --mocks', 'Generate mock tests.', true)
+  .option('-v, --verbose', 'verbose output useful for debugging')
+  .description('Generates a test t as <name> within ' + path.sep + 'tests')
+  .action(function (name) {
+    generate('tests', name, function () {
+      lib.utils.success('test generated within ' + path.sep + 'tests');
+    });
+  });
 
-if ( !program.args.length ) {
-    program.help();
+/**  Plural Tests Generator
+================================*/
+program
+  .command('tests <names>')
+  .usage('tests [options] <names>')
+  .option('-i, --integration', 'Generate integration tests', true)
+  .option('-u, --unit', 'Generate unit tests.', true)
+  // .option('-e, --e2e', 'Generate e2e tests.', true)
+  // .option('-m, --mocks', 'Generate mock tests.', true)
+  .option('-v, --verbose', 'verbose output useful for debugging')
+  .description('Generates test specified with <name ...> within ' + path.sep + 'tests')
+  .action(function() {
+    generate('tests',  program.parent.rawArgs.splice(3), function () {
+      lib.utils.success('tests generated within ' + path.sep + 'tests');
+    });
+  });
+
+/**  Define CLI Help
+================================*/
+program.on('--help', function() {
+  console.log('  Example:');
+  console.log('');
+  console.log('    clever generate model users');
+  console.log('    clever generate controller users');
+  console.log('    clever g controller users');
+  console.log('    clever g controllers users auth email');
+  console.log('');
+});
+
+/**  Parse CLI Arguments
+================================*/
+program.parse(process.argv);
+if (!program.args.length) {
+  program.help();
 }

@@ -16,7 +16,8 @@
     "waits"     : false,
     "waitsFor"  : false,
     "runs"      : false,
-    "lib"       : true
+    "lib"       : true,
+    "program"   : true
   },
   "predef": [
     "-Promise"

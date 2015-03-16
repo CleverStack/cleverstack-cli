@@ -1,9 +1,9 @@
-define( ['angular', '../module' ], function( ng ) {
+define(['angular', '../module' ], function(ng) {
   'use strict';
 
   ng
-  .module( '{{template_name}}.services' )
-  .service( '{{Template}}Service', function( {{Template}}Model ) {
+  .module('{{template_name}}.services')
+  .service('{{Template}}Service', function({{Template}}Model) {
 
     var {{Template}}Service = {
 
@@ -11,19 +11,19 @@ define( ['angular', '../module' ], function( ng ) {
 
       data    : null,
 
-      list    : function( findOptions ) {
-        return this.model.list( findOptions ).$promise.then( function( data ) {
+      list    : function(findOptions) {
+        return this.model.list(findOptions).$promise.then(function(data) {
           {{Template}}Service.data = data;
           return {{Template}}Service.data;
         });
       },
 
-      get     : function( findOptions ) {
-        return this.model.get( findOptions ).$promise;
+      get     : function(findOptions) {
+        return this.model.get(findOptions).$promise;
       },
 
-      create  : function( data ) {
-        return this.model.create( data ).$promise;
+      create  : function(data) {
+        return this.model.create(data).$promise;
       }
 
     };

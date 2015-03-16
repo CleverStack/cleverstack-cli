@@ -1,40 +1,40 @@
 #!/usr/bin/env node
 
-var path      = require( 'path' )
-  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
-  , program   = GLOBAL.program = require( 'commander' )
+var path      = require('path')
+  , lib       = GLOBAL.lib = require(path.join(__dirname, '..', 'lib'))
+  , program   = GLOBAL.program = require('commander')
   , scaffold  = lib.generator.scaffold;
 
 /**  Define CLI Usage
 ================================*/
-program.version( lib.pkg.version );
+program.version(lib.pkg.version);
 
 program
-    .usage( '[options] <name>' )
-    .option( '--no-service', 'Disables generating a service.' )
-    .option( '--no-controller', 'Disables generating a controller.' )
-    .option( '--no-model', 'Disables generating a model.' )
-    .option( '--no-task', 'Disables generating a task.' )
-    .option( '--no-test', 'Disables generating a test.' );
+  .usage('[options] <name>')
+  .option('--no-service', 'Disables generating a service.')
+  .option('--no-controller', 'Disables generating a controller.')
+  .option('--no-model', 'Disables generating a model.')
+  .option('--no-task', 'Disables generating a task.')
+  .option('--no-test', 'Disables generating a test.');
 
 /**  Define CLI Help
 ================================*/
-program.on( '--help', function() {
-    console.log( '  Note:' );
-    console.log( '    Scaffold will generate templates within ' + process.cwd() );
-    console.log( '    If you wish to generate an entire model use clever new <name>' );
-    console.log( '' );
-    console.log( '  Example:' );
-    console.log( '    clever scaffold my_component' );
-    console.log( '    clever scaffold myComponent' );
-    console.log( '' );
+program.on('--help', function() {
+  console.log('  Note:');
+  console.log('    Scaffold will generate templates within ' + process.cwd());
+  console.log('    If you wish to generate an entire model use clever new <name>');
+  console.log('');
+  console.log('  Example:');
+  console.log('    clever scaffold my_component');
+  console.log('    clever scaffold myComponent');
+  console.log('');
 });
 
 /**  Parse CLI Arguments
 ================================*/
-program.parse( process.argv );
-if ( program.rawArgs.length < 3 ) {
-    program.help();
+program.parse(process.argv);
+if (program.rawArgs.length < 3) {
+  program.help();
 }
 
 /**  Start Scaffolding
@@ -42,22 +42,22 @@ if ( program.rawArgs.length < 3 ) {
 var filterOut = []
   , filters   = [ 'service', 'controller', 'model', 'task', 'test' ];
 
-filters.forEach( function( filter ) {
-    if ( program[ filter ] === false ) {
-        filterOut.push( filter );
-    }
+filters.forEach(function(filter) {
+  if (program[ filter ] === false) {
+    filterOut.push(filter);
+  }
 });
 
-if ( filterOut.length === filters.length ) {
-    program.help();
+if (filterOut.length === filters.length) {
+  program.help();
 }
 
-var args = program.rawArgs.splice( 2 );
-scaffold( args[ 0 ], filterOut, function( err ) {
-    if ( !!err ) {
-        lib.utils.fail( err );
-        process.exit( 1 );
-    }
+var args = program.rawArgs.splice(2);
+scaffold(args[ 0 ], filterOut, function(err) {
+  if (!!err) {
+    lib.utils.fail(err);
+    process.exit(1);
+  }
 
-    process.exit( 0 );
+  process.exit(0);
 });

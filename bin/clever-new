@@ -1,90 +1,90 @@
 #!/usr/bin/env node
 
-var path      = require( 'path' )
-  , lib       = GLOBAL.lib = require( path.join( __dirname, '..', 'lib' ) )
-  , program   = GLOBAL.program = require( 'commander' )
-  , fs        = require( 'fs' )
+var path      = require('path')
+  , lib       = GLOBAL.lib = require(path.join(__dirname, '..', 'lib'))
+  , program   = GLOBAL.program = require('commander')
+  , fs        = require('fs')
   , scaffold  = lib.generator.newModule
-  , paths     = require( path.join( __dirname, '..', 'lib', 'generate', 'paths' ) );
+  , paths     = require(path.join(__dirname, '..', 'lib', 'generate', 'paths'));
 
 /**  Define CLI Usage
 ================================*/
-program.version( lib.pkg.version );
+program.version(lib.pkg.version);
 program
-    .usage( '[options] <name>' )
-    .option( '-v, --verbose', 'verbose output useful for debugging' )
-    .option( '--no-service', 'Disables generating a service.' )
-    .option( '--no-controller', 'Disables generating a controller.' )
-    .option( '--no-model', 'Disables generating a model.' )
-    .option( '--no-task', 'Disables generating a task.' )
-    .option( '--no-test', 'Disables generating a test.' );
+  .usage('[options] <name>')
+  .option('-v, --verbose', 'verbose output useful for debugging')
+  .option('--no-service', 'Disables generating a service.')
+  .option('--no-controller', 'Disables generating a controller.')
+  .option('--no-model', 'Disables generating a model.')
+  .option('--no-task', 'Disables generating a task.')
+  .option('--no-test', 'Disables generating a test.');
 
 /**  Define CLI Help
 ================================*/
-program.on( '--help', function() {
-    console.log( '  Example:' );
-    console.log( '    clever new my_module' );
-    console.log( '    clever new myModule' );
-    console.log( '' );
+program.on('--help', function() {
+  console.log('  Example:');
+  console.log('    clever new my_module');
+  console.log('    clever new myModule');
+  console.log('');
 });
 
 /**  Parse CLI Arguments
 ================================*/
-program.parse( process.argv );
-if ( program.rawArgs.length < 3 ) {
-    program.help();
+program.parse(process.argv);
+if (program.rawArgs.length < 3) {
+  program.help();
 }
 
 /**  Start generating
 ================================*/
 var filterOut = []
-    , filters   = [ 'service', 'controller', 'model', 'task', 'test', 'script', 'view' ]
-    , args      = program.rawArgs.splice( 2 );
+  , filters   = [ 'service', 'controller', 'model', 'task', 'test', 'script', 'view' ]
+  , args      = program.rawArgs.splice(2);
 
-filters.forEach( function( filter ) {
-    if ( program[ filter ] === false ) {
-        filterOut.push( filter );
-    }
+filters.forEach(function(filter) {
+  if (program[ filter ] === false) {
+    filterOut.push(filter);
+  }
 });
 
-if ( filterOut.length === filters.length ) {
-    program.help();
+if (filterOut.length === filters.length) {
+  program.help();
 }
 
 lib.util
-    .locations
-    .get()
-    .then( function( projects ) {
-        var folders = []
-            , name    = args[ 0 ];
+  .locations
+  .get()
+  .then(function(projects) {
+    var folders = []
+      , name    = args[ 0 ];
 
-        projects.forEach( function( project ) {
-            var folder = paths.getModulePath( project, name );
+    projects.forEach(function(project) {
+      var folder = paths.getModulePath(project, name);
 
-            if ( fs.existsSync( folder ) ) {
-                lib.utils.fail( 'Module already exists within ' + folder );
-            }
+      if (fs.existsSync(folder)) {
+        lib.utils.fail('Module already exists within ' + folder);
+      }
 
-            if ( program.verbose ) {
-                lib.utils.info( 'Module path is ' + folder );
-            }
-            
-            folders.push( folder );
+      if (program.verbose) {
+        lib.utils.info('Module path is ' + folder);
+      }
+      
+      folders.push(folder);
+    });
+
+    lib.utils.info('Setting up new module... ');
+
+    scaffold(
+      projects,
+      name,
+      filterOut,
+      function() {
+        folders.forEach(function(folder) {
+          lib.utils.success('Module has been created successfully within ' + folder);
         });
 
-        lib.utils.info( 'Setting up new module... ' );
-
-        scaffold(
-            projects,
-            name,
-            filterOut,
-            function() {
-                folders.forEach( function( folder ) {
-                    lib.utils.success( 'Module has been created successfully within ' + folder );
-                });
-
-                process.exit( 0 );
-            }
-        );
-    })
-    .error( lib.utils.error );
+        process.exit(0);
+      }
+     );
+  })
+  .error(lib.utils.error);

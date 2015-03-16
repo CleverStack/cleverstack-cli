@@ -51,14 +51,6 @@ describe( 'Remove', function ( ) {
         expect( stderr ).to.equal( '' );
         expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module' ) ) ).to.be.false;
 
-        if (require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ]) {
-          delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
-        }
-
-        var projPkg = require( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) );
-        expect( projPkg ).to.have.property( 'bundledDependencies' );
-        expect( projPkg.bundledDependencies ).to.not.include( 'backend-example-module' );
-
         done( err );
       } );
     } );
