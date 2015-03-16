@@ -1,7 +1,7 @@
 {
   "name"        : "cleverstack-cli",
   "description" : "Command line interface for CleverStack",
-  "version"     : "1.1.6",
+  "version"     : "1.2.0",
   "license"     : "MIT",
   "author": {
     "name"      : "CleverStack",
