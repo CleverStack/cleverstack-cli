@@ -13,7 +13,7 @@ var chai      = require( 'chai' )
     views:      require( path.join( __dirname, 'views' ) )
   }
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 var tap = {
   success: function ( cmd, err, stderr, stdout, done ) {

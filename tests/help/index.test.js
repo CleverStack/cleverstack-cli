@@ -21,7 +21,7 @@ var chai    = require( 'chai' )
     upgrade:    require( path.join( __dirname, 'upgrade' ) )
   };
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 function tap ( cmd, fn ) {
   exec( path.join( binPath, 'clever-' + cmd + ' -h' ), function ( err, stdout, stderr ) {

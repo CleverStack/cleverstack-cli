@@ -5,7 +5,7 @@ var chai    = require( 'chai' )
   , binPath = path.join( __dirname, '..', 'bin' )
   , assetPath = path.join( __dirname, 'assets' );
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe( 'List', function( ) {
   it( 'should be able to list all of the modules', function ( done ) {

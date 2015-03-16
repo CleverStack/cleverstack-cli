@@ -9,7 +9,7 @@ var chai      = require( 'chai' )
   , binPath   = path.join( __dirname, '..', '..', 'bin' )
   , assetPath = path.join( __dirname, '..', 'assets' );
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe( 'Install with a backend module', function ( ) {
   before( function ( done ) {

@@ -6,7 +6,7 @@ var chai      = require( 'chai' )
   , binPath   = path.join( __dirname, '..', '..', 'bin' )
   , assetPath = path.join( __dirname, '..', 'assets' );
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe( 'New (frontend seed)', function ( ) {
   it( 'should be able to create a new module within the frontend seed', function ( done ) {

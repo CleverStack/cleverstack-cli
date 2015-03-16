@@ -6,7 +6,7 @@ var chai    = require( 'chai' )
   , binPath = path.join( __dirname, '..', 'bin' )
   , assetPath = path.join( __dirname, 'assets' );
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe( 'Search', function( ) {
   it( 'should be able to list a backend module', function ( done ) {

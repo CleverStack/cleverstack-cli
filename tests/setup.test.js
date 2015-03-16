@@ -8,7 +8,7 @@ var chai      = require( 'chai' )
   , binPath   = path.join( __dirname, '..', 'bin' )
   , assetPath = path.join( __dirname, 'assets' );
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe( 'Setup', function ( ) {
   after( function ( done ) {

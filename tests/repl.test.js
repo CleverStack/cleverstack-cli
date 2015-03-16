@@ -5,7 +5,7 @@ var chai      = require( 'chai' )
   , binPath   = path.join( __dirname, '..', 'bin' )
   , assetPath = path.join( __dirname, 'assets' );
 
-chai.Assertion.includeStack = true;
+chai.config.includeStack = true;
 
 describe( 'REPL', function ( ) {
   it( 'should be able to go into the REPL and execute some commands', function ( done ) {
