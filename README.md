@@ -1,5 +1,7 @@
 # CleverStack CLI
 
+[![Join the chat at https://gitter.im/CleverStack/cleverstack-cli](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/CleverStack/cleverstack-cli?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![NPM version](https://badge.fury.io/js/cleverstack-cli.png)](http://badge.fury.io/js/cleverstack-cli) [![GitHub version](https://badge.fury.io/gh/cleverstack%2Fcleverstack-cli.png)](http://badge.fury.io/gh/cleverstack%2Fcleverstack-cli) [![Dependency Status](https://david-dm.org/CleverStack/cleverstack-cli.png)](https://david-dm.org/CleverStack/cleverstack-cli) [![devDependency Status](https://david-dm.org/CleverStack/cleverstack-cli/dev-status.png)](https://david-dm.org/CleverStack/cleverstack-cli#info=devDependencies) [![Code Climate](https://codeclimate.com/github/CleverStack/cleverstack-cli.png)](https://codeclimate.com/github/CleverStack/cleverstack-cli) [![Build Status](https://secure.travis-ci.org/CleverStack/cleverstack-cli.png?branch=master)](https://travis-ci.org/CleverStack/cleverstack-cli) [![NPM downloads](http://img.shields.io/npm/dm/cleverstack-cli.png)](https://www.npmjs.org/package/cleverstack-cli) [![Coverage](https://codeclimate.com/github/CleverStack/cleverstack-cli/coverage.png)](https://codeclimate.com/github/CleverStack/cleverstack-cli) 
 
 
