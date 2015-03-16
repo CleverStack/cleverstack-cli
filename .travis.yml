@@ -4,7 +4,12 @@ node_js:
   - '0.10'
   - '0.11'
   - '0.12'
+  - 'iojs'
 
 before_install:
   - 'npm install -g grunt-cli'
   - 'npm install -g bower'
+
+cache:
+  directories:
+    - node_modules
