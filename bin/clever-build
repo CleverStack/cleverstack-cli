@@ -31,22 +31,21 @@ program.parse(process.argv);
 
 /**  Find Buildable Projects
 ================================*/
-var currentDir  = path.resolve(process.cwd())
-  , files       = fs.readdirSync(currentDir)
-  , folders     = [];
+var currentDir = path.resolve(process.cwd())
+  , files      = fs.readdirSync(currentDir)
+  , folders    = [];
 
 files
   .filter(function findBuildableProjects(d) {
-    var stats = fs.statSync(path.resolve(path.join(currentDir, d)));
-    return d === 'package.json' || stats.isDirectory();
+    return d === 'package.json' || fs.statSync(path.resolve(path.join(currentDir, d))).isDirectory();
   })
   .forEach(function buildCompatibleProjects(d) {
     var isProject = d.indexOf('package.json') === -1
       , pkg       = path.resolve(path.join(currentDir, d, isProject ? 'package.json' : ''));
 
     if (fs.existsSync(pkg)) {
-      var readPkg     = require(pkg)
-        , hasPkgName  = readPkg.hasOwnProperty('name');
+      var readPkg    = require(pkg)
+        , hasPkgName = readPkg.hasOwnProperty('name');
 
       if (hasPkgName && readPkg.name.indexOf('package.json') === -1) {
         folders.push({
