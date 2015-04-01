@@ -27,17 +27,23 @@ describe( 'REPL', function ( ) {
     } );
 
     proc.on( 'exit', function ( code ) {
-      expect( code ).to.equal( 0 );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.commands\u001b\[39m   \u001b\[38;5;8mLists all of the REPL commands/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.help\u001b\[39m       \u001b\[38;5;8mAlias for .commands/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.h\u001b\[39m          \u001b\[38;5;8mAlias for .commands/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.modules\u001b\[39m    \u001b\[38;5;8mList all of the modules within this project/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.models\u001b\[39m     \u001b\[38;5;8mLists all models/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.services\u001b\[39m   \u001b\[38;5;8mLists all services/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.exit\u001b\[39m       \u001b\[38;5;8mExits the CleverStack REPL/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.quit\u001b\[39m       \u001b\[38;5;8mAlias for .exit/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.q\u001b\[39m          \u001b\[38;5;8mAlias for .exit/ );
-      expect( stdout ).to.match( /\u001b\[38;5;172m\.history\u001b\[39m    \u001b\[38;5;8mShow command history/ );
+      expect(code).to.equal( 0 );
+
+      expect(stdout).to.match(/\u001b\[38;5;172m.break\u001b\[39m    │ \u001b\[38;5;8mSometimes you get stuck, this gets you out\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.clear\u001b\[39m    │ \u001b\[38;5;8mAlias for .break\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.exit\u001b\[39m     │ \u001b\[38;5;8mExits the CleverStack REPL\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.help\u001b\[39m     │ \u001b\[38;5;8mAlias for .commands\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.save\u001b\[39m     │ \u001b\[38;5;8mSave all evaluated commands in this REPL session to a file\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.load\u001b\[39m     │ \u001b\[38;5;8mLoad JS from a file into the REPL session\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.commands\u001b\[39m │ \u001b\[38;5;8mLists all of the REPL commands\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.h\u001b\[39m        │ \u001b\[38;5;8mAlias for .commands\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.quit\u001b\[39m     │ \u001b\[38;5;8mAlias for .exit\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.q\u001b\[39m        │ \u001b\[38;5;8mAlias for .exit\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.history\u001b\[39m  │ \u001b\[38;5;8mShows command history\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.models\u001b\[39m   │ \u001b\[38;5;8mLists all of the models within this project\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.modules\u001b\[39m  │ \u001b\[38;5;8mLists all of the modules within this project\u001b\[39m/);
+      expect(stdout).to.match(/\u001b\[38;5;172m.services\u001b\[39m │ \u001b\[38;5;8mLists all of the services within this project\u001b\[39m/);
+
       done( );
     } );
   } );
