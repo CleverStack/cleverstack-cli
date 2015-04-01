@@ -1,96 +1,96 @@
-var chai      = require( 'chai' )
+var chai      = require('chai')
   , expect    = chai.expect
   , exec      = require('child_process').exec
-  , path      = require( 'path' )
-  , semver    = require( 'semver' )
-  , rimraf    = require( 'rimraf' )
-  , async     = require( 'async' )
-  , fs        = require( 'fs' )
-  , binPath   = path.join( __dirname, '..', '..', 'bin' )
-  , assetPath = path.join( __dirname, '..', 'assets' );
+  , path      = require('path')
+  , semver    = require('semver')
+  , rimraf    = require('rimraf')
+  , async     = require('async')
+  , fs        = require('fs')
+  , binPath   = path.join(__dirname, '..', '..', 'bin')
+  , assetPath = path.join(__dirname, '..', 'assets');
 
 chai.config.includeStack = true;
 
-describe( 'Install with a backend module', function ( ) {
-  before( function ( done ) {
-    if ( !fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ) {
+describe('Install with a backend module', function () {
+  before(function (done) {
+    if (!fs.existsSync(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'))) {
       return done();
     }
 
-    if ( require.cache[ path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ] ) {
-      delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ];
+    if (require.cache[ path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json') ]) {
+      delete require.cache[ require.resolve(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json')) ];
     }
 
-    delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
+    delete require.cache[ require.resolve(path.join(assetPath, 'my-new-project', 'backend', 'package.json')) ];
 
-    async.parallel( [
-      async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module' ) ),
+    async.parallel([
+      async.apply(rimraf, path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module')),
     ],
-    done );
-  } );
+    done);
+  });
 
-  afterEach( function ( done ) {
-    if ( require.cache.hasOwnProperty( require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ) ) {
-      delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ];
+  afterEach(function (done) {
+    if (require.cache.hasOwnProperty(require.resolve(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json')))) {
+      delete require.cache[ require.resolve(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json')) ];
     }
 
-    delete require.cache[ require.resolve( path.join( assetPath, 'my-new-project', 'backend', 'package.json' ) ) ];
+    delete require.cache[ require.resolve(path.join(assetPath, 'my-new-project', 'backend', 'package.json')) ];
 
-    async.parallel( [
-      async.apply( rimraf, path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module' ) ),
+    async.parallel([
+      async.apply(rimraf, path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module')),
     ],
-    done );
-  } );
+    done);
+  });
 
-  it( 'within the root directory', function( done ) {
-    var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
+  it('within the root directory', function(done) {
+    var proc = exec(path.join(binPath, 'clever-install') + ' backend-example-module', { cwd: path.join(assetPath, 'my-new-project') }, function (err, stdout, stderr) {
       
-      expect( stderr ).to.equal( '' );
+      expect(stderr).to.equal('');
 
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ).to.be.true;
+      expect(fs.existsSync(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'))).to.be.true;
 
-      var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) );
-      expect( pkg.name ).to.equal( 'backend-example-module' );
-      expect( semver.gt( pkg.version, '0.0.1' ) ).to.true;
+      var pkg = require(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'));
+      expect(pkg.name).to.equal('backend-example-module');
+      expect(semver.gt(pkg.version, '0.0.1')).to.true;
 
-      done( err );
-    } );
-
-    // proc.stdout.pipe( process.stdout );
-    // proc.stderr.pipe( process.stdout );
-  } );
-
-  it( 'within the backend directory', function( done ) {
-    var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module', { cwd: path.join( assetPath, 'my-new-project', 'backend' ) }, function ( err, stdout, stderr ) {
-      expect( stderr ).to.equal( '' );
-
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ).to.be.true;
-
-      var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) );
-      expect( pkg.name ).to.equal( 'backend-example-module' );
-      expect( semver.gt( pkg.version, '0.0.1' ) ).to.true;
-
-      done( err );
+      done(err);
     });
 
-    // proc.stdout.pipe( process.stdout );
-    // proc.stderr.pipe( process.stdout );
+    // proc.stdout.pipe(process.stdout);
+    // proc.stderr.pipe(process.stdout);
   });
 
-  it( 'with a specific version', function( done ) {
-    var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module@1.0.5', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
-      expect( stderr ).to.equal( '' );
+  it('within the backend directory', function(done) {
+    var proc = exec(path.join(binPath, 'clever-install') + ' backend-example-module', { cwd: path.join(assetPath, 'my-new-project', 'backend') }, function (err, stdout, stderr) {
+      expect(stderr).to.equal('');
 
-      expect( fs.existsSync( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) ) ).to.be.true;
+      expect(fs.existsSync(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'))).to.be.true;
 
-      var pkg = require( path.join( assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json' ) );
-      expect( pkg.name ).to.equal( 'backend-example-module' );
-      expect( pkg.version ).to.equal( '1.0.5' );
+      var pkg = require(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'));
+      expect(pkg.name).to.equal('backend-example-module');
+      expect(semver.gt(pkg.version, '0.0.1')).to.true;
 
-      done( err );
+      done(err);
     });
 
-    // proc.stdout.pipe( process.stdout );
-    // proc.stderr.pipe( process.stdout );
+    // proc.stdout.pipe(process.stdout);
+    // proc.stderr.pipe(process.stdout);
   });
-} );
+
+  it('with a specific version', function(done) {
+    var proc = exec(path.join(binPath, 'clever-install') + ' backend-example-module@1.0.5', { cwd: path.join(assetPath, 'my-new-project') }, function (err, stdout, stderr) {
+      expect(stderr).to.equal('');
+
+      expect(fs.existsSync(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'))).to.be.true;
+
+      var pkg = require(path.join(assetPath, 'my-new-project', 'backend', 'modules', 'backend-example-module', 'package.json'));
+      expect(pkg.name).to.equal('backend-example-module');
+      expect(pkg.version).to.equal('1.0.5');
+
+      done(err);
+    });
+
+    // proc.stdout.pipe(process.stdout);
+    // proc.stderr.pipe(process.stdout);
+  });
+});
