@@ -22,21 +22,22 @@ if (!args) {
   program.help();
 }
 
-lib .search
-  .aggregate(args)
-  .spread(function(npm, bower) {
-    var repos = npm.concat(bower);
+lib
+.search
+.aggregate(args)
+.spread(function(npm, bower) {
+  var repos = npm.concat(bower);
 
-    if (repos.length < 1) {
-      lib.utils.fail('Couldn\'t find any modules that were compatible with CleverStack.');
-    }
+  if (repos.length < 1) {
+    lib.utils.fail('Couldn\'t find any modules that were compatible with CleverStack.');
+  }
 
-    lib.utils.success('Found ' + repos.length + ' module' + (repos.length !== 1 ? 's' : ''));
-    console.log('');
+  lib.utils.success('Found ' + repos.length + ' module' + (repos.length !== 1 ? 's' : ''));
+  console.log('');
 
-    repos.forEach(lib.repos.display);
-    process.exit(0);
-  })
-  .catch(function(err) {
-    lib.utils.fail(err);
-  });
+  repos.forEach(lib.repos.display);
+  process.exit(0);
+})
+.catch(function(err) {
+  lib.utils.fail(err);
+});
