@@ -43,7 +43,7 @@ describe( 'Install with a backend module', function ( ) {
   } );
 
   it( 'within the root directory', function( done ) {
-    var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module -v', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
+    var proc = exec( path.join( binPath, 'clever-install' ) + ' backend-example-module', { cwd: path.join( assetPath, 'my-new-project' ) }, function ( err, stdout, stderr ) {
       
       expect( stderr ).to.equal( '' );
 
