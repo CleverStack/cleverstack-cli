@@ -147,8 +147,10 @@ function setupBackend() {
         return reject(err);
       }
 
-      utils.info([ '  Downloading and extracting ', csPackage.name, '...' ].join(''));
-      utils.running('Downloading and extracting...');
+      utils
+        .info('Downloading and extracting ' + csPackage.name + '...')
+        .running('Downloading and extracting ' + csPackage.name + '...');
+
       lib.packages
         .get(csPackage, projectDir)
         .then(function() {
@@ -158,6 +160,14 @@ function setupBackend() {
         .then(function() {
           utils.progress();
           return installNPMPackages(projectDir);
+        })
+        .then(function() {
+          return utils
+            .info('  Installing module dependencies...'.join( '' ), '└── ')
+            .running('Installing module dependencies...')
+            .progress()
+            .dependencies
+            .installPeerDeps(projectDir);
         })
         .then(function() {
           utils.progress();
