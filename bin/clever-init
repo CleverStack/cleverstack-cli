@@ -9,6 +9,7 @@ var path            = require('path')
   , rimraf          = require('rimraf')
   , async           = require('async')
   , exec            = require('child_process').exec
+  , spawn           = require('child_process').spawn
   , Promise         = require('bluebird')
   , singleSeed      = true
   , seedsToInstall  = []
@@ -104,22 +105,34 @@ function writeLocalJSON(projectDir) {
  */
 function installNPMPackages(projectDir) {
   return new Promise(function(resolve, reject) {
-    utils.info([ '  Installing NPM modules...' ].join(''));
-    utils.running('Installing NPM modules...');
-    var proc = exec('npm install --silent', { cwd: projectDir }, function(err) {
-      if (!!err && err.message !== 'Command failed: ') {
-        utils.fail(err);
-        reject(err);
+    utils
+      .info('  Installing NPM modules...')
+      .running('Installing NPM modules...');
+
+    var args = ['install']
+      , opts = { env: process.env, cwd: projectDir };
+
+    if (!!program.verbose) {
+      opts.stdio = 'inherit';
+    } else {
+      args.push('--silent');
+    }
+
+    var proc  = spawn('npm', args, opts)
+      , error = '';
+
+    proc.on('error', function(err) {
+      error += err;
+    });
+
+    proc.on('close', function(code) {
+      if (code !== 0 || !!error && error !== 'Command failed: ') {
+        utils.fail(error);
+        reject(error);
       } else {
         resolve();
       }
     });
-
-    // Pipe the output of exec if verbose has been specified
-    if (program.verbose) {
-      proc.stdout.pipe(process.stdout);
-      proc.stderr.pipe(process.stdout);
-    }
   });
 }
 
