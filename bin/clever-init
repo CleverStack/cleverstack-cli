@@ -556,7 +556,7 @@ async.waterfall(
       lib.utils.finishProgress();
       process.exit(0);
     } else {
-      utils.fail(err);
+      utils.fail(err.stack ? (err + '\n' + err.stack) : err);
     }
   }
 );
