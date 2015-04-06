@@ -162,12 +162,12 @@ function setupBackend() {
           return installNPMPackages(projectDir);
         })
         .then(function() {
-          return utils
-            .info('  Installing module dependencies...'.join( '' ), '└── ')
+          utils
+            .info('  Installing module dependencies...', '└── ')
             .running('Installing module dependencies...')
-            .progress()
-            .dependencies
-            .installPeerDeps(projectDir);
+            .progress();
+
+          return lib.util.dependencies.installPeerDependencies(projectDir);
         })
         .then(function() {
           utils.progress();
