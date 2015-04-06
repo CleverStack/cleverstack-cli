@@ -58,7 +58,7 @@ program.on('--help', function() {
 /**  Parse CLI Arguments
 ================================*/
 program.parse(process.argv);
-if (!program.args[ 0 ] || program.args[ 0 ].toString().trim() === '') {
+if (!program.args[0] || program.args[0].toString().trim() === '') {
   program.help();
 }
 
@@ -76,13 +76,16 @@ if (!program.args[ 0 ] || program.args[ 0 ].toString().trim() === '') {
  * @api private
  */
 function writeLocalJSON(projectDir) {
+  var configDir = path.resolve(path.join(projectDir, 'config'));
+
   return new Promise(function(resolve, reject) {
-    var localJSONFile = require(path.join(projectDir, 'config', 'local.example.json'));
+    var localJSONFile = require(path.join(configDir, 'local.example.json'));
 
-    utils.info([ '  Creating local configuration file config/local.json', '...' ].join(''));
-    utils.running('Creating config/local.json...');
+    utils
+      .info('  Creating local configuration file config/local.json...')
+      .running('Creating config/local.json...');
 
-    fs.writeFile(path.join(projectDir, 'config', 'local.json'), JSON.stringify(localJSONFile, null, 2), function (err) {
+    fs.writeFile(path.join(configDir, 'local.json'), JSON.stringify(localJSONFile, null, 2), function(err) {
       if (!!err) {
         return reject(err);
       }
