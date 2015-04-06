@@ -9,6 +9,7 @@ var path            = require('path')
   , rimraf          = require('rimraf')
   , async           = require('async')
   , exec            = require('child_process').exec
+  , spawn           = require('child_process').spawn
   , Promise         = require('bluebird')
   , singleSeed      = true
   , seedsToInstall  = []
@@ -58,7 +59,7 @@ program.on('--help', function() {
 /**  Parse CLI Arguments
 ================================*/
 program.parse(process.argv);
-if (!program.args[ 0 ] || program.args[ 0 ].toString().trim() === '') {
+if (!program.args[0] || program.args[0].toString().trim() === '') {
   program.help();
 }
 
@@ -76,13 +77,16 @@ if (!program.args[ 0 ] || program.args[ 0 ].toString().trim() === '') {
  * @api private
  */
 function writeLocalJSON(projectDir) {
+  var configDir = path.resolve(path.join(projectDir, 'config'));
+
   return new Promise(function(resolve, reject) {
-    var localJSONFile = require(path.join(projectDir, 'config', 'local.example.json'));
+    var localJSONFile = require(path.join(configDir, 'local.example.json'));
 
-    utils.info([ '  Creating local configuration file config/local.json', '...' ].join(''));
-    utils.running('Creating config/local.json...');
+    utils
+      .info('  Creating local configuration file config/local.json...')
+      .running('Creating config/local.json...');
 
-    fs.writeFile(path.join(projectDir, 'config', 'local.json'), JSON.stringify(localJSONFile, null, 2), function (err) {
+    fs.writeFile(path.join(configDir, 'local.json'), JSON.stringify(localJSONFile, null, 2), function(err) {
       if (!!err) {
         return reject(err);
       }
@@ -101,22 +105,34 @@ function writeLocalJSON(projectDir) {
  */
 function installNPMPackages(projectDir) {
   return new Promise(function(resolve, reject) {
-    utils.info([ '  Installing NPM modules...' ].join(''));
-    utils.running('Installing NPM modules...');
-    var proc = exec('npm install --silent', { cwd: projectDir }, function(err) {
-      if (!!err && err.message !== 'Command failed: ') {
-        utils.fail(err);
-        reject(err);
+    utils
+      .info('  Installing NPM modules...')
+      .running('Installing NPM modules...');
+
+    var args = ['install']
+      , opts = { env: process.env, cwd: projectDir };
+
+    if (!!program.verbose) {
+      opts.stdio = 'inherit';
+    } else {
+      args.push('--silent');
+    }
+
+    var proc  = spawn('npm', args, opts)
+      , error = '';
+
+    proc.on('error', function(err) {
+      error += err;
+    });
+
+    proc.on('close', function(code) {
+      if (code !== 0 || !!error && error !== 'Command failed: ') {
+        utils.fail(error);
+        reject(error);
       } else {
         resolve();
       }
     });
-
-    // Pipe the output of exec if verbose has been specified
-    if (program.verbose) {
-      proc.stdout.pipe(process.stdout);
-      proc.stderr.pipe(process.stdout);
-    }
   });
 }
 
@@ -147,8 +163,10 @@ function setupBackend() {
         return reject(err);
       }
 
-      utils.info([ '  Downloading and extracting ', csPackage.name, '...' ].join(''));
-      utils.running('Downloading and extracting...');
+      utils
+        .info('Downloading and extracting ' + csPackage.name + '...')
+        .running('Downloading and extracting ' + csPackage.name + '...');
+
       lib.packages
         .get(csPackage, projectDir)
         .then(function() {
@@ -158,6 +176,14 @@ function setupBackend() {
         .then(function() {
           utils.progress();
           return installNPMPackages(projectDir);
+        })
+        .then(function() {
+          utils
+            .info('  Installing module dependencies...', '└── ')
+            .running('Installing module dependencies...')
+            .progress();
+
+          return lib.util.dependencies.installPeerDependencies(projectDir);
         })
         .then(function() {
           utils.progress();
@@ -546,7 +572,7 @@ async.waterfall(
       lib.utils.finishProgress();
       process.exit(0);
     } else {
-      utils.fail(err);
+      utils.fail(err.stack ? (err + '\n' + err.stack) : err);
     }
   }
 );
