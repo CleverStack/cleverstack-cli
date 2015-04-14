@@ -10,6 +10,7 @@ var path            = require('path')
   , async           = require('async')
   , exec            = require('child_process').exec
   , spawn           = require('child_process').spawn
+  , readline        = require('readline')
   , Promise         = require('bluebird')
   , singleSeed      = true
   , seedsToInstall  = []
@@ -112,14 +113,23 @@ function installNPMPackages(projectDir) {
     var args = ['install']
       , opts = { env: process.env, cwd: projectDir };
 
-    if (!!program.verbose) {
-      opts.stdio = 'inherit';
-    } else {
+    if (!program.verbose) {
       args.push('--silent');
     }
 
     var proc  = spawn('npm', args, opts)
       , error = '';
+
+    if (!!program.verbose) {
+      readline
+        .createInterface({
+          input    : proc.stdout,
+          terminal : false
+        })
+        .on('line', function(line) {
+          console.log('      ' + line);
+        });
+    }
 
     proc.on('error', function(err) {
       error += err;

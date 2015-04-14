@@ -5,6 +5,7 @@ var path      = require('path')
   , program   = GLOBAL.program = require('commander')
   , async     = require('async')
   , spawn     = require('child_process').spawn
+  , readline  = require('readline')
   , fs        = require('fs')
   , os        = require('os')
   , isWin     = /^win32/.test(os.platform())
@@ -99,23 +100,39 @@ async.waterfall(
                 var args = ['install']
                   , opts = { cwd: _path, env: process.env };
 
-                if (program.verbose) {
-                  opts.stdio = 'inherit';
-                  lib.utils.info('  Installing NPM modules for ' + _path + '...');
-                } else {
+                lib
+                  .utils
+                  .info('  Installing NPM modules for ' + seed.name + '...')
+                  .running('  Installing NPM modules for ' + seed.name + '...');
+
+                if (!program.verbose) {
                   args.push('--silent');
-                  lib.utils.info('  Installing NPM modules for ' + seed.name + '...');
                 }
-                lib.utils.running('  Installing NPM modules for ' + seed.name + '...');
 
-                var proc  = spawn(!isWin ? 'npm' : 'npm.cmd', args, opts)
-                  , error = '';
+                var posixProc = spawn(!isWin ? 'npm' : 'npm.cmd', args, opts)
+                  , exitHdlr  = process.kill.bind(process, posixProc)
+                  , error     = '';
 
-                proc.on('error', function(err) {
+                if (!!program.verbose) {
+                  readline
+                    .createInterface({
+                      input    : posixProc.stdout,
+                      terminal : false
+                    })
+                    .on('line', function(line) {
+                      console.log('        ' + line);
+                    });
+                }
+
+                process.on('SIGTERM', exitHdlr);
+
+                posixProc.on('error', function(err) {
                   error += err;
                 });
 
-                proc.on('close', function(code) {
+                posixProc.on('close', function(code) {
+                  process.removeListener('SIGTERM', exitHdlr);
+
                   if (code !== 0) {
                     return lib.utils.fail(error);
                   }
