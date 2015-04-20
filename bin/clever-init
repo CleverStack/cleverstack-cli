@@ -10,6 +10,8 @@ var path            = require('path')
   , async           = require('async')
   , exec            = require('child_process').exec
   , spawn           = require('child_process').spawn
+  , os              = require('os')
+  , isWin           = /^win32/.test(os.platform())
   , readline        = require('readline')
   , Promise         = require('bluebird')
   , singleSeed      = true
@@ -117,7 +119,7 @@ function installNPMPackages(projectDir) {
       args.push('--silent');
     }
 
-    var proc  = spawn('npm', args, opts)
+    var proc  = spawn(!isWin ? 'npm' : 'npm.cmd', args, opts)
       , error = '';
 
     if (!!program.verbose) {
