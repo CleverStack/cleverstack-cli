@@ -115,23 +115,20 @@ function installNPMPackages(projectDir) {
     var args = ['install']
       , opts = { env: process.env, cwd: projectDir };
 
-    if (!program.verbose) {
-      args.push('--silent');
-    }
-
     var proc  = spawn(!isWin ? 'npm' : 'npm.cmd', args, opts)
       , error = '';
-
-    if (!!program.verbose) {
-      readline
-        .createInterface({
-          input    : proc.stdout,
-          terminal : false
-        })
-        .on('line', function(line) {
+    
+    // Create a readline interface because otherwise the buffer will 
+    readline
+      .createInterface({
+        input    : proc.stdout,
+        terminal : false
+      })
+      .on('line', function(line) {
+        if (!!program.verbose) {
           console.log('      ' + line);
-        });
-    }
+        }
+      });
 
     proc.on('error', function(err) {
       error += err;
@@ -176,7 +173,7 @@ function setupBackend() {
       }
 
       utils
-        .info('Downloading and extracting ' + csPackage.name + '...')
+        .info('  Downloading and extracting ' + csPackage.name + '...')
         .running('Downloading and extracting ' + csPackage.name + '...');
 
       lib.packages
