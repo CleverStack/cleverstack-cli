@@ -1,7 +1,7 @@
 {
   "name"        : "cleverstack-cli",
   "description" : "Command line interface for CleverStack",
-  "version"     : "1.2.8",
+  "version"     : "1.2.9",
   "license"     : "MIT",
   "author": {
     "name"      : "CleverStack",
@@ -39,6 +39,7 @@
     "event-stream"        : "~3.3.0",
     "findit"              : "~2.0.0",
     "follow-redirects"    : "~0.0.3",
+    "https-proxy-agent"   : "^1.0.0",
     "i"                   : "^0.3.2",
     "lodash"              : "~3.4.0",
     "mkdirp"              : "~0.5.0",

@@ -35,7 +35,7 @@ async.waterfall(
       });
 
       // Only check for updates on a set interval
-      if (Date.now() - updateConfig.get('lastUpdateCheck') > checkUpdatesEvery) {
+      if (!process.env.HTTP_PROXY && !process.env.HTTPS_PROXY && Date.now() - updateConfig.get('lastUpdateCheck') > checkUpdatesEvery) {
         notifier = updateNotifier({ pkg: packageJson, callback: checkDone });
       } else {
         checkDone(null);
