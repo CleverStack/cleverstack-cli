@@ -34,7 +34,7 @@ describe('Search', function() {
       expect(stdout).to.match(/Found 1 module/);
 
       expect(stdout).to.match(/clever\-datatables/);
-      expect(stdout).to.match(/git:\/\/github.com\/CleverStack\/clever\-datatables.git/);
+      expect(stdout).to.match(/github.com\/CleverStack\/clever\-datatables.git/);
       expect(stdout).to.match(/This module provides a directive to create jQuery dataTables./);
 
       done(err);
@@ -50,7 +50,7 @@ describe('Search', function() {
       expect(stdout).to.match(/Found 2 modules/);
 
       expect(stdout).to.match(/clever\-datatables/);
-      expect(stdout).to.match(/git:\/\/github.com\/CleverStack\/clever\-datatables.git/);
+      expect(stdout).to.match(/github.com\/CleverStack\/clever\-datatables.git/);
       expect(stdout).to.match(/This module provides a directive to create jQuery dataTables./);
 
       expect(stdout).to.match(/clever\-orm/);

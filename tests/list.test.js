@@ -12,11 +12,11 @@ describe('List', function() {
     exec(path.join(binPath, 'clever-list'), { cwd: assetPath }, function (err, stdout, stderr) {
       expect(stderr).to.equal('');
       expect(stdout).to.match(/clever-auth/);
-      expect(stdout).to.match(/git:\/\/github.com\/CleverStack\/clever-auth.git/);
+      expect(stdout).to.match(/github.com\/CleverStack\/clever-auth.git/);
       expect(stdout).to.match(/CleverStack Authentication Module/);
 
       expect(stdout).to.match(/clever-datatables/);
-      expect(stdout).to.match(/git:\/\/github.com\/CleverStack\/clever-datatables.git/);
+      expect(stdout).to.match(/github.com\/CleverStack\/clever-datatables.git/);
       expect(stdout).to.match(/This module provides a directive to create jQuery dataTables./);
 
       done(err);
