@@ -11,6 +11,9 @@ before_install:
   - 'npm install -g grunt-cli'
   - 'npm install -g bower'
 
+script:
+  - "travis_wait make tests"
+
 cache:
   directories:
     - node_modules
